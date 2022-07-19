@@ -4,15 +4,17 @@ import styles from "../styles/Home.module.css";
 import {AuthContext} from '../context/index'
 import {useRouter} from "next/router";
 
-import withAuth from "./HOC/withAuth.js";
+import withAuth from "./HOC/withAuth.jsx";
 
-function Login() {
+function Test() {
   return (
     <>
-<h2>TEST 2</h2>
+<div className="container">
+ds
+</div>
    
     </>
   );
 }
 
-export default  withAuth(Login);
+export default  withAuth(Test);

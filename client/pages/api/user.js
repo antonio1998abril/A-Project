@@ -1,6 +1,6 @@
 import  { useEffect, useState } from 'react';
 import axios from 'axios';
-import swal from 'sweetalert2';
+/* import swal from 'sweetalert2'; */
 
 function User(token) {
 
@@ -22,12 +22,12 @@ function User(token) {
                    
                    
                 } catch (err) {
-                    swal({
+                    /* swal({
                         title:"ERROR",
                         text:err.response.data.msg,
                         icon:"error",
                         button:"OK"
-                    })
+                    }) */
                     localStorage.removeItem('firstLogin')
                 }
             }
