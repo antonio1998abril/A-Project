@@ -42,10 +42,25 @@ a {
 
 .content-wrap {
   padding-bottom: 5.5rem;    
-  margin-left: 8%;
+  margin-left: 3%;
   margin-right: 3%; 
   
  }
+
+ .grid {
+  display:grid;
+  grid-template-columns: 25% 25% 25% 25%
+ }
+
+ .grid div {
+  background-color: #999;
+  padding: 1em;
+ }
+
+ .grid div:hover {
+  border: 1px solid #f1c40f
+ }
+
 
 @import url("Register/register.css");
 @import url("Login/login.css");

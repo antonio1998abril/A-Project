@@ -6,13 +6,37 @@ import Link from "next/link";
 
 function Index() {
   const state = useContext(AuthContext);
-  const [isLogged] = state.User.isLogged;
-
   return (
     <>
+       <div className="content-wrap">
       <div> Dashboard Index</div>
 
-      <div className="container">
+      <div className="grid">
+<div className="container">
+  dsd
+</div>
+<div>
+  AuthContext
+</div>
+
+<div>
+  del
+</div>
+
+<div>
+  del 2
+</div>
+
+</div>
+
+   
+
+
+
+
+
+
+
         <div className="card">
           <div className="card-body">
             <h5 className="card-title">Card title</h5>

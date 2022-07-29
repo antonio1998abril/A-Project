@@ -2,29 +2,31 @@ import { useEffect, useState, createContext } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
 import User from "../pages/api/user";
+import { loginService } from "../service/loginService";
 
-export const AuthContext = createContext()
+const initialToken = {
+  token: ''
+}
+
+export const AuthContext = createContext(initialToken)
 export const DataProvider = ({ children }) => {
-  const [token, setToken] = useState(false);
+  const [token, setToken] = useState('');
+  const {getRefreshToken} = loginService();
 
   useEffect(() => {
     const firstLogin = localStorage.getItem("firstLogin");
     if (firstLogin) {
       const refreshToken = async () => {
         try {
-          const res = await axios.get("/api/refresh_token");
+          /* const res = await axios.get("/api/refresh_token"); */
+          const res = await getRefreshToken()
+      
           setToken(res.data.accessToken);
 
           setTimeout(() => {
             refreshToken();
           }, 10 * 60 * 1000);
         } catch (err) {
-/*           Swal({
-            title: "Error try it again",
-            text: err.response.data.msg,
-            icon: "error",
-            button: "OK",
-          }); */
           localStorage.removeItem("firstLogin");
         }
       };

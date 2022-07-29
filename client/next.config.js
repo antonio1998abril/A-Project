@@ -1,4 +1,4 @@
-const onLine = 'http://localhost:5000/api' || 'https://backantononio.herokuapp.com'
+const onLine = process.env.REACT_APP_BASE || process.env.REACT_APP_API_URL
 
 module.exports = {
   reactStrictMode: true,

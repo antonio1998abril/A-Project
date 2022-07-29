@@ -1,21 +1,21 @@
 import Head from "next/head";
 import Image from "next/image";
 import { useContext, useState } from "react";
-import { AuthContext } from "../context";
-import styles from "../styles/Home.module.css";
 import axios from "axios";
 import Router from "next/router";
 import Link from "next/link";
 import { Form, Row } from "react-bootstrap";
+import verifyAuth from "./HOC/verifyAuth.jsx";
+import { AuthContext } from "../context";
+import styles from "../styles/Home.module.css";
 
 const initialState = {
   email: "",
   password: "",
 };
 
-export default function Home() {
+function Home() {
   const state = useContext(AuthContext);
-  const [isLogged] = state.User.isLogged;
   // user Context
   const [login, setLogin] = useState(initialState);
 
@@ -157,3 +157,5 @@ export default function Home() {
     </>
   );
 }
+
+export default verifyAuth(Home);

@@ -17,7 +17,7 @@ function Register() {
   };
   const [register, setRegister] = useState(initialState);
   const state = useContext(AuthContext);
-  const [isLogged] = state.User.isLogged;
+ 
 
   const handleChangeInput = (e) => {
     const { name, value } = e.target;
