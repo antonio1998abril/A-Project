@@ -25,7 +25,7 @@ a {
 }
 
 .card {
-  transition: all 0.5s ease; 
+  transition: all 0.5s ease;
   box-shadow: 0 0 15px rgb(231, 231, 231);
 }
 
@@ -39,28 +39,125 @@ a {
   color: #999;
 }
 
-
 .content-wrap {
-  padding-bottom: 5.5rem;    
+  padding-bottom: 5.5rem;
   margin-left: 3%;
-  margin-right: 3%; 
-  
- }
+  margin-right: 3%;
+}
 
- .grid {
-  display:grid;
-  grid-template-columns: 25% 25% 25% 25%
- }
+.general_Top {
+  margin-top: 1rem;
+}
 
- .grid div {
-  background-color: #999;
-  padding: 1em;
- }
+/* Header Icons */
+.bell-icon {
+  position: absolute;
 
- .grid div:hover {
-  border: 1px solid #f1c40f
- }
+  margin-left: 400px;
+}
+.bell-icon span {
+  background: rgb(255, 61, 2);
+  border-radius: 20px;
+  color: rgb(255, 255, 255);
+  position: absolute;
 
+  right: -1px;
+  padding: 2px 7px;
+  font-size: 12px;
+  z-index: 1;
+}
+
+@media (max-width: 1000px) {
+  .bell-icon {
+    margin-left: 200px;
+  }
+}
+@media (max-width: 280px) {
+  .bell-icon {
+    margin-left: 180px;
+  }
+}
+
+
+
+.chat-icon {
+  position: absolute;
+
+  margin-left: 360px;
+}
+.chat-icon span {
+  background: rgb(255, 61, 2);
+  border-radius: 20px;
+  color: rgb(255, 255, 255);
+  position: absolute;
+
+  right: -1px;
+  padding: 2px 7px;
+  font-size: 12px;
+  z-index: 1;
+}
+
+@media (max-width: 1000px) {
+  .chat-icon {
+    margin-left: 160px;
+  }
+}
+@media (max-width: 280px) {
+  .chat-icon {
+    margin-left: 150px;
+  }
+}
+
+
+/* Border Header */
+.borderHeader {
+  border-bottom: 1px solid rgb(151, 151, 151);
+  box-shadow: 0 0 1px rgb(0 0 0 / 13%), 0 1px 3px rgb(0 0 0 / 20%);
+  background: rgb(252, 252, 252);
+}
+
+.fontNavBar {
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: 600;
+}
+.MagNet {
+  width: 3.3rem;
+  height: 2.1rem;
+  margin-left: 5%;
+  -webkit-box-align: center;
+}
+
+/* Home */
+.cards {
+  margin: 0 auto;
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(5, 1fr);
+}
+
+@media (max-width: 1730px) {
+  .cards {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (max-width: 1400px) {
+  .cards {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 1050px) {
+  .cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 710px) {
+  .cards {
+    grid-template-columns: repeat(1, 1fr);
+  }
+}
 
 @import url("Register/register.css");
 @import url("Login/login.css");

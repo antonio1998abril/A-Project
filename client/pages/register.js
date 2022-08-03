@@ -29,7 +29,7 @@ function Register() {
     try {
       await axios.post("/api/register", { ...register });
       localStorage.setItem("firstLogin", true);
-      Router.push("/dashboard");
+      Router.push("/DashboardSession");
       /*       swal({ icon: "success", text: "GOOD!!", timer: "2000" }).then(
         function () {
           window.location.href = "/";

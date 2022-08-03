@@ -8,7 +8,10 @@ const routes = {
     .post('/login',userController.login)
     .get('/logout',userController.logout)
     .get('/refresh_token',userController.refreshToken)
+    .get('/role',auth,userController.getRole)
+    .get('/newPassword',userController.restorePassword)
     .get('/info',auth,userController.getInfo),
+    
 }
 
 module.exports = routes

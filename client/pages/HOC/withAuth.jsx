@@ -7,7 +7,7 @@ const withAuth = (WrappedComponent) => {
   return (props) => {
     const Router = useRouter();
     const [verified, setVerified] = useState(false);
-    const { getRefreshToken } = loginService();
+    const { getRefreshToken, getInfoUser } = loginService();
     const [returnPage, setReturnPage] = useState(false);
 
     const removeLocalStorage = () => {
@@ -22,6 +22,7 @@ const withAuth = (WrappedComponent) => {
             const res = await getRefreshToken();
             if (res.status === 200) {
               setVerified(true);
+
             } else {
               setVerified(false);
               setReturnPage(true);
@@ -45,7 +46,7 @@ const withAuth = (WrappedComponent) => {
     }, [returnPage]);
 
     if (verified) {
-      return <WrappedComponent {...props} />;
+      return <WrappedComponent verified={verified} {...props} />;
     } else {
       return null;
     }

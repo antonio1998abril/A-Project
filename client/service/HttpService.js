@@ -5,7 +5,7 @@ import { AuthContext } from "../context";
 export const HttpService = () => {
   const state = useContext(AuthContext);
   const [ token ] = state.token;
-
+  
   const createRequestOptions = useCallback(
     (method, url, body) => {
       return {

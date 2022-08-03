@@ -5,7 +5,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 
 import { DataProvider } from "../context/index";
 import Header from "../components/Header";
-
+import { SSRProvider } from "react-bootstrap";
 
 function MyApp({ Component, pageProps }) {
   const router = useRouter();
@@ -14,16 +14,18 @@ function MyApp({ Component, pageProps }) {
 
   return (
     <>
-      <DataProvider>
-        <div className="main">
-          {!showBarLogin && !showBarRegister && (
-            <>
-              <Header />
-            </>
-          )}
-          <Component {...pageProps} />
-        </div>
-      </DataProvider>
+      <SSRProvider>
+        <DataProvider>
+          <div className="main">
+            {!showBarLogin && !showBarRegister && (
+              <>
+                <Header />
+              </>
+            )}
+            <Component {...pageProps} />
+          </div>
+        </DataProvider>
+      </SSRProvider>
     </>
   );
 }

@@ -18,10 +18,15 @@ export const loginService = () => {
     return get(url, "getInfo", {});
   };
 
+  const createNewPassword = (body) => {
+    const url = `/api/newPassword`;
+    return post(url, body,"newPassword", {});
+  };
 
   return {
     getLogOut,
     getRefreshToken,
     getInfoUser,
+    createNewPassword
   };
 };

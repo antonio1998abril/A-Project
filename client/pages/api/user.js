@@ -7,18 +7,18 @@ function User(token) {
 
   const [infoUser, setInfoUser] = useState([]);
   const [callback, setCallback] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(false);
+  const [isManager, setIsManager] = useState(false);
+  const [isCollaborator, setIsCollaborator] = useState(false);
 
   useEffect(() => {
     if (token) {
       const getUser = async () => {
         try {
-          const res = await axios.get("/api/info", {
+           const res = await axios.get("/api/role", {
             headers: { Authorization: token },
           });
-
-          setInfoUser(res.data);
-          res.data.role == "Admin" ? setIsAdmin(true) : setIsAdmin(false);
+          res.role === 'Manager' && setIsManager(true) || res.role !== 'Manager' && setIsCollaborator(true); 
+          
         } catch (err) {
           localStorage.removeItem("firstLogin");
         }
@@ -27,9 +27,11 @@ function User(token) {
     }
   }, [token]);
 
+  
   return {
     infoUser: [infoUser, setInfoUser],
-    isAdmin: [isAdmin, setIsAdmin],
+    isManager: [isManager, setIsManager],
+    isCollaborator: [isCollaborator,setIsCollaborator],
     callback: [callback, setCallback],
   };
 }

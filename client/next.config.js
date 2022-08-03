@@ -20,6 +20,12 @@ module.exports = {
         source: '/api/logout',
         destination: `${onLine}/logout`
       },{
+        source: '/api/role',
+        destination: `${onLine}/role`
+      },{
+        source: '/api/newPassword',
+        destination: `${onLine}/newPassword`
+      },{
         source: '/api/info',
         destination: `${onLine}/info`
       }

@@ -1,31 +1,82 @@
-import React from "react";
+import React, { useState } from "react";
 import { Navbar, Nav, Container, Image, NavDropdown } from "react-bootstrap";
 import Link from "next/link";
 
 function Index() {
+  const [sizeBel, setSizeBell] = useState(50);
   return (
     <>
-      <Navbar expand="lg" bg="dark" variant="dark">
+      <Navbar className="borderHeader" expand="lg" variant="light" sticky="top">
         <Container>
-          <Navbar.Brand href="#home">A-Project</Navbar.Brand> 
           <Navbar.Toggle aria-controls="responsive-navbar-nav" />
+
           <Navbar.Collapse id="responsive-navbar-nav">
             <Nav className="me-auto">
-              <Nav.Link href="#features">Charts</Nav.Link>
-              <Nav.Link href="#pricing">Chats</Nav.Link>
-              <NavDropdown title="Actions" id="collasible-nav-dropdown">
-                <NavDropdown.Item href="#action/3.3">
+              <Navbar.Brand href="/">
+                <Image
+                  src="/logoClip.png"
+                  alt=" A-Project"
+                  className="MagNet ubuntu"
+                />
+                A-Project
+              </Navbar.Brand>
+
+              <Nav.Link href="/" className="fontNavBar ">
+                Home
+              </Nav.Link>
+              <Nav.Link href="#features" className="fontNavBar ">
+                Charts
+              </Nav.Link>
+              <NavDropdown
+                title="Actions"
+                id="collasible-nav-dropdown"
+                className="fontNavBar "
+              >
+                <NavDropdown.Item href="#action/3.3" className="fontNavBar ">
                   Settings
                 </NavDropdown.Item>
                 <NavDropdown.Divider />
-                <NavDropdown.Item href="#action/3.4">
+                <NavDropdown.Item href="#action/3.4" className="fontNavBar ">
                   Log out
                 </NavDropdown.Item>
               </NavDropdown>
+
+              <div className="chat-icon">
+                <span>{sizeBel}</span>
+                <Nav.Link>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="20"
+                    height="20"
+                    fill="currentColor"
+                    className="bi bi-bell-fill"
+                    viewBox="0 0 16 16"
+                  >
+                    <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2zm.995-14.901a1 1 0 1 0-1.99 0A5.002 5.002 0 0 0 3 6c0 1.098-.5 6-2 7h14c-1.5-1-2-5.902-2-7 0-2.42-1.72-4.44-4.005-4.901z" />
+                  </svg>
+                </Nav.Link>
+              </div>
+
+              <div className="bell-icon">
+                <span>{sizeBel}</span>
+
+                <Nav.Link>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="20"
+                    height="20"
+                    fill="currentColor"
+                    className="bi bi-chat-dots-fill bellStyle"
+                    viewBox="0 0 16 16"
+                  >
+                    <path d="M16 8c0 3.866-3.582 7-8 7a9.06 9.06 0 0 1-2.347-.306c-.584.296-1.925.864-4.181 1.234-.2.032-.352-.176-.273-.362.354-.836.674-1.95.77-2.966C.744 11.37 0 9.76 0 8c0-3.866 3.582-7 8-7s8 3.134 8 7zM5 8a1 1 0 1 0-2 0 1 1 0 0 0 2 0zm4 0a1 1 0 1 0-2 0 1 1 0 0 0 2 0zm3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2z" />
+                  </svg>
+                </Nav.Link>
+              </div>
             </Nav>
           </Navbar.Collapse>
         </Container>
-      </Navbar> 
+      </Navbar>
     </>
   );
 }

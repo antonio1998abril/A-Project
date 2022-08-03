@@ -34,7 +34,7 @@ const verifyAuth = (WrappedComponent) => {
       } */
 
       if (returnPage) {
-        Router.replace("/dashboard");
+        Router.replace("/DashboardSession");
       }
     }, [verified, returnPage]);
 
