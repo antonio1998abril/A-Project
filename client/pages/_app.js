@@ -6,6 +6,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { DataProvider } from "../context/index";
 import Header from "../components/Header";
 import { SSRProvider } from "react-bootstrap";
+import Success from "../components/Alert/Success";
 
 function MyApp({ Component, pageProps }) {
   const router = useRouter();
@@ -22,6 +23,7 @@ function MyApp({ Component, pageProps }) {
                 <Header />
               </>
             )}
+             <Success />
             <Component {...pageProps} />
           </div>
         </DataProvider>

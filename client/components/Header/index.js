@@ -1,9 +1,21 @@
 import React, { useState } from "react";
 import { Navbar, Nav, Container, Image, NavDropdown } from "react-bootstrap";
 import Link from "next/link";
+import Router from "next/router";
+import { loginService } from "../../service/loginService";
 
 function Index() {
   const [sizeBel, setSizeBell] = useState(50);
+  const { getLogOut } = loginService();
+
+  const logoutUser = async()=>{
+    await  getLogOut().then(function(e) {
+      Router.push("/");
+    }).catch(function(e) {
+      console.log("error");
+    })
+}
+
   return (
     <>
       <Navbar className="borderHeader" expand="lg" variant="light" sticky="top">
@@ -29,14 +41,14 @@ function Index() {
               </Nav.Link>
               <NavDropdown
                 title="Actions"
-                id="collasible-nav-dropdown"
+                id="collapsable-nav-dropdown"
                 className="fontNavBar "
               >
                 <NavDropdown.Item href="#action/3.3" className="fontNavBar ">
                   Settings
                 </NavDropdown.Item>
                 <NavDropdown.Divider />
-                <NavDropdown.Item href="#action/3.4" className="fontNavBar ">
+                <NavDropdown.Item onClick={logoutUser} className="fontNavBar ">
                   Log out
                 </NavDropdown.Item>
               </NavDropdown>

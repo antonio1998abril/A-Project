@@ -4,13 +4,8 @@ export const loginService = () => {
   const { post, get } = HttpService();
 
   const getLogOut = () => {
-    const url = `/login`;
+    const url = `/api/logout`;
     return get(url, "logOut", {});
-  };
-
-  const getRefreshToken = () => {
-    const url = `/api/refresh_token`;
-    return get(url, "refreshToken", {});
   };
 
   const getInfoUser = () => {
@@ -18,15 +13,8 @@ export const loginService = () => {
     return get(url, "getInfo", {});
   };
 
-  const createNewPassword = (body) => {
-    const url = `/api/newPassword`;
-    return post(url, body,"newPassword", {});
-  };
-
   return {
     getLogOut,
-    getRefreshToken,
-    getInfoUser,
-    createNewPassword
+    getInfoUser
   };
 };

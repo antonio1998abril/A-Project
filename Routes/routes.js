@@ -9,7 +9,7 @@ const routes = {
     .get('/logout',userController.logout)
     .get('/refresh_token',userController.refreshToken)
     .get('/role',auth,userController.getRole)
-    .get('/newPassword',userController.restorePassword)
+    .post('/newPassword',userController.restorePassword)
     .get('/info',auth,userController.getInfo),
     
 }

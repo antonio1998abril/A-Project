@@ -5,8 +5,10 @@ import React, { useContext, useEffect, useState } from "react";
 import { Form, Row } from "react-bootstrap";
 import { AuthContext } from "../context";
 import verifyAuth from "./HOC/verifyAuth.jsx";
+import { commonService } from "../service/HttpNoTokenRequired/commonService";
 
 function Register() {
+  const { registerNewAccount } = commonService();
   const initialState = {
     name: "",
     email: "",
@@ -17,7 +19,6 @@ function Register() {
   };
   const [register, setRegister] = useState(initialState);
   const state = useContext(AuthContext);
- 
 
   const handleChangeInput = (e) => {
     const { name, value } = e.target;
@@ -26,24 +27,17 @@ function Register() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      await axios.post("/api/register", { ...register });
-      localStorage.setItem("firstLogin", true);
-      Router.push("/DashboardSession");
-      /*       swal({ icon: "success", text: "GOOD!!", timer: "2000" }).then(
-        function () {
-          window.location.href = "/";
-        },
-        2000
-      ); */
-    } catch (err) {
-      /* swal({
-        title: "ERROR",
-        text: err.response.data.msg,
-        icon: "error",
-        button: "OK",
-      }); */
-    }
+
+    await registerNewAccount(register)
+      .then(function () {
+        localStorage.setItem("firstLogin", true);
+        Router.push("/DashboardSession");
+      })
+      .catch(function (e) {
+        console.log("error");
+      });
+
+    /* await axios.post("/api/register", { ...register }); */
   };
 
   return (
@@ -122,14 +116,11 @@ function Register() {
                       autoComplete="on"
                     />
                   </Form.Group>
-                
-                    <button
-                      type="submit"
-                      className="btn btn-primary btn-block  "
-                    >
-                      Register
-                    </button>
-                  
+
+                  <button type="submit" className="btn btn-primary btn-block  ">
+                    Register
+                  </button>
+
                   <div className="text-center p-t-46 ">
                     <Link href="/">
                       <a className="txt2">or Login</a>

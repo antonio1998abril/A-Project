@@ -9,6 +9,7 @@ function User(token) {
   const [callback, setCallback] = useState(false);
   const [isManager, setIsManager] = useState(false);
   const [isCollaborator, setIsCollaborator] = useState(false);
+  const [alert,setAlert] = useState({})
 
   useEffect(() => {
     if (token) {
@@ -29,6 +30,7 @@ function User(token) {
 
   
   return {
+    alert: [alert,setAlert],
     infoUser: [infoUser, setInfoUser],
     isManager: [isManager, setIsManager],
     isCollaborator: [isCollaborator,setIsCollaborator],

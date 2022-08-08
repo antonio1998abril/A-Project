@@ -9,25 +9,35 @@ import IconPersonCard from "../../components/Icons/IconPersonCard";
 import PersonIcon from "../../components/Icons/PersonIcon";
 import { loginService } from "../../service/loginService";
 import { useEffect } from "react";
+import axios from "axios";
 
-function Index(verified) {
-  const state = useContext(AuthContext);
+function Index({role}) {
+/*   const state = useContext(AuthContext);
   const [isManager] = state.User.isManager;
-  const [isCollaborator] = state.User.isCollaborator;
+  const [isCollaborator] = state.User.isCollaborator; */
 
-  const { getInfoUser } = loginService();
+/*   const { getInfoUser } = loginService(); */
 
-  console.log("Manager", isManager);
-  console.log("Collaborator", isCollaborator);
+/*   console.log("Manager", isManager);
+  console.log("Collaborator", isCollaborator); */
 
-  const getInfo = async () => {
-    const res = await getInfoUser();
+/*   const getInfo = async () => {
+   const res = await getInfoUser(); 
+
     console.log("DashBoard Session, userInfo", res);
   };
 
   useEffect(() => {
-    getInfo();
-  }, []);
+
+    const timer = setTimeout(() => {
+      getInfo();
+    }, 3000);
+    return () => clearTimeout(timer);
+    
+  }, []); */
+
+
+console.log(role)
 
   const userAdded = [
     {
@@ -60,7 +70,7 @@ function Index(verified) {
   return (
     <>
       <div className="content-wrap">
-        <div className="cardSearch container general_Top">
+        <div className="cardSearch container">
           <div className="card-body">
             <div className="input-group">
               <input

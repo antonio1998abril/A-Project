@@ -1,17 +1,16 @@
 import { useEffect, useState, createContext } from "react";
-import axios from "axios";
-import Swal from "sweetalert2";
 import User from "../pages/api/user";
-import { loginService } from "../service/loginService";
+import { commonService } from "../service/HttpNoTokenRequired/commonService";
 
 const initialToken = {
   token: ''
 }
 
+
 export const AuthContext = createContext(initialToken)
 export const DataProvider = ({ children }) => {
   const [token, setToken] = useState('');
-  const {getRefreshToken} = loginService();
+  const {getRefreshToken} = commonService();
 
   useEffect(() => {
     const firstLogin = localStorage.getItem("firstLogin");
@@ -19,9 +18,30 @@ export const DataProvider = ({ children }) => {
       const refreshToken = async () => {
         try {
           /* const res = await axios.get("/api/refresh_token"); */
-          const res = await getRefreshToken()
+          /*  await getRefreshToken().then((res)=> {
+            if (res.status === 200) {
+              setToken(res.data.accessToken);
+            } 
+          }).catch(function(e) {
+            console.log("error");
+          }) */
+
+          const res=  await getRefreshToken()
+          if (res.status === 200)
+            setToken(res.data.accessToken);
+          
+
+/* 
+          axios.get('/api/refresh_token', {
+            validateStatus: function (status) {
+              if (status === 200) {
+                setToken(res.data.accessToken);
+              } 
+              return status < 500; 
+            }
+          }) */
     
-          setToken(res.data.accessToken);
+         
           setTimeout(() => {
             refreshToken();
           }, 10 * 60 * 1000);
