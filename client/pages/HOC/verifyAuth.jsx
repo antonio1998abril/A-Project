@@ -11,15 +11,10 @@ const verifyAuth = (WrappedComponent) => {
     const { getRefreshToken } = commonService();
     const [returnPage, setReturnPage] = useState(false);
     
-    const removeLocalStorage = () => {
-      localStorage.removeItem("firstLogin");
-    }
     useEffect(() => {
       try{
-      const firstLogin = localStorage.getItem("firstLogin");
-     /*  if (firstLogin) { */
+    
         const refreshToken = async () => {
-
          const res=  await getRefreshToken()
              if (res.status === 200) {
               setVerified(false);
@@ -27,34 +22,13 @@ const verifyAuth = (WrappedComponent) => {
             } else {
               setVerified(true);
               setReturnPage(false);
-              removeLocalStorage();
             }  
-
-
- /*            const res = await axios.get('/api/refresh_token', {
-              validateStatus: function (status) {
-
-                if (status === 200) {
-                  setVerified(false);
-                  setReturnPage(true);
-                } else {
-                  setVerified(true);
-                  setReturnPage(false);
-                  removeLocalStorage();
-                } 
-
-                return status < 500; 
-              }
-            }) */
 
         };
        refreshToken()
       }catch(err){
-        console.log('err')
+        console.log(err)
       }
-  /*     } else {
-        setVerified(true);
-      } */
 
       if (returnPage) {
         Router.replace("/DashboardSession");

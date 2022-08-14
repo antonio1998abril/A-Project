@@ -3,6 +3,7 @@ import { Navbar, Nav, Container, Image, NavDropdown } from "react-bootstrap";
 import Link from "next/link";
 import Router from "next/router";
 import { loginService } from "../../service/loginService";
+import withAuth from "../../pages/HOC/withAuth";
 
 function Index() {
   const [sizeBel, setSizeBell] = useState(50);
@@ -93,4 +94,4 @@ function Index() {
   );
 }
 
-export default Index;
+export default withAuth(Index);

@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import { AuthContext } from "../../context";
 
-function Success() {
+function Alert() {
   const state = useContext(AuthContext);
   const alert = state.User.alert[0]
 
@@ -60,4 +60,4 @@ function Success() {
   }}
 />; */}
 
-export default Success;
+export default Alert;

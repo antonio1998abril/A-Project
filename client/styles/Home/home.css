@@ -203,3 +203,12 @@
     opacity: 0;
   }
 }
+/* Dashboard Collaborator */
+.dahsBoardActivity {
+  display: grid;
+  grid-template-columns: 25% 25% 25% 25%;
+}
+
+.dahsBoardActivity div {
+  padding: 1em;
+}

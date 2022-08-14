@@ -1,14 +1,18 @@
-import axios from "axios";
-import { useState } from "react";
+
+import { useContext, useState } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
+import { AuthContext } from "../../../context/index.js";
 import { commonService } from "../../../service/HttpNoTokenRequired/commonService.js";
 
 const initialState = {
   email: "",
 };
 
-function RestorePassWordButton({ show, onHide }) {
-  const { restorePassword } = commonService()
+function RestorePassWordButton() {
+  const state = useContext(AuthContext);
+  const { restorePassword } = commonService();
+  const [showAlert,setShowAlert] = state.User.alert
+
   const [newPasswordModalShow, setNewPasswordModalShow] = useState(false);
   const handleClose = () => {
     setNewPasswordModalShow(false);
@@ -22,18 +26,14 @@ function RestorePassWordButton({ show, onHide }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    
-/* const res = await axios.post("/api/newPassword", { ...email }); */
-    /*   console.log(res) */
+    const res  = await restorePassword(email)
+    console.log(res)
+    if(res.status !== 200) {
+      setShowAlert({status:true,message:'User and Password incorrect',type:'ERROR',duration:3000,position:'top-right'})
+    } else {
+      setShowAlert({status:true,message:'Hello again',type:'SUCCESS',duration:10000,position:'top-right'})
+    }
 
-
-      await restorePassword(email)
-      .then(function (res) {
-       console.log(res);
-      })
-      .catch(function (e) {
-        console.log(r);
-      });
 
   };
   return (

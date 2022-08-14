@@ -1,5 +1,6 @@
 const express = require ('express');
 const userController = require('../Controller/user')
+const adminController = require('../Controller/admin')
 const auth = require('../Middleware/auth');
 
 const routes = {
@@ -11,6 +12,15 @@ const routes = {
     .get('/role',auth,userController.getRole)
     .post('/newPassword',userController.restorePassword)
     .get('/info',auth,userController.getInfo),
+
+
+    admin: express.Router()
+    .post('/registerNewUser',adminController.registerNewUserAccount)
+    .get('/getAllUser',adminController.getAllUser)
+    .get('/getAllManager',adminController.getAllManager)
+    .delete('/deleteUserAccount/:id',adminController.deleteUserAccount)
+    .put('/updateAccount/:id',adminController.updateUserAccount)
+
     
 }
 

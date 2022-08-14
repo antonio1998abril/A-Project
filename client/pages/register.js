@@ -1,9 +1,8 @@
-import axios from "axios";
 import Router from "next/router";
 import Link from "next/link";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useState } from "react";
+import Swal from "sweetalert2";
 import { Form, Row } from "react-bootstrap";
-import { AuthContext } from "../context";
 import verifyAuth from "./HOC/verifyAuth.jsx";
 import { commonService } from "../service/HttpNoTokenRequired/commonService";
 
@@ -15,10 +14,9 @@ function Register() {
     password: "",
     repeatPassword: "",
     lastName: "",
-    role: "",
+    occupation: "",
   };
   const [register, setRegister] = useState(initialState);
-  const state = useContext(AuthContext);
 
   const handleChangeInput = (e) => {
     const { name, value } = e.target;
@@ -28,16 +26,24 @@ function Register() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    await registerNewAccount(register)
-      .then(function () {
-        localStorage.setItem("firstLogin", true);
-        Router.push("/DashboardSession");
-      })
-      .catch(function (e) {
-        console.log("error");
-      });
+    const res = await registerNewAccount(register);
+    const message = JSON.stringify(res.data.msg);
 
-    /* await axios.post("/api/register", { ...register }); */
+    if (res.status !== 200) {
+      Swal.fire({
+        title: "Error!",
+        text: `${message}`,
+        icon: "error",
+        confirmButtonText: "Ok",
+      });
+    } else {
+      Swal.fire({
+        title: "Good!",
+        icon: "success",
+        timer: 1500,
+      });
+      Router.reload(window.location.pathname);
+    }
   };
 
   return (
@@ -61,7 +67,7 @@ function Register() {
                       onChange={handleChangeInput}
                       name="email"
                       type="email"
-                      placeholder=" Type your email, it can be also a fake email"
+                      placeholder=" Type your email"
                     />
                   </Form.Group>
 
@@ -86,12 +92,12 @@ function Register() {
                   </Form.Group>
 
                   <Form.Group className="mb-4">
-                    <Form.Label>Role: </Form.Label>
+                    <Form.Label>Occupation: </Form.Label>
                     <Form.Control
                       onChange={handleChangeInput}
-                      name="role"
+                      name="occupation"
                       type="text"
-                      placeholder="What is your role in your company?"
+                      placeholder="What is your Occupation?"
                     />
                   </Form.Group>
 

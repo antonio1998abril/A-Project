@@ -6,7 +6,8 @@ const activitySchema = new Schema({
     type: String,
     required: true,
   },
-  action: {
+  observable: {
+    default: "private",
     type: String,
     required: true,
   },
@@ -23,14 +24,14 @@ const activitySchema = new Schema({
     required: true,
     default: "low",
   },
-  Status: {
+  StatusDone: {
     default: false,
     type: Boolean,
     required: true,
   },
   collaborator_id: {
     type: Schema.Types.ObjectId,
-    ref: "collaborator",
+    ref: "user",
   },
 });
 module.exports = mongoose.model("activity", activitySchema);

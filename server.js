@@ -20,7 +20,7 @@ mongoose
     console.log("Database connection failed.", err);
   });
 mongoose.connection;
-//get data from inputs of my frontend
+//get data from inputs of req.body
 app.use(express.json());
 //get body entries
 app.use(express.urlencoded({
@@ -29,6 +29,7 @@ app.use(express.urlencoded({
 
 app.use(cookieParser()) 
 app.use("/api", routes.user);
+app.use("/api", routes.admin);
 
 // catch Error
 app.use(function (err, res) {

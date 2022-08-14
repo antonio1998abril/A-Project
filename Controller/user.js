@@ -2,65 +2,39 @@ const User = require("../Models/user");
 const bCrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
+const { generatePassword, verifyPass } = require("../utils/apiUtils");
 
 let transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
     user: process.env.MESSAGE_EMAIL,
-    pass: process.env.PASS_EMAIL,
+    pass: process.env.PASS_EMAIL, /// 2 step verification account, Generate another passWord
   },
 });
 
-
-
-const generatePassword = () => {
-  const Allowed = {
-    Uppers: "QWERTYUIOPASDFGHJKLZXCVBNM",
-    Lowers: "qwertyuiopasdfghjklzxcvbnm",
-    Numbers: "1234567890",
-    Symbols: "!@#$%^&*",
-  };
-  let length = 8; // password will be @Param-length, default to 8, and have at least one upper, one lower, one number and one symbol
-  const getRandomCharFromString = (str) =>
-    str.charAt(Math.floor(Math.random() * str.length));
-  let pwd = "";
-  pwd += getRandomCharFromString(Allowed.Uppers); //pwd will have at least one upper
-  pwd += getRandomCharFromString(Allowed.Lowers); //pwd will have at least one lower
-  pwd += getRandomCharFromString(Allowed.Numbers); //pwd will have at least one number
-  pwd += getRandomCharFromString(Allowed.Symbols); //pwd will have at least one symbolo
-  for (let i = pwd.length; i < length; i++)
-    pwd += getRandomCharFromString(Object.values(Allowed).join("")); //fill the rest of the pwd with random characters
-  return pwd;
-};
-
-
-const savePassword = async({user,newPassword}) => {
+const savePassword = async ({ user, newPassword, res }) => {
+  const email = user.email;
   let mailOptions = {
     from: process.env.MESSAGE_EMAIL,
-    to: user.email,
-    subject: `Password Restore from A-Project`,
-    text: `New Password ${newPassword}`,
+    to: email,
+    subject: `Password restore from A-Project`,
+    text: `New password generated ${newPassword}`,
   };
 
-  await transporter.sendMail(mailOptions, async(error, info) => {
+  await transporter.sendMail(mailOptions, async (error, info) => {
     if (error) {
       return res.status(302).json({ msg: "Something went wrong" });
     } else {
       const passwordHash = await bCrypt.hash(newPassword, 10);
-      await User.findOneAndUpdate({email},{
-        password:passwordHash
-      })
+      await User.findOneAndUpdate(
+        { email },
+        {
+          password: passwordHash,
+        }
+      );
       return res.status(200).json({ msg: "Email Sent" });
     }
   });
-}
-
-const verifyPass = (pass) => {
-  let charCheck = pass.length > 7 && pass.length < 31;
-  let capitalCheck = /[A-Z]/g.test(pass);
-  let numberCheck = /[0-9]/g.test(pass);
-  let symbolCheck = /[,?!:;.@#%]/g.test(pass);
-  return charCheck && capitalCheck && numberCheck && symbolCheck;
 };
 
 const createAccessToken = (user) => {
@@ -69,14 +43,15 @@ const createAccessToken = (user) => {
 const createRefreshToken = (user) => {
   return jwt.sign(user, process.env.REFRESH_TOKEN_SECRET, { expiresIn: "7d" });
 };
-
-// Controllers
+/////////////////////////////////////////////////////////////////////////////// Controllers ///////////////////////////////////
 
 const controller = {
   register: async (req, res, next) => {
-    console.log(req.body);
+    const { name, email, lastName, password, occupation, repeatPassword } =
+      req.body;
 
-    const { name, email, lastName, password, role, repeatPassword } = req.body;
+    if (!email)
+      return res.status(401).json({ msg: "You forgot write your email" });
 
     if (password != repeatPassword)
       return res.status(401).json({ msg: "Passwords do not match" });
@@ -85,8 +60,8 @@ const controller = {
     if (user) return res.status(401).json({ msg: "Email already exist" });
 
     if (!verifyPass(password))
-      return res.status(400).json({
-        msg: "Create a password with numbers, using these symbols , ? ! : ; . @ # % and capital letters one o more letters",
+      return res.status(401).json({
+        msg: "Create a password with numbers, using one of these symbols , ? ! : ; . @ # % and capital letters one o more letters",
       });
     const passwordHash = await bCrypt.hash(password, 10);
 
@@ -95,7 +70,7 @@ const controller = {
       email,
       password: passwordHash,
       lastName,
-      role,
+      occupation,
     });
     await newUser
       .save()
@@ -103,10 +78,12 @@ const controller = {
         const accessToken = createAccessToken({
           id: newUser._id,
           email: newUser.email,
+          role: newUser.role,
         });
         const refreshToken = createRefreshToken({
           id: newUser._id,
           email: newUser.email,
+          role: newUser.role,
         });
 
         res.cookie("refreshToken", refreshToken, {
@@ -129,12 +106,14 @@ const controller = {
 
     const isMatch = await bCrypt.compare(password, user.password);
 
-    if (!isMatch) return res.status(401).json({ msg: "Incorrect Email or Password." });
+    if (!isMatch)
+      return res.status(401).json({ msg: "Incorrect Email or Password." });
 
-    const accessToken = createAccessToken({ id: user._id, email: user.email });
+    const accessToken = createAccessToken({ id: user._id, email: user.email, role: user.role });
     const refreshToken = createRefreshToken({
       id: user._id,
       email: user.email,
+      role: user.role,
     });
 
     res.cookie("refreshToken", refreshToken, {
@@ -151,22 +130,24 @@ const controller = {
   },
 
   refreshToken: async (req, res, next) => {
-    try {   
-    const rf_token = req.cookies.refreshToken;
-    if (!rf_token)
+    try {
+      const rf_token = req.cookies.refreshToken;
+      if (!rf_token)
+        return res.status(401).json({ msg: "Please Login or Register" });
+
+      jwt.verify(rf_token, process.env.REFRESH_TOKEN_SECRET, (err, user) => {
+        if (err) return res.status(401).json({ msg: "Session expired" });
+
+        const accessToken = createAccessToken({
+          id: user.id,
+          email: user.email,
+          role: user.role,
+        });
+        res.json({ accessToken });
+      });
+    } catch (err) {
       return res.status(302).json({ msg: "Please Login or Register" });
-  
-
-    jwt.verify(rf_token, process.env.REFRESH_TOKEN_SECRET, (err, user) => {
-      if (err) return res.status(302).json({ msg: "Please Login or Register" });
-
-      const accessToken = createAccessToken({ id: user.id, email: user.email });
-      res.json({ accessToken });
-    }); 
-
-  }catch(err) {
-    return res.status(302).json({msg:'Please Login or Register'})
-  }
+    }
   },
 
   getInfo: async (req, res, next) => {
@@ -179,22 +160,17 @@ const controller = {
     const user = await User.findById(req.user.id).select("role -_id");
     if (!user) return res.status(400).json({ msg: "Error to get role." });
     res.json(user);
-    /* next(err); */
   },
 
-  restorePassword: async (err, req, res, next) => {
+  restorePassword: async (req, res, next) => {
     const { email } = req.body;
-    const user = await User.findOne({ email }).select("email -_id")
+    const user = await User.findOne({ email }).select("email -_id");
     if (!user) return res.status(400).json({ msg: "Email does not exist." });
-    res.json(user);
-    next(err);
- /*    if (user) {
-      const newPassword = generatePassword(); */
-      /* savePassword({user,newPassword}).catch(next(err)) */
-      
-/*     } else {
-      return res.status(302).json({ msg: "Email does not exist" });
-    } */
+
+    if(user.role === 'private') return res.status(400).json({ msg: "your email is private and you can not access" });
+
+    const newPassword = generatePassword();
+    savePassword({ user, newPassword, res });
   },
 };
 
