@@ -30,7 +30,7 @@ app.use(express.urlencoded({
 app.use(cookieParser()) 
 app.use("/api", routes.user);
 app.use("/api", routes.admin);
-
+/* app.use('/api',uploadRoute) */
 // catch Error
 app.use(function (err, res) {
   res.json({ error: err.message });

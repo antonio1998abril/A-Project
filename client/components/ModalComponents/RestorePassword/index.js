@@ -1,4 +1,3 @@
-
 import { useContext, useState } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
 import { AuthContext } from "../../../context/index.js";
@@ -11,7 +10,7 @@ const initialState = {
 function RestorePassWordButton() {
   const state = useContext(AuthContext);
   const { restorePassword } = commonService();
-  const [showAlert,setShowAlert] = state.User.alert
+  const [showAlert, setShowAlert] = state.User.alert;
 
   const [newPasswordModalShow, setNewPasswordModalShow] = useState(false);
   const handleClose = () => {
@@ -25,16 +24,24 @@ function RestorePassWordButton() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    const res  = await restorePassword(email)
-    console.log(res)
-    if(res.status !== 200) {
-      setShowAlert({status:true,message:'User and Password incorrect',type:'ERROR',duration:3000,position:'top-right'})
+    const res = await restorePassword(email);
+    if (res.status !== 200) {
+      setShowAlert({
+        status: true,
+        message: "User and Password incorrect",
+        type: "ERROR",
+        duration: 3000,
+        position: "top-right",
+      });
     } else {
-      setShowAlert({status:true,message:'Hello again',type:'SUCCESS',duration:10000,position:'top-right'})
+      setShowAlert({
+        status: true,
+        message: "Hello again",
+        type: "SUCCESS",
+        duration: 10000,
+        position: "top-right",
+      });
     }
-
-
   };
   return (
     <>
@@ -46,12 +53,11 @@ function RestorePassWordButton() {
         or Restore your password
       </p>
       <Modal show={newPasswordModalShow} onHide={handleClose}>
-      <form method="POST" onSubmit={handleSubmit}>
-        <Modal.Header closeButton>
-          <Modal.Title>Type your Email</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-      
+        <form method="POST" onSubmit={handleSubmit}>
+          <Modal.Header closeButton>
+            <Modal.Title>Type your Email</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
             <Form.Label>Email</Form.Label>
             <Form.Control
               onChange={handleChangeInput}
@@ -60,19 +66,17 @@ function RestorePassWordButton() {
               type="email"
               placeholder="Email address"
             />
-        
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleClose}>
-            Close
-          </Button>
-          <Button type="submit" variant="primary" onClick={handleClose}>
-            Restore my password
-          </Button>
-        </Modal.Footer>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={handleClose}>
+              Close
+            </Button>
+            <Button type="submit" variant="primary" onClick={handleClose}>
+              Restore my password
+            </Button>
+          </Modal.Footer>
         </form>
       </Modal>
-      
     </>
   );
 }

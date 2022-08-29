@@ -12,6 +12,16 @@ function Index() {
   const [isCollaborator] = state.User.isCollaborator;
   const [isAdmin] = state.User.isAdmin;
 
+  /*  const [categories] = state.User.role; */
+  const [role, setRole] = state.User.role;
+  const [sort, setSort] = state.User.sort;
+  const [search, setSearch] = state.User.search;
+  const [itemsDashBoard,setItemsDashBoard] = state.User.itemsDashBoard
+
+  const handleRole = (e) => {
+    setRole(e.target.value);
+    setSearch("");
+  };
   return (
     <>
       <div className="content-wrap">
@@ -33,14 +43,15 @@ function Index() {
                 }
                 aria-label="Username"
                 aria-describedby="basic-addon1"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
               />
-              <button className="btn btn-primary my-2 my-sm-0" type="submit">
-                Search
-              </button>
             </div>
           </div>
         </div>
-
+        <br />
+        <br />
+        <br />
         <Admin />
         <Manager />
         <Collaborator />

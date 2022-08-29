@@ -24,7 +24,7 @@ const activitySchema = new Schema({
     required: true,
     default: "low",
   },
-  StatusDone: {
+  statusDone: {
     default: false,
     type: Boolean,
     required: true,

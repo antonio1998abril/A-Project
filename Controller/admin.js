@@ -3,6 +3,60 @@ const bCrypt = require("bcrypt");
 const nodemailer = require("nodemailer");
 const { generatePassword } = require("../utils/apiUtils");
 
+/* Search Method */
+class APIfeature {
+  constructor(query, queryString) {
+    this.query = query;
+    this.queryString = queryString;
+  }
+  filtering() {
+    /*     const queryObj = { ...this.queryString };
+    const excludedFields = ["page", "sort", "limit"];
+    excludedFields.forEach((el) => delete queryObj[el]);
+
+    let queryStr = JSON.stringify(queryObj);
+    queryStr = queryStr.replace(
+      /\b(gte|gt|lt|lte|regex)\b/g,
+      (match) => "$" + match
+    );
+
+    this.query.find(JSON.parse(queryStr));
+    return this; */
+
+    const queryObj = { ...this.queryString };
+    const excludedFields = ["page", "sort", "limit"];
+    excludedFields.forEach((el) => delete queryObj[el]);
+    let s = {
+      $or: [
+        { email: { $regex: this.queryString.email } },
+        { name: { $regex: this.queryString.email } },
+        { lastName: { $regex: this.queryString.email } },
+      ],
+    };
+    s = JSON.stringify(s);
+    /* const test= JSON.parse(queryStr.replace(/}{/g,',')); */
+    this.query.find(JSON.parse(s));
+    return this;
+  }
+  sorting() {
+    if (this.queryString.sort) {
+      const sortBy = this.queryString.sort.split(",").join(" ");
+      this.query = this.query.sort(sortBy);
+    } else {
+      this.query = this.query.sort("-createdAt");
+    }
+    return this;
+  }
+  paginating() {
+    const page = this.queryString.page * 1 || 1;
+    const limit = this.queryString.limit * 1 || 6;
+    const skip = (page - 1) * limit;
+    this.quey = this.query.skip(skip).limit(limit);
+    return this;
+  }
+}
+
+/*  Search Method*/
 let transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
@@ -59,8 +113,25 @@ const updateUserAndNotifyAccount = async ({ email, newPassword, res }) => {
 
 const controller = {
   getAllUser: async (req, res, next) => {
-    const getAllUser = await User.find();
-    return res.status(200).json({ getAllUser });
+    let features =
+      (req.user.role === "Admin" &&
+        new APIfeature(User.find().lean(), req.query)
+          .filtering()
+          .sorting()
+          .paginating()) ||
+      (req.user.role === "Manager" &&
+        new APIfeature(User.find({ role: "Collaborator" }).lean(), req.query)
+          .filtering()
+          .sorting()
+          .paginating());
+
+    const user = await features.query;
+
+    res.json({
+      status: "success",
+      result: user.length,
+      users: user,
+    });
   },
   getAllManager: async (req, res, next) => {
     const getAllManagers = await User.find({ role: "Manager" });
@@ -116,32 +187,33 @@ const controller = {
       manager,
     } = req.body;
 
+    const user = await User.findOne({email});
+
     const newPassword = generatePassword();
     const passwordHash = await bCrypt.hash(newPassword, 10);
 
-    await User.findByIdAndUpdate(
-      { _id:req.params.id },
-      {
-        name,
-        email,
-        lastName,
-        occupation,
-        role,
-        userImage,
-        status,
-        password: passwordHash,
-        manager,
-      }
-    ).catch((err)=>{
-        return next(err)
-    })
-
-    if (status === "public") {
-      updateUserAndNotifyAccount({ email, newPassword, res });
-    }
-    if (status === "private") {
+    let saveUser = {
+      name,
+      email,
+      lastName,
+      occupation,
+      role,
+      userImage,
+      status,
+      /*  password: passwordHash, */
+      manager,
+    };
+    if (status === "private") saveUser["password"] = passwordHash;
+    if (user.status !== status && status === "private")
       notifyPassword({ email, res });
-    }
+    if (user.status !== status && status === "public")
+      updateUserAndNotifyAccount({ email, newPassword, res });
+
+    await User.findByIdAndUpdate({ _id: req.params.id }, saveUser).catch(
+      (err) => {
+        return next(err);
+      }
+    );
   },
   deleteUserAccount: async (req, res, next) => {
     await User.findByIdAndDelete(req.params.id)

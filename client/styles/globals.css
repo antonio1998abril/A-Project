@@ -161,6 +161,8 @@ a {
   }
 }
 
+@import url("Forms/form.css");
 @import url("Register/register.css");
 @import url("Login/login.css");
 @import url("Home/home.css");
+

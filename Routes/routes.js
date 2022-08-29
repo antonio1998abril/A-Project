@@ -15,8 +15,8 @@ const routes = {
 
 
     admin: express.Router()
-    .post('/registerNewUser',adminController.registerNewUserAccount)
-    .get('/getAllUser',adminController.getAllUser)
+    .post('/registerNewUser',auth,adminController.registerNewUserAccount)
+    .get('/getAllUser',auth,adminController.getAllUser)
     .get('/getAllManager',adminController.getAllManager)
     .delete('/deleteUserAccount/:id',adminController.deleteUserAccount)
     .put('/updateAccount/:id',adminController.updateUserAccount)

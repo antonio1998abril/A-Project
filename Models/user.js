@@ -48,6 +48,24 @@ const userSchema = new Schema({
       ref: "user",
     },
   ],
+  birthDay: {
+    type:String,
+    required:false
+  },
+  hired:{
+    type:String,
+    required:false
+  },
+  previousApexManager: {
+    type:Array,
+    default:[]
+  },
+  clientProjects: [
+    {
+      type:Schema.Types.ObjectId,
+      ref:'collaboratorProject'
+    }
+  ],
 });
 
 module.exports = mongoose.model("user", userSchema);
