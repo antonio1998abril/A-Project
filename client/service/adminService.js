@@ -22,11 +22,21 @@ export const adminService = () => {
     const url = `/api/updateAccount/${id}`;
     return put(url, body,"updateAccount", {});
   };
+  const uploadFile = (formData) => {
+    const url = `/api/upload`;
+    return post(url, formData,"uploadFile", {});
+  };
 
+  const deleteFile = (body) => {
+    const url = `/api/destroy/`;
+    return post(url,body,"deleteFile", {});
+  };
 
   return {
     registerNewUser,
     deleteUser,
-    updateUser
+    updateUser,
+    uploadFile,
+    deleteFile
   };
 };

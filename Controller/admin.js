@@ -133,6 +133,7 @@ const controller = {
       users: user,
     });
   },
+  
   getAllManager: async (req, res, next) => {
     const getAllManagers = await User.find({ role: "Manager" });
     return res.status(200).json({ getAllManagers });
@@ -165,6 +166,7 @@ const controller = {
       role,
       status,
       manager,
+      userImage
     });
 
     if (status === "public") {

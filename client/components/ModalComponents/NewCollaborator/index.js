@@ -8,12 +8,15 @@ import {
   Col,
   Row,
 } from "react-bootstrap";
+import Back from "../../../public/fondo2.jpg";
+import Image from "next/image";
 import { Formik } from "formik";
 import Select from "react-select";
 import { newCollaboratorSchema } from "../validationSchema/newCollaborator";
 import CustomInput from "../../InputCustom/index";
 import { adminService } from "../../../service/adminService";
 import { AuthContext } from "../../../context";
+import Loading from "../../Loading/index";
 
 
 const accountOptions = [
@@ -26,18 +29,17 @@ const roleOptions = [
   { label: "Collaborator", value: "Collaborator" },
 ];
 
-
 function NewCollaboratorButton() {
-  const { registerNewUser } = adminService();
+  const { registerNewUser, uploadFile, deleteFile } = adminService();
   const updateTemplate = useRef(null);
   const state = useContext(AuthContext);
   const [callback, setCallback] = state.User.callback;
   const [isAdmin] = state.User.isAdmin;
-
-  const [images, setImages] = useState(false);
+  /* iMAGES */
   const [loading, setLoading] = useState(false);
-
-
+  const [imagesUrl, setImagesUrl] = useState("");
+  const [imagesId, setImagesId] = useState("");
+    /* iMAGES */
 
   const [newCollaboratorModal, setNewCollaboratorModal] = useState(false);
   const [accountStatus, setAccountStatus] = useState({
@@ -63,10 +65,55 @@ function NewCollaboratorButton() {
       occupation: occupation,
       status: accountStatus.value,
       role: role.value,
+      userImage:{
+        public_id:imagesId,
+        url:imagesUrl,
+      }
     };
     const res = await registerNewUser(body);
     setNewCollaboratorModal(false);
     setCallback(!callback);
+  };
+
+  const styleUpload = {
+    display: imagesUrl ? "block" : "none",
+  };
+
+  const handleUpload = async (e) => {
+    e.preventDefault();
+    try {
+      const file = e.target.files[0];
+
+      if (!file) return alert("file not exist");
+
+      if (file.size > 1024 * 1024) return alert("File not exist");
+
+      if (file.type !== "image/jpeg" && file.type !== "image/png")
+        return alert("File format is incorrect");
+      setLoading(true);
+      let formData = new FormData();
+      formData.append("file", file);
+      const res = await uploadFile(formData);
+
+      console.log(res);
+      setLoading(false);
+      setImagesUrl(res.data.url);
+      setImagesId(res.data.public_id);
+    } catch (err) {
+      alert(err.response.data.msg);
+    }
+  };
+  const handleDestroy = async () => {
+    try {
+      setLoading(true);
+      const res = await deleteFile({ public_id: imagesId });
+      console.log(res);
+      setLoading(false);
+      setImagesUrl("");
+      setImagesId("");
+    } catch (err) {
+      alert(err.response.data.msg);
+    }
   };
   return (
     <>
@@ -106,6 +153,39 @@ function NewCollaboratorButton() {
                   <Modal.Title>Create a new user</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
+                  <div className="imageTitle">Select a image: </div>
+
+                  <div className="upload">
+                    <input
+                      required
+                      type="file"
+                      name="file"
+                      id="file_up"
+                      onChange={handleUpload}
+                    ></input>
+
+                    {loading ? (
+                      <div id="file_Loader">
+                        {" "}
+                        <Loading />{" "}
+                      </div>
+                    ) : (
+                      <div id="file_img" style={styleUpload}>
+                        <Image
+                          /*   style={{marginLeft:'10rem'}} */
+                          src={imagesUrl ? imagesUrl : Back}
+                          width={500}
+                          height={400}
+                          alt="Pro_Image"
+                        />
+
+                        <span id="file_img_delete" onClick={handleDestroy}>
+                          X
+                        </span>
+                      </div>
+                    )}
+                  </div>
+
                   <Row className="mb-6">
                     <Col xs={12} lg={12} className="mb-4">
                       <label
@@ -199,20 +279,6 @@ function NewCollaboratorButton() {
                       />
                     </Col>
                   </Row>
-
-                  <input
-                    type="file"
-                    name="file"
-                    id="file_up" /* onChange={handleUpload} */
-                  ></input>
-                  {loading ? (
-                    <div id="file_img"></div>
-                  ) : (
-                    <div id="file_img" /* style={styleUpload} */>
-                      <img src={images ? images.url : ""} alt=""></img>
-                      {/*  <span onClick={handleDestroy}>X</span> */}
-                    </div>
-                  )}
                 </Modal.Body>
               </Form>
             )}

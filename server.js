@@ -1,10 +1,12 @@
 const express = require("express");
 require("dotenv").config();
 const cookieParser = require("cookie-parser");
+const fileUpload = require('express-fileupload')
 
 const app = express();
 // Call all Routes
 const routes = require("./Routes/routes");
+const uploadRoute=require('./Routes/upload')
 // Connect to MongoAtlas
 const mongoose = require("mongoose");
 mongoose.set("runValidators", true);
@@ -27,9 +29,15 @@ app.use(express.urlencoded({
   extended: true
 }));
 
+app.use(fileUpload({
+  useTempFiles:true
+}))
+
 app.use(cookieParser()) 
 app.use("/api", routes.user);
 app.use("/api", routes.admin);
+app.use("/api", routes.collaborator);
+app.use("/api",uploadRoute)
 /* app.use('/api',uploadRoute) */
 // catch Error
 app.use(function (err, res) {

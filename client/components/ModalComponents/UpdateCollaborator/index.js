@@ -8,12 +8,15 @@ import {
   Col,
   Row,
 } from "react-bootstrap";
+import Image from "next/image";
 import { Formik } from "formik";
 import Select from "react-select";
 import { AuthContext } from "../../../context";
 import { newCollaboratorSchema } from "../validationSchema/newCollaborator";
 import CustomInput from "../../InputCustom/index";
 import { adminService } from "../../../service/adminService";
+import Back from "../../../public/fondo2.jpg";
+import Loading from "../../Loading";
 
 const accountOptions = [
   { label: "Yes", value: "public" },
@@ -35,8 +38,11 @@ function UpdateUser({ item }) {
   const [isAdmin] = state.User.isAdmin;
   const [id, setId] = useState("");
 
-  const [images, setImages] = useState(false);
+  /* iMAGES */
   const [loading, setLoading] = useState(false);
+  const [imagesUrl, setImagesUrl] = useState("");
+  const [imagesId, setImagesId] = useState("");
+  /* iMAGES */
 
   const [accountStatus, setAccountStatus] = useState({
     label: "No",
@@ -62,8 +68,11 @@ function UpdateUser({ item }) {
       occupation: occupation,
       status: accountStatus.value,
       role: role.value,
+      userImage: {
+        public_id: imagesId,
+        url: imagesUrl,
+      },
     };
-console.log(body)
     const res = await updateUser(id, body);
     setCallback(!callback);
     setUpdateCollaboratorModal(false);
@@ -76,10 +85,50 @@ console.log(body)
     if (item.role === "Collaborator")
       setRole({ label: "Collaborator", value: "Collaborator" });
     setId(item._id);
-    if(item.status === "public") {setAccountStatus({ label:"Yes", value:"public"})}
-    
-    console.log(item)
+    if (item.status === "public") {
+      setAccountStatus({ label: "Yes", value: "public" });
+    }
   }, []);
+
+  /* IMAGE */
+  const styleUpload = {
+    display: imagesUrl ? "block" : "none",
+  };
+
+  const handleUpload = async (e) => {
+    e.preventDefault();
+    try {
+      const file = e.target.files[0];
+
+      if (!file) return alert("file not exist");
+
+      if (file.size > 1024 * 1024) return alert("File not exist");
+
+      if (file.type !== "image/jpeg" && file.type !== "image/png")
+        return alert("File format is incorrect");
+      setLoading(true);
+      let formData = new FormData();
+      formData.append("file", file);
+      const res = await uploadFile(formData);
+      setLoading(false);
+      setImagesUrl(res.data.url);
+      setImagesId(res.data.public_id);
+    } catch (err) {
+      alert(err.response.data.msg);
+    }
+  };
+  const handleDestroy = async () => {
+    try {
+      setLoading(true);
+      const res = await deleteFile({ public_id: imagesId });
+      setLoading(false);
+      setImagesUrl("");
+      setImagesId("");
+    } catch (err) {
+      alert(err.response.data.msg);
+    }
+  };
+  /* IMAGE */
 
   return (
     <>
@@ -123,6 +172,36 @@ console.log(body)
                   </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
+                  <div className="imageTitle">Select a image: </div>
+                  <div className="upload">
+                    <input
+                      required
+                      type="file"
+                      name="file"
+                      id="file_up"
+                      onChange={handleUpload}
+                    ></input>
+
+                    {loading ? (
+                      <div id="file_Loader">
+                        {" "}
+                        <Loading />{" "}
+                      </div>
+                    ) : (
+                      <div id="file_img" style={styleUpload}>
+                        <Image
+                          src={imagesUrl ? imagesUrl : Back}
+                          width={500}
+                          height={400}
+                          alt="Pro_Image"
+                        />
+
+                        <span id="file_img_delete" onClick={handleDestroy}>
+                          X
+                        </span>
+                      </div>
+                    )}
+                  </div>
                   <Row className="mb-6">
                     <Col xs={12} lg={12} className="mb-4">
                       <label
@@ -216,20 +295,6 @@ console.log(body)
                       />
                     </Col>
                   </Row>
-
-                  <input
-                    type="file"
-                    name="file"
-                    id="file_up" /* onChange={handleUpload} */
-                  ></input>
-                  {loading ? (
-                    <div id="file_img"></div>
-                  ) : (
-                    <div id="file_img" /* style={styleUpload} */>
-                      <img src={images ? images.url : ""} alt=""></img>
-                      {/*  <span onClick={handleDestroy}>X</span> */}
-                    </div>
-                  )}
                 </Modal.Body>
               </Form>
             )}

@@ -1,12 +1,21 @@
 const onLine = process.env.REACT_APP_BASE || process.env.REACT_APP_API_URL;
 
 module.exports = {
-  reactStrictMode: true,
+  reactStrictMode: false,
   images: {
     domains: ["res.cloudinary.com"],
   },
   async rewrites() {
     return [
+      /* Image */
+      {
+        source: "/api/upload",
+        destination: `${onLine}/upload`,
+      },
+      {
+        source: "/api/destroy",
+        destination: `${onLine}/destroy`,
+      },
       {
         source: "/api/register",
         destination: `${onLine}/register`,

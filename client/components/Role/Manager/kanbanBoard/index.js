@@ -1,100 +1,101 @@
-import React, { useEffect, useState } from 'react'
-import roleAccess from '../roleAccess'
-
+import { useEffect, useState } from "react";
 import { DragDropContext } from "react-beautiful-dnd";
-import DraggableElement from "./DraggableElement";
+import roleAccess from "../roleAccess";
+import Column from "./Column";
+import { status } from "./mock";
+import KanbanIcon from "../../../Icons/KanbanIcon";
+import { loginService } from "../../../../service/loginService";
+import { useRouter } from 'next/router'
 
-/* 
-const DragDropContextContainer = styled.div`
-  padding: 20px;
-  border: 4px solid indianred;
-  border-radius: 6px;
-`;
 
-const ListGrid = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  grid-gap: 8px;
-`; */
+const onDragEnd = (result, columns, setColumns) => {
+  if (!result.destination) return;
+  const { source, destination } = result;
 
-// fake data generator
-const getItems = (count, prefix) =>
-  Array.from({ length: count }, (v, k) => k).map((k) => {
-    const randomId = Math.floor(Math.random() * 1000);
-    return {
-      id: `item-${randomId}`,
-      prefix,
-      content: `item ${randomId}`
-    };
-  });
-
-const removeFromList = (list, index) => {
-  const result = Array.from(list);
-  const [removed] = result.splice(index, 1);
-  return [removed, result];
+  if (source.droppableId !== destination.droppableId) {
+    const sourceColumn = columns[source.droppableId];
+    const destColumn = columns[destination.droppableId];
+    const sourceItems = [...sourceColumn.items];
+    const destItems = [...destColumn.items];
+    const [removed] = sourceItems.splice(source.index, 1);
+    destItems.splice(destination.index, 0, removed);
+    setColumns({
+      ...columns,
+      [source.droppableId]: {
+        ...sourceColumn,
+        items: sourceItems,
+      },
+      [destination.droppableId]: {
+        ...destColumn,
+        items: destItems,
+      },
+    });
+  } else {
+    const column = columns[source.droppableId];
+    const copiedItems = [...column.items];
+    const [removed] = copiedItems.splice(source.index, 1);
+    copiedItems.splice(destination.index, 0, removed);
+    setColumns({
+      ...columns,
+      [source.droppableId]: {
+        ...column,
+        items: copiedItems,
+      },
+    });
+  }
 };
-
-const addToList = (list, index, element) => {
-  const result = Array.from(list);
-  result.splice(index, 0, element);
-  return result;
-};
-
-const lists = ["todo", "inProgress", "done"];
-
-const generateLists = () =>
-  lists.reduce(
-    (acc, listKey) => ({ ...acc, [listKey]: getItems(10, listKey) }),
-    {}
-  );
-
-
 
 function Index() {
+  const [columns, setColumns] = useState(status);
+  const { get} = loginService();
 
-  const [elements, setElements] = useState(generateLists());
+  const router = useRouter()
+  const { pid } = router.query
 
-  useEffect(() => {
-    setElements(generateLists());
-  }, []);
-
-  const onDragEnd = (result) => {
-    if (!result.destination) {
-      return;
-    }
-    const listCopy = { ...elements };
-
-    const sourceList = listCopy[result.source.droppableId];
-    const [removedElement, newSourceList] = removeFromList(
-      sourceList,
-      result.source.index
-    );
-    listCopy[result.source.droppableId] = newSourceList;
-    const destinationList = listCopy[result.destination.droppableId];
-    listCopy[result.destination.droppableId] = addToList(
-      destinationList,
-      result.destination.index,
-      removedElement
-    );
-
-    setElements(listCopy);
-  };
+  console.log(router.query);
+  useEffect(()=>{
+    
+  },[])
 
   return (
-
-    <DragDropContext onDragEnd={onDragEnd}>
-
-        {lists.map((listKey) => (
-          <DraggableElement
-            elements={elements[listKey]}
-            key={listKey}
-            prefix={listKey}
-          />
-        ))}
-   
-    </DragDropContext>
-
-  )
+    <div className="content-wrap">
+      <br />
+      <div className="cardKanban">
+        <div className="card position-kanban-tools">
+          <div className="card-body">
+            <h6 className="card-title text-center">Options</h6>
+            <KanbanIcon />
+          </div>
+        </div>
+      </div>
+      <br />
+      <div
+        className="kanaban-grid" /* style={{ display: "flex", justifyContent: "center", height: "100%" }} */
+      >
+        <DragDropContext
+          onDragEnd={(result) => onDragEnd(result, columns, setColumns)}
+        >
+          {Object.entries(columns).map(([columnId, column], index) => {
+            return (
+              <div
+                key={columnId}
+              >
+                <h5 className="card-title text-center">{column.name}</h5>
+                <div style={{ margin: 2 }}>
+                  <Column
+                    droppableId={columnId}
+                    key={columnId}
+                    index={index}
+                    column={column}
+                  />
+                </div>
+              </div>
+            );
+          })}
+        </DragDropContext>
+      </div>
+    </div>
+  );
 }
 
-export default roleAccess(Index)
+export default roleAccess(Index);

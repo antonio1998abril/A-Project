@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 const collaboratorProjectSchema = new Schema({
-  isCurrentClient: {
+  isCurrentProject: {
     type: Boolean,
     required: true,
     default:false
