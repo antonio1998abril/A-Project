@@ -42,12 +42,12 @@ const userSchema = new Schema({
     type: Array,
     default: [],
   },
-  collaborators: [
+/*   collaborators: [
     {
       type: Schema.Types.ObjectId,
       ref: "user",
     },
-  ],
+  ], */
   birthDay: {
     type:String,
     required:false

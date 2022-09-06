@@ -61,6 +61,27 @@ module.exports = {
         source: "/api/updateAccount/:id",
         destination: `${onLine}/updateAccount/:id`,
       },
+        /* Collaborator */
+      {
+        source: "/api/getCollaboratorInfo/:id",
+        destination: `${onLine}/getCollaboratorInfo/:id`,
+      },
+      /* Task */
+      {
+        source: "/api/newTask",
+        destination: `${onLine}/newTask`,
+      }, {
+        source: "/api/getTask/:id",
+        destination: `${onLine}/getTask/:id`,
+      },
+      {
+        source: "/api/updateTask/:id",
+        destination: `${onLine}/updateTask/:id`,
+      },
+      {
+        source: "/api/deleteTask/:id",
+        destination: `${onLine}/deleteTask/:id`,
+      }
     ];
   },
 };

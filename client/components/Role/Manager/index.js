@@ -12,8 +12,12 @@ function Manager() {
   const state = useContext(AuthContext);
   const [itemsDashBoard, setItemsDashBoard] = state.User.itemsDashBoard;
 
-  const kanbaLink = (id) => {
-    Router.push(`/KanbaBoard/${id}`);
+  const kanbaLink = (id,userId) => {
+    let paramID = id.substring(7);
+    Router.push({
+      pathname: `/KanbaBoard/${paramID}`,
+      query: { keyword: userId },
+    });
   };
   return (
     <>
@@ -36,7 +40,7 @@ function Manager() {
                     <div
                       className="contentUser"
                       onClick={() =>
-                        kanbaLink(`${item._id}&${item.name}&${item.lastName}`)
+                        kanbaLink(`${item._id}&${item.name}&${item.lastName}`,item._id)
                       }
                     >
                       <div className="icon">

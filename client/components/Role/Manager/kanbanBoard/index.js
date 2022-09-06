@@ -1,12 +1,16 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { DragDropContext } from "react-beautiful-dnd";
 import roleAccess from "../roleAccess";
 import Column from "./Column";
-import { status } from "./mock";
-import KanbanIcon from "../../../Icons/KanbanIcon";
-import { loginService } from "../../../../service/loginService";
-import { useRouter } from 'next/router'
+/* import { status } from "./mock"; */
+/* import { loginService } from "../../../../service/loginService";
+ */
+import { useRouter } from "next/router";
+import { adminService } from "../../../../service/adminService";
+import KanbanCreate from "../../../ModalComponents/KanbanOptions/KanbanCreate";
 
+import { v4 as uuid } from "uuid";
+import { AuthContext } from "../../../../context";
 
 const onDragEnd = (result, columns, setColumns) => {
   if (!result.destination) return;
@@ -46,16 +50,54 @@ const onDragEnd = (result, columns, setColumns) => {
 };
 
 function Index() {
-  const [columns, setColumns] = useState(status);
-  const { get} = loginService();
+  const state = useContext(AuthContext);
+  const [callback, setCallback] = state.User.callback;
 
-  const router = useRouter()
-  const { pid } = router.query
+  const [columns, setColumns] = useState([]);
 
-  console.log(router.query);
-  useEffect(()=>{
-    
-  },[])
+  const { getCollaboratorInfo, getTasks } = adminService();
+  const [collaborator, setCollaborator] = useState({});
+  const router = useRouter();
+
+  /* functions callbacks */
+  const catchCollaborator = async (id) => {
+    const res = await getCollaboratorInfo(id);
+    setCollaborator(res?.data);
+  };
+
+  const catchListTasks = async (id) => {
+    const res = await getTasks(id);
+
+    setColumns({
+      [uuid()]: {
+        name: "To do",
+        color: "#FFFAE6",
+        items: res?.data?.todo,
+      },
+      [uuid()]: {
+        name: "In Progress",
+        color: "#EAE6FF",
+        items: res?.data?.inProgress,
+      },
+      [uuid()]: {
+        name: "Review",
+        color: "#DEEBFF",
+        items: res?.data?.review,
+      },
+      [uuid()]: {
+        name: "Completed",
+        color: "#E3FCEF",
+        items: res?.data?.completed,
+      },
+    })
+
+  
+  };
+
+  useEffect(() => {
+    catchCollaborator(router?.query?.keyword);
+    catchListTasks(router?.query?.keyword);
+  }, [callback]);
 
   return (
     <div className="content-wrap">
@@ -63,8 +105,8 @@ function Index() {
       <div className="cardKanban">
         <div className="card position-kanban-tools">
           <div className="card-body">
-            <h6 className="card-title text-center">Options</h6>
-            <KanbanIcon />
+            <h6 className="card-title text-center">New Task</h6>
+            <KanbanCreate id={router?.query?.keyword} />
           </div>
         </div>
       </div>
@@ -77,9 +119,7 @@ function Index() {
         >
           {Object.entries(columns).map(([columnId, column], index) => {
             return (
-              <div
-                key={columnId}
-              >
+              <div key={columnId}>
                 <h5 className="card-title text-center">{column.name}</h5>
                 <div style={{ margin: 2 }}>
                   <Column
@@ -87,6 +127,7 @@ function Index() {
                     key={columnId}
                     index={index}
                     column={column}
+                    collaborator={collaborator}
                   />
                 </div>
               </div>

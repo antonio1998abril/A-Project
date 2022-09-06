@@ -3,12 +3,12 @@ const User = require("../Models/user");
 const controller = {
   getInfoCollaborator: async (req, res, next) => {
    
-    const user = await User.findById(req.user.id).select("-password");
+    const user = await User.findById(req.params.id).select("-password");
     if (!user) return res.status(400).json({ msg: "Error to get user." });
     res.json(user);
   },
   
-  getAllManager: async (req, res, next) => {
+  /* getAllManager: async (req, res, next) => {
     const getAllManagers = await User.find({ role: "Manager" });
     return res.status(200).json({ getAllManagers });
   },
@@ -76,7 +76,7 @@ const controller = {
       role,
       userImage,
       status,
-      /*  password: passwordHash, */
+ 
       manager,
     };
     if (status === "private") saveUser["password"] = passwordHash;
@@ -99,7 +99,7 @@ const controller = {
       .catch((err) => {
         return next({ msg: "not found" });
       });
-  },
+  }, */
 };
 
 module.exports = controller;

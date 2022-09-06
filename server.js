@@ -36,7 +36,8 @@ app.use(fileUpload({
 app.use(cookieParser()) 
 app.use("/api", routes.user);
 app.use("/api", routes.admin);
-app.use("/api", routes.collaborator);
+app.use("/api", routes.apiCollaborator);
+app.use("/api", routes.task);
 app.use("/api",uploadRoute)
 /* app.use('/api',uploadRoute) */
 // catch Error

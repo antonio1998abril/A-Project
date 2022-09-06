@@ -1,18 +1,41 @@
-import React, { memo } from "react";
+import React, { memo, useEffect } from "react";
 import PropTypes from "prop-types";
 import { Draggable } from "react-beautiful-dnd";
 import Image from "next/image";
+import KanbanDelete from "../../../ModalComponents/KanbanOptions/KanbanDelete";
+import KanbanUpdate from "../../../ModalComponents/KanbanOptions/KanbanUpdate";
+import { adminService } from "../../../../service/adminService";
 
-function TaskCard({ item, index }) {
+function TaskCard({ item, index, collaborator,column }) {
+  const { updateTask } = adminService();
+const updateTaskSelected =async(item,column)=> {
+  let statusDone="";
+  if (column === "To do"){statusDone="todo"}
+  if (column === "In Progress"){statusDone="inProgress"}
+  if (column === "Review"){statusDone="review"}
+  if (column === "Completed"){statusDone="completed"}
+  const body ={
+    statusDone:statusDone
+  }
+  await updateTask(item._id,body)
+}
+useEffect(()=>{
+updateTaskSelected(item,column)
+},[])
   return (
-    <Draggable key={item.id} draggableId={item.id} index={index}>
+    <Draggable key={item.id} draggableId={item._id} index={index}>
       {(provided, snapshot) => {
         return (
           <div
+            className="card"
             ref={provided.innerRef}
             {...provided.draggableProps}
             {...provided.dragHandleProps}
             style={{
+              marginBottom: "1rem",
+              ...provided.draggableProps.style,
+            }}
+            /* style={{
               userSelect: "none",
               padding: 16,
               margin: "0 0 8px 0",
@@ -20,18 +43,38 @@ function TaskCard({ item, index }) {
               backgroundColor: snapshot.isDragging ? "#263B4A" : "#456C86",
               color: "white",
               borderRadius: "4px",
-              ...provided.draggableProps.style,
-            }}
+             
+            }} */
           >
-            <div className="content-card">
-              <Image
-                /*  src={item?.userImage?.url} */
-                src="https://res.cloudinary.com/antoapex19/image/upload/v1661865888/A-Project/lxtqvxbrfxcnlpck0rme.jpg"
-                width={50}
-                height={50}
-              />
-
-              {item.content}
+            <div className="card-body p-2">
+              <div className="float-start">
+                {collaborator?.userImage?.url ? (
+                  <Image
+                    className="rounded-circle"
+                    src={collaborator?.userImage?.url}
+                    width={50}
+                    height={50}
+                  />
+                ) : (
+                  <Image
+                    className="rounded-circle"
+                    src="https://res.cloudinary.com/antoapex19/image/upload/v1662361498/A-Project/avatar_gebnpv.webp"
+                    width={50}
+                    height={50}
+                  />
+                )}
+              </div>
+              <div className="float-start">{item.subject}</div>
+              &nbsp;
+              <div className="float-end">
+                <KanbanUpdate /> <KanbanDelete item={item} />
+              </div>
+              <br />
+              <br />
+              <p>{item.description}</p>
+              <button className="btn btn-primary btn-sm float-end">
+                Date to Complete: {item.dateToComplete}{" "}
+              </button>
             </div>
           </div>
         );

@@ -2,6 +2,7 @@ const express = require ('express');
 const userController = require('../Controller/user')
 const adminController = require('../Controller/admin')
 const collaboratorController = require('../Controller/collaborator')
+const taskController = require('../Controller/activities')
 const auth = require('../Middleware/auth');
 
 const routes = {
@@ -14,7 +15,6 @@ const routes = {
     .post('/newPassword',userController.restorePassword)
     .get('/info',auth,userController.getInfo),
 
-
     admin: express.Router()
     .post('/registerNewUser',auth,adminController.registerNewUserAccount)
     .get('/getAllUser',auth,adminController.getAllUser)
@@ -22,8 +22,14 @@ const routes = {
     .delete('/deleteUserAccount/:id',adminController.deleteUserAccount)
     .put('/updateAccount/:id',adminController.updateUserAccount),
 
-    collaborator: express.Router()
-    .get('/getCollaboratorInfo/:id',auth,collaboratorController.getInfoCollaborator)
+    apiCollaborator: express.Router()
+    .get('/getCollaboratorInfo/:id',auth,collaboratorController.getInfoCollaborator),
+
+    task:express.Router()
+    .post('/newTask',auth,taskController.postAct)
+    .get('/getTask/:id',auth,taskController.getAct)
+    .put('/updateTask/:id',auth,taskController.updateAct)
+    .delete('/deleteTask/:id',auth,taskController.deleteAct)
 
     
 }

@@ -25,8 +25,8 @@ const activitySchema = new Schema({
     default: "low",
   },
   statusDone: {
-    default: false,
-    type: Boolean,
+    default: "todo",
+    type: String,
     required: true,
   },
   collaborator_id: {

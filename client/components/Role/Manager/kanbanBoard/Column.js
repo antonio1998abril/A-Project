@@ -1,10 +1,13 @@
-import React, { memo } from "react";
+import React, { memo, useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import { Droppable } from "react-beautiful-dnd";
 import TaskCard from "./TaskCard";
+/* import { adminService } from "../../../../service/adminService";
+import { useRouter } from "next/router"; */
 
-const Column = ({ droppableId, column }) => {
-  console.log("MOVE", column);
+const Column = ({ droppableId, column, collaborator }) => {
+ /*  console.log("MOVE", column); */
+
   return (
     <Droppable droppableId={droppableId} key={droppableId}>
       {(provided, snapshot) => {
@@ -22,7 +25,15 @@ const Column = ({ droppableId, column }) => {
             }}
           >
             {column?.items?.map((item, index) => {
-              return <TaskCard key={item.id} item={item} index={index} />;
+              return (
+                <TaskCard
+                  key={item._id}
+                  item={item}
+                  index={index}
+                  collaborator={collaborator}
+                  column={column.name}
+                />
+              );
             })}
             {provided.placeholder}
           </div>

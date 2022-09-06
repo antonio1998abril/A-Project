@@ -12,12 +12,12 @@ function Admin() {
   const state = useContext(AuthContext);
   const [itemsDashBoard, setItemsDashBoard] = state.User.itemsDashBoard;
 
-  const kanbaLink = (id,userId) => {
+/*   const kanbaLink = (id,userId) => {
     Router.push({
       pathname: `/KanbaBoard/${id}`,
       query: { keyword: userId },
     });
-  };
+  }; */
   return (
     <>
       <NewCollaborator />
@@ -38,9 +38,9 @@ function Admin() {
                   >
                     <div
                       className="contentUser"
-                      onClick={() =>
+                      /* onClick={() =>
                         kanbaLink(`${item._id}&${item.name}&${item.lastName}`,item._id)
-                      }
+                      } */
                     >
                       <div className="icon">
                         {item?.userImage?.url ? (

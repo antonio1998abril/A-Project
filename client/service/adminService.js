@@ -31,12 +31,39 @@ export const adminService = () => {
     const url = `/api/destroy/`;
     return post(url,body,"deleteFile", {});
   };
+  /* Collaborator */
+  const getCollaboratorInfo = (id) => {
+    const url = `/api/getCollaboratorInfo/${id}`;
+    return get(url,"CollaboratorInfo", {});
+  };
+  /* Kanban Board */
+  const postTask =(body) => {
+    const url =`/api/newTask`;
+    return post(url,body,"newTask", {});
+  };
+  const getTasks = (id) => {
+    const url = `/api/getTask/${id}`;
+    return get(url,"TaskList", {});
+  };
+  const updateTask = (id,body) => {
+    const url = `/api/updateTask/${id}`;
+    return put(url,body,"TaskList", {});
+  };
+  const deleteTask = (id) => {
+    const url = `/api/deleteTask/${id}`;
+    return deleteFn(url,"deleteTask", {});
+  };
 
   return {
     registerNewUser,
     deleteUser,
     updateUser,
     uploadFile,
-    deleteFile
+    deleteFile,
+    getCollaboratorInfo,
+    postTask,
+    getTasks,
+    updateTask,
+    deleteTask
   };
 };

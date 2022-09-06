@@ -34,7 +34,7 @@ function DeleteUserAdmin({ item }) {
       <Modal show={updateCollaboratorModal} onHide={handleClose}>
         <Modal.Header closeButton>
           <Modal.Title>
-            Are you sure you want to delete {item.name} {item.name}?
+            Are you sure you want to delete {item.name} {item.lastName}?
           </Modal.Title>
         </Modal.Header>
         <Modal.Body></Modal.Body>

@@ -78,7 +78,7 @@ a {
   }
 }
 
-.alertShow{
+.alertShow {
   margin-top: 4rem;
 }
 
@@ -109,7 +109,6 @@ a {
     margin-left: 150px;
   }
 }
-
 
 /* Border Header */
 .borderHeader {
@@ -194,14 +193,14 @@ a {
   border: 2px solid #4a9af5;
 }
 
-.position-kanban-tools{
-display:flex;
-flex-direction: column;
-align-items:center;
-width:15%;
-height: 10%;
-position: relative;
-margin-left: 80%;
+.position-kanban-tools {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 15%;
+  height: 10%;
+  position: relative;
+  margin-left: 80%;
 }
 /* .cardKanban{
   float: right;
@@ -209,4 +208,11 @@ margin-left: 80%;
 .kanaban-grid {
   display: grid;
   grid-template-columns: 24% 24% 24% 24%;
+}
+
+.kanbanOptions {
+  margin-left: auto;
+  margin-right: 0;
+  padding: 0.75rem 1.25rem;
+  margin-bottom: 0;
 }
