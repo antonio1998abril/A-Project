@@ -95,7 +95,6 @@ function NewCollaboratorButton() {
       formData.append("file", file);
       const res = await uploadFile(formData);
 
-      console.log(res);
       setLoading(false);
       setImagesUrl(res.data.url);
       setImagesId(res.data.public_id);

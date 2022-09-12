@@ -74,11 +74,13 @@ const controller = {
       subject,
       dateToComplete,
       collaborator_id,
-      statusDone
+      statusDone,
+      importanceLevel
     } = req.body;
+
     await Act.findByIdAndUpdate(
       { _id: req.params.id },
-      { description, observable, subject, dateToComplete, collaborator_id, statusDone }
+      { description, observable, subject, dateToComplete, collaborator_id, statusDone,importanceLevel }
     )
       .then(() => {
         return res.json({ msg: "Activity updated" });
@@ -94,6 +96,7 @@ const controller = {
       })
       .catch(next);
   },
+
   DoneAct: async (req, res, next) => {
     await Act.findByIdAndUpdate(
       { _id: req.params.id },
@@ -102,21 +105,7 @@ const controller = {
       return res.json({ msg: "Activdad done" });
     });
   },
-  Backoff: async (req, res, next) => {
-    let today = new Date();
-    let dd = String(today.getDate()).padStart(2, "0");
-    let mm = String(today.getMonth() + 1).padStart(2, "0");
-    let yyyy = today.getFullYear();
 
-    today = yyyy + "-" + mm + "-" + dd;
-
-    await Act.findByIdAndUpdate(
-      { _id: req.params.id },
-      { dateToComplete: today, Status: false }
-    ).then(() => {
-      return res.json({ msg: "activity returned" });
-    });
-  },
 };
 
 module.exports = controller;

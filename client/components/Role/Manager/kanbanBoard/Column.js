@@ -19,7 +19,7 @@ const Column = ({ droppableId, column, collaborator }) => {
               background: snapshot.isDraggingOver ? "lightblue" : column.color,
               padding: 4,
 
-              minHeight: 500,
+              minHeight: 1000,
               border: "2px dashed #ccc",
               borderRadius: "4px",
             }}

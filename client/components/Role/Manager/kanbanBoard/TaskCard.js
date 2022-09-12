@@ -1,27 +1,39 @@
-import React, { memo, useEffect } from "react";
+import React, { memo, useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import { Draggable } from "react-beautiful-dnd";
 import Image from "next/image";
 import KanbanDelete from "../../../ModalComponents/KanbanOptions/KanbanDelete";
 import KanbanUpdate from "../../../ModalComponents/KanbanOptions/KanbanUpdate";
 import { adminService } from "../../../../service/adminService";
+import moment from "moment";
 
-function TaskCard({ item, index, collaborator,column }) {
+function TaskCard({ item, index, collaborator, column }) {
+  const [levelDateImportance,setLevelDateImportance] = useState('')
   const { updateTask } = adminService();
-const updateTaskSelected =async(item,column)=> {
-  let statusDone="";
-  if (column === "To do"){statusDone="todo"}
-  if (column === "In Progress"){statusDone="inProgress"}
-  if (column === "Review"){statusDone="review"}
-  if (column === "Completed"){statusDone="completed"}
-  const body ={
-    statusDone:statusDone
-  }
-  await updateTask(item._id,body)
-}
-useEffect(()=>{
-updateTaskSelected(item,column)
-},[])
+
+  const updateTaskSelected = async (item, column) => {
+    let statusDone = "";
+    if (column === "To do") {
+      statusDone = "todo";
+    }
+    if (column === "In Progress") {
+      statusDone = "inProgress";
+    }
+    if (column === "Review") {
+      statusDone = "review";
+    }
+    if (column === "Completed") {
+      statusDone = "completed";
+    }
+    const body = {
+      statusDone: statusDone,
+    };
+    await updateTask(item._id, body);
+  };
+  useEffect(() => {
+    updateTaskSelected(item, column);
+    setLevelDateImportance(moment(item.dateToComplete).format("MMM Do YY"))
+  }, []);
   return (
     <Draggable key={item.id} draggableId={item._id} index={index}>
       {(provided, snapshot) => {
@@ -67,13 +79,15 @@ updateTaskSelected(item,column)
               <div className="float-start">{item.subject}</div>
               &nbsp;
               <div className="float-end">
-                <KanbanUpdate /> <KanbanDelete item={item} />
+                <KanbanUpdate item={item}/> <KanbanDelete item={item} />
               </div>
               <br />
               <br />
               <p>{item.description}</p>
-              <button className="btn btn-primary btn-sm float-end">
-                Date to Complete: {item.dateToComplete}{" "}
+            </div>
+            <div className="card-footer ">
+              <button className={`btn btn-sm float-end ${item.importanceLevel === "low" ? "btn-primary" : item.importanceLevel === "medium" ? "btn-warning" : item.importanceLevel === "high" ? "btn-danger" : "" }`}  /* className={`btn btn-primary btn-sm float-end`} */ >
+                Date to Complete: {levelDateImportance}{" "}
               </button>
             </div>
           </div>
