@@ -1,10 +1,10 @@
 const express = require ('express');
-const auth = require('../MiddleWare/auth.js')
-const userController = require('../Controller/user')
-const adminController = require('../Controller/admin')
-const collaboratorController = require('../Controller/collaborator')
-const taskController = require('../Controller/activities')
-const projectController = require('../Controller/clients')
+const auth = require('../MiddleWare/auth');
+const userController = require('../Controller/user');
+const adminController = require('../Controller/admin');
+const collaboratorController = require('../Controller/collaborator');
+const taskController = require('../Controller/activities');
+const projectController = require('../Controller/clients');
 
 
 const routes = {
