@@ -81,7 +81,56 @@ module.exports = {
       {
         source: "/api/deleteTask/:id",
         destination: `${onLine}/deleteTask/:id`,
-      }
+      },
+      /* Client */
+      {
+        source: "/api/newTechLead",
+        destination: `${onLine}/newTechLead`,
+      },
+      {
+        source: "/api/getTechLead/:id",
+        destination: `${onLine}/getTechLead/:id`,
+      },
+      {
+        source: "/api/updateTechLead/:id",
+        destination: `${onLine}/updateTechLead/:id`,
+      },
+      {
+        source: "/api/deleteTechLead/:id",
+        destination: `${onLine}/deleteTechLead/:id`,
+      },
+      {
+        source: "/api/newManager",
+        destination: `${onLine}/newManager`,
+      },
+      {
+        source: "/api/getManager/:id",
+        destination: `${onLine}/getManager/:id`,
+      },
+      {
+        source: "/api/updateManager/:id",
+        destination: `${onLine}/updateManager/:id`,
+      },
+      {
+        source: "/api/deleteManager/:id",
+        destination: `${onLine}/deleteManager/:id`,
+      },
+      {
+        source: "/api/newClient",
+        destination: `${onLine}/newClient`,
+      },
+      {
+        source: "/api/getClient/:id",
+        destination: `${onLine}/getClient/:id`,
+      },
+      {
+        source: "/api/updateClient/:id",
+        destination: `${onLine}/updateClient/:id`,
+      },
+      {
+        source: "/api/deleteClient/:id",
+        destination: `${onLine}/deleteClient/:id`,
+      },
     ];
   },
 };

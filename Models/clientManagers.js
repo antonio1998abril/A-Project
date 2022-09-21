@@ -13,6 +13,14 @@ const clientManagersSchema = new Schema({
   email: {
     type:String,
     required:false
+  },
+  client: {
+    type:Schema.Types.ObjectId,
+    ref:'client'
+  },
+  user: {
+    type:Schema.Types.ObjectId,
+    ref:'user'
   }
 
 });

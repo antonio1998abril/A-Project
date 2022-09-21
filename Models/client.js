@@ -6,18 +6,22 @@ const clientSchema = new Schema({
     type: String,
     required: true,
   },
-  clientManagers: [
+/*   clientManagers: [
     {
-      type:Schema.Types.ObjectId,
-      ref:'clientManagers'
-    }
+      type: Schema.Types.ObjectId,
+      ref: "clientManagers",
+    },
   ],
-  clientTeachLeads:[
+  clientTeachLeads: [
     {
-      type:Schema.Types.ObjectId,
-      ref:'clientTeachLeads'
-    }
-  ],
+      type: Schema.Types.ObjectId,
+      ref: "clientTeachLeads",
+    },
+  ], */
+  user: {
+    type:Schema.Types.ObjectId,
+    ref:'user'
+  }
 });
 
 module.exports = mongoose.model("client", clientSchema);

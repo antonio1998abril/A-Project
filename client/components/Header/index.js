@@ -1,21 +1,26 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { Navbar, Nav, Container, Image, NavDropdown } from "react-bootstrap";
 import Link from "next/link";
 import Router from "next/router";
 import { loginService } from "../../service/loginService";
 import withAuth from "../../pages/HOC/withAuth";
+import { AuthContext } from "../../context";
 
 function Index() {
   const [sizeBel, setSizeBell] = useState(50);
   const { getLogOut } = loginService();
+  const state = useContext(AuthContext);
+  const [isManager] = state.User.isManager;
 
-  const logoutUser = async()=>{
-    await  getLogOut().then(function(e) {
-      Router.push("/");
-    }).catch(function(e) {
-      console.log("error");
-    })
-}
+  const logoutUser = async () => {
+    await getLogOut()
+      .then(function (e) {
+        Router.push("/");
+      })
+      .catch(function (e) {
+        console.log("error");
+      });
+  };
 
   return (
     <>
@@ -37,9 +42,12 @@ function Index() {
               <Nav.Link href="/" className="fontNavBar ">
                 Home
               </Nav.Link>
-              <Nav.Link href="#features" className="fontNavBar ">
-                Charts
-              </Nav.Link>
+              {isManager && (
+                <Nav.Link href="/clients" className="fontNavBar ">
+                  Clients
+                </Nav.Link>
+              )}
+
               <NavDropdown
                 title="Actions"
                 id="collapsable-nav-dropdown"

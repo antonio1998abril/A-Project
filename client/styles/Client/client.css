@@ -1,0 +1,11 @@
+.gridClient {
+display: grid;
+grid-template-columns: 50% 50%;
+}
+
+.gridClient div {
+padding: 1em;
+}
+.modal-content .client{
+background-color: rgba(66, 66, 66, 0.893);
+}

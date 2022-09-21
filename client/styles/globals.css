@@ -164,6 +164,7 @@ a {
 @import url("Register/register.css");
 @import url("Login/login.css");
 @import url("Home/home.css");
+@import url("Client/client.css");
 
 .task-container {
   /* border: 1px dotted pink; */
