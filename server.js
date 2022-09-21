@@ -5,8 +5,10 @@ const fileUpload = require('express-fileupload')
 
 const app = express();
 // Call all Routes
-const routes = require("./Routes/routes");
+ const routes = require('./Routes/routes')
 const uploadRoute=require('./Routes/upload')
+
+
 // Connect to MongoAtlas
 const mongoose = require("mongoose");
 mongoose.set("runValidators", true);

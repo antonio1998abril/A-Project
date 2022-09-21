@@ -4,7 +4,7 @@ const adminController = require('../Controller/admin')
 const collaboratorController = require('../Controller/collaborator')
 const taskController = require('../Controller/activities')
 const projectController = require('../Controller/clients')
-const auth = require('../Middleware/auth');
+const auth = require('../Middleware/auth')
 
 const routes = {
     user: express.Router()
