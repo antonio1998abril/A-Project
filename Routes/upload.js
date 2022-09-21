@@ -1,7 +1,7 @@
-const router = require('express').Router()
-const cloudinary = require('cloudinary')
-const auth = require('../Middleware/auth')
-const fs = require('fs')
+const router = require('express').Router();
+const cloudinary = require('cloudinary');
+const auth = require('../Middleware/auth');
+const fs = require('fs');
 
 // we will upload image on cloudinary
 cloudinary.config({
