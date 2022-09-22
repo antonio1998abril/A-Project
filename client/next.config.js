@@ -1,4 +1,4 @@
-const onLine = process.env.REACT_APP_BASE || process.env.REACT_APP_API_URL;
+const onLine = process.env.REACT_APP_BASE || 'https://a-project-production.up.railway.app';
 
 module.exports = {
   reactStrictMode: false,

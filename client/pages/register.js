@@ -126,7 +126,6 @@ function Register() {
                   <button type="submit" className="btn btn-primary btn-block  ">
                     Register
                   </button>
-
                   <div className="text-center p-t-46 ">
                     <Link href="/">
                       <a className="txt2">or Login</a>
