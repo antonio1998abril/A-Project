@@ -51,5 +51,5 @@ app.use(function (err, res) {
   res.json({ error: err.message });
 });
 
-const PORT = 5000;
+const PORT = 3000;
 app.listen(PORT, () => console.log("Server Activated Correctly"));
