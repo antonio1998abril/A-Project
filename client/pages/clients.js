@@ -9,6 +9,7 @@ import Image from "next/image";
 import NewClientButton from "../components/ModalComponents/Client/newClient";
 import ClientInfo from "../components/ModalComponents/Client/getClientInfo";
 import { clientService } from "../service/clientService";
+import DeleteClient from "../components/ModalComponents/Client/Options/DeleteClient";
 
 function Clients() {
   const state = useContext(AuthContext);
@@ -16,19 +17,17 @@ function Clients() {
   const [infoModal, setInfoModal] = useState(false);
   const [itemMT, setItemMT] = useState();
   const [client, setClients] = useState([]);
-  const { getClient } = clientService();
-
-  const getClientsList = async () => {
-    const res = await getClient();
-    setClients(res.data);
-  };
-
-  const deleteClient = async() => {
-    
-  }
+  const { getClientList } = clientService();
 
   useEffect(() => {
-    getClientsList();
+    const getClient = async () => {
+      const res = await getClientList();
+      setClients(res.data);
+    };
+
+    setTimeout(() => {
+      getClient();
+    }, 1000);
   }, [callback]);
   return (
     <>
@@ -37,7 +36,7 @@ function Clients() {
         <NewClientButton />
         <br />
         <div className="gridClient">
-          {client?.map((item) => {
+          {client.map((item) => {
             return (
               <div key={item._id}>
                 <div className="card mb-3" /* style={{ width: "40rem" }} */>
@@ -49,9 +48,7 @@ function Clients() {
                     alt="Card client"
                   />
                   <div className="card-body">
-                    <h5 className="card-title">
-                      Client: {item.name}
-                    </h5>
+                    <h5 className="card-title">Client: {item.name}</h5>
                     <div className="card-text text-center">
                       <button
                         type="button"
@@ -71,13 +68,7 @@ function Clients() {
                         Update information
                       </button>
                       &nbsp;
-                      <button
-                        type="button"
-                             onClick={() => deleteClient(true)} 
-                        className="btn btn-danger btn-small"
-                      >
-                        Delete Client
-                      </button>
+                      <DeleteClient item={item} />
                       <ClientInfo
                         show={infoModal}
                         onHide={() => {

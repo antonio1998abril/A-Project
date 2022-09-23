@@ -47,7 +47,9 @@ function ClientInfo({ show, onHide, item }) {
 
   useEffect(() => {
     if (item) {
-      getDataTM();
+      setTimeout(() => {
+        getDataTM();
+      }, 2000);
     }
   }, [callback, item]);
 
@@ -61,7 +63,7 @@ function ClientInfo({ show, onHide, item }) {
             {(props) => (
               <Form onSubmit={props.handleSubmit} id="formTemplate">
                 <Modal.Header closeButton>
-                  <Modal.Title>Info Client</Modal.Title>
+                  <Modal.Title>List of Managers and TechLeads</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                   <div className="card-text text-center">

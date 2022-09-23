@@ -47,8 +47,8 @@ export const clientService = () => {
     return post(url, body, "newClient", {});
   };
 
-  const getClient = (id) => {
-    const url = `/api/getClient/${id}`;
+  const getClientList = () => {
+    const url = `/api/getClient`;
     return get(url, "getClient", {});
   };
   const updateClient = (id, body) => {
@@ -71,7 +71,7 @@ export const clientService = () => {
     updateManager,
     deleteManager,
     newClient,
-    getClient,
+    getClientList,
     updateClient,
     deleteClient,
   };
