@@ -45,7 +45,7 @@ const routes = {
     .delete('/deleteManager/:id',auth,projectController.deleteManagers)
 
     .post('/newClient',auth,projectController.createClient)
-    .get('/getClient',auth,projectController.getClient)
+    .get('/getClient/:id',auth,projectController.getClient)
     .put('/updateClient/:id',auth,projectController.updateClient)
     .delete('/deleteClient/:id',auth,projectController.deleteClient)
 }

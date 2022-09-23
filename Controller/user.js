@@ -157,7 +157,7 @@ const controller = {
   },
 
   getRole: async (req, res, next) => {
-    const user = await User.findById(req.user.id).select("role -_id");
+    const user = await User.findById(req.user.id).select("role");
     if (!user) return res.status(400).json({ msg: "Error to get role." });
     res.json(user);
   },

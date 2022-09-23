@@ -47,8 +47,8 @@ export const clientService = () => {
     return post(url, body, "newClient", {});
   };
 
-  const getClientList = () => {
-    const url = `/api/getClient`;
+  const getClientList = (userId) => {
+    const url = `/api/getClient/${userId}`;
     return get(url, "getClient", {});
   };
   const updateClient = (id, body) => {

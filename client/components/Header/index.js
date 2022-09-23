@@ -1,5 +1,5 @@
 import React, { useContext, useState } from "react";
-import { Navbar, Nav, Container, Image, NavDropdown } from "react-bootstrap";
+import { Navbar, Nav, Container, Image, NavDropdown, Button } from "react-bootstrap";
 import Link from "next/link";
 import Router from "next/router";
 import { loginService } from "../../service/loginService";
@@ -12,6 +12,8 @@ function Index() {
   const state = useContext(AuthContext);
   const [isManager] = state.User.isManager;
 
+  const [userId] = state.User.userId
+
   const logoutUser = async () => {
     await getLogOut()
       .then(function (e) {
@@ -20,6 +22,13 @@ function Index() {
       .catch(function (e) {
         console.log("error");
       });
+  };
+
+  const kanbaLink = (userId) => {
+    Router.push({
+      pathname: `/${userId}`,
+      query: { keyword: userId },
+    });
   };
 
   return (
@@ -43,9 +52,14 @@ function Index() {
                 Home
               </Nav.Link>
               {isManager && (
-                <Nav.Link href="/clients" className="fontNavBar ">
+                <>
+                {/* <Nav.Link href="/clients" className="fontNavBar ">
                   Clients
-                </Nav.Link>
+                </Nav.Link> */}
+                <Button  onClick={() =>
+                  kanbaLink(userId)
+                }> Clients</Button>
+                </>
               )}
 
               <NavDropdown

@@ -22,6 +22,8 @@ function User(token) {
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [itemsDashBoard,setItemsDashBoard] = useState([]);
+
+  const [userId, setUserId] =  useState('');
   /* Serch functionality */
 
   useEffect(() => {
@@ -34,6 +36,8 @@ function User(token) {
           (res.data.role === "Manager" && setIsManager(true)) ||
             (res.data.role === "Admin" && setIsAdmin(true)) ||
             (res.data.role === "Collaborator" && setIsCollaborator(true));
+
+            setUserId(res.data?._id)
         } catch (err) {
           localStorage.removeItem("firstLogin");
         }
@@ -66,7 +70,8 @@ function User(token) {
     sort: [sort, setSort],
     search: [search, setSearch],
     page: [page, setPage],
-    itemsDashBoard:[itemsDashBoard,setItemsDashBoard]
+    itemsDashBoard:[itemsDashBoard,setItemsDashBoard],
+    userId:[userId]
   };
 }
 export default User;
