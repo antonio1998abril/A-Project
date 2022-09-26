@@ -1,4 +1,4 @@
-import React, { useContext, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import {
   Modal,
   OverlayTrigger,
@@ -17,6 +17,7 @@ import CustomInput from "../../InputCustom/index";
 import { adminService } from "../../../service/adminService";
 import { AuthContext } from "../../../context";
 import Loading from "../../Loading/index";
+import { clientService } from "../../../service/clientService";
 
 
 const accountOptions = [
@@ -31,6 +32,7 @@ const roleOptions = [
 
 function NewCollaboratorButton() {
   const { registerNewUser, uploadFile, deleteFile } = adminService();
+  const { getClientList } = clientService();
   const updateTemplate = useRef(null);
   const state = useContext(AuthContext);
   const [callback, setCallback] = state.User.callback;
@@ -51,6 +53,10 @@ function NewCollaboratorButton() {
     label: "Collaborator",
     value: "Collaborator",
   });
+
+  const [clientList,setClientList] = useState([]);
+  const [managerList,setManagerList] = useState([]);
+  const [techLeadList,setTeachLeadsList] = useState([]);
 
   const handleClose = () => {
     setNewCollaboratorModal(false);
@@ -106,7 +112,6 @@ function NewCollaboratorButton() {
     try {
       setLoading(true);
       const res = await deleteFile({ public_id: imagesId });
-      console.log(res);
       setLoading(false);
       setImagesUrl("");
       setImagesId("");
@@ -114,6 +119,13 @@ function NewCollaboratorButton() {
       alert(err.response.data.msg);
     }
   };
+  const handleList = async() => {
+ let res = await getClientList()
+  }
+
+  useEffect(()=>{
+    handleList()
+  },[]);
   return (
     <>
       <div

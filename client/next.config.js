@@ -1,4 +1,4 @@
-const onLine =  'https://a-project-production.up.railway.app/api' || 'http://localhost:5000/api';
+const onLine =  /* 'https://a-project-production.up.railway.app/api' || */ 'http://localhost:5000/api';
 
 module.exports = {
   reactStrictMode: false,
@@ -120,8 +120,8 @@ module.exports = {
         destination: `${onLine}/newClient`,
       },
       {
-        source: "/api/getClient/:id",
-        destination: `${onLine}/getClient/:id`,
+        source: "/api/getClient",
+        destination: `${onLine}/getClient`,
       },
       {
         source: "/api/updateClient/:id",

@@ -144,11 +144,8 @@ const controller = {
       .catch(next);
   },
   getClient: async (req, res, next) => {
-    await Client.find({ user: req.params.id })
-      .lean()
-      .populate([{ path: "user", model: "user" }])
-      .then((result) => {
-       res.json(result);
+    await Client.find({ user: req.user.id }).then((result) => {
+       res.json({result});
       })
       .catch(next);
   },

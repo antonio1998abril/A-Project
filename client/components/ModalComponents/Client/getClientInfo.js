@@ -5,19 +5,17 @@ import {
   Tooltip,
   Form,
   Button,
-  Col,
-  Row,
   Table,
 } from "react-bootstrap";
 
 import { Formik } from "formik";
-import { newCollaboratorSchema } from "../validationSchema/newCollaborator";
-import CustomInput from "../../InputCustom";
-import Options from "../../TableOptions/index";
+
 import NewManager from "./Options/NewManager";
 import NewTechLead from "./Options/NewTechLead";
 import { AuthContext } from "../../../context";
 import { clientService } from "../../../service/clientService";
+
+import DeleteClient from "./Options/DeleteClient";
 
 function ClientInfo({ show, onHide, item }) {
   const state = useContext(AuthContext);
@@ -47,9 +45,7 @@ function ClientInfo({ show, onHide, item }) {
 
   useEffect(() => {
     if (item) {
-      setTimeout(() => {
-        getDataTM();
-      }, 2000);
+      getDataTM();
     }
   }, [callback, item]);
 
@@ -90,7 +86,7 @@ function ClientInfo({ show, onHide, item }) {
                             <td>{item.clientManagerName}</td>
                             <td>{item.clientManagerLastName}</td>
                             <td>{item.email}</td>
-                            <Options />
+                            <DeleteClient item={item} managerStatus={true} />
                           </tr>
                         );
                       })}
@@ -123,7 +119,8 @@ function ClientInfo({ show, onHide, item }) {
                             <td>{item.projectTechLeadLastName}</td>
                             <td>{item.email}</td>
                             <td>{item.occupation}</td>
-                            <Options />
+
+                            <DeleteClient item={item} techLeadStatus={true} />
                           </tr>
                         );
                       })}
