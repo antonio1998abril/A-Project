@@ -33,9 +33,10 @@ function User(token) {
           const res = await axios.get("/api/role", {
             headers: { Authorization: token },
           });
-          (res.data.role === "Manager" && setIsManager(true)) ||
-            (res.data.role === "Admin" && setIsAdmin(true)) ||
-            (res.data.role === "Collaborator" && setIsCollaborator(true));
+        
+           (res.data?.role === "Manager" && setIsManager(true)) ||
+            (res.data?.role === "Admin" && setIsAdmin(true)) ||
+            (res.data?.role === "Collaborator" && setIsCollaborator(true));
 
      
       
@@ -65,7 +66,7 @@ function User(token) {
       getUser();
     }
   }, [token, role, sort, search, page, callback]);
-
+  console.log(role) 
   return {
     alert: [alert, setAlert],
     infoUser: [infoUser, setInfoUser],

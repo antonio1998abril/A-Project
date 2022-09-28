@@ -75,18 +75,19 @@ const controller = {
       currentTechLead,
       currentClient
     });
+  
     await newUser
       .save()
       .then((result) => {
         const accessToken = createAccessToken({
           id: newUser._id,
           email: newUser.email,
-          role: newUser.role,
+          role: 'Collaborator',
         });
         const refreshToken = createRefreshToken({
           id: newUser._id,
           email: newUser.email,
-          role: newUser.role,
+          role: 'Collaborator',
         });
 
         res.cookie("refreshToken", refreshToken, {
@@ -160,6 +161,7 @@ const controller = {
   },
 
   getRole: async (req, res, next) => {
+    console.log('role',req.user.id)
     const user = await User.findById(req.user.id).select("role");
     if (!user) return res.status(400).json({ msg: "Error to get role." });
     res.json(user);

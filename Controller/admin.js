@@ -1,4 +1,5 @@
 const User = require("../Models/user");
+const Activities = require("../Models/activities");
 const bCrypt = require("bcrypt");
 const nodemailer = require("nodemailer");
 const { generatePassword } = require("../utils/apiUtils");
@@ -121,6 +122,12 @@ const controller = {
           .paginating()) ||
       (req.user.role === "Manager" &&
         new APIfeature(User.find({ role: "Collaborator" }).lean(), req.query)
+          .filtering()
+          .sorting()
+          .paginating())
+          ||
+      (req.user.role === "Collaborator" &&
+        new APIfeature(Activities.find({ collaborator_id: req.user.id }).lean(), req.query)
           .filtering()
           .sorting()
           .paginating());

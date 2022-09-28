@@ -19,7 +19,7 @@ function Index() {
   const [itemsDashBoard,setItemsDashBoard] = state.User.itemsDashBoard
 
   const handleRole = (e) => {
-    setRole(e.target.value);
+  /*   setRole(e.target.value); */
     setSearch("");
   };
   return (
