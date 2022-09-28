@@ -18,7 +18,7 @@ import { adminService } from "../../../service/adminService";
 import { AuthContext } from "../../../context";
 import Loading from "../../Loading/index";
 import { clientService } from "../../../service/clientService";
-
+import ReactDatePicker from "react-datepicker";
 
 const accountOptions = [
   { label: "Yes", value: "public" },
@@ -32,7 +32,7 @@ const roleOptions = [
 
 function NewCollaboratorButton() {
   const { registerNewUser, uploadFile, deleteFile } = adminService();
-  const { getClientList } = clientService();
+  const { getClientList, getManager, getTechLead } = clientService();
   const updateTemplate = useRef(null);
   const state = useContext(AuthContext);
   const [callback, setCallback] = state.User.callback;
@@ -41,7 +41,7 @@ function NewCollaboratorButton() {
   const [loading, setLoading] = useState(false);
   const [imagesUrl, setImagesUrl] = useState("");
   const [imagesId, setImagesId] = useState("");
-    /* iMAGES */
+  /* iMAGES */
 
   const [newCollaboratorModal, setNewCollaboratorModal] = useState(false);
   const [accountStatus, setAccountStatus] = useState({
@@ -54,12 +54,30 @@ function NewCollaboratorButton() {
     value: "Collaborator",
   });
 
-  const [clientList,setClientList] = useState([]);
-  const [managerList,setManagerList] = useState([]);
-  const [techLeadList,setTeachLeadsList] = useState([]);
+  const [enableManagerTechLeadHTML, setEnableManagerTechLeadHTML] =
+    useState(false);
+  const [hired, setHired] = useState(new Date());
+  const [birthDay, setBirthDay] = useState(new Date());
+  const [clientList, setClientList] = useState([]);
+  const [managerList, setManagerList] = useState([]);
+  const [techLeadList, setTeachLeadsList] = useState([]);
+
+  const [clientStatus, setClientStatus] = useState({
+    label: "N/A",
+    value: "N/A",
+  });
+  const [managerStatus, setManagerStatus] = useState({
+    label: "N/A",
+    value: "N/A",
+  });
+  const [techLeadStatus, setTechLeadStatus] = useState({
+    label: "N/A",
+    value: "N/A",
+  });
 
   const handleClose = () => {
     setNewCollaboratorModal(false);
+    setClientStatus({ label: "N/A", value: "N/A" });
   };
   const onSubmit = async (values) => {
     const { email, lastName, name, occupation } = values;
@@ -71,10 +89,15 @@ function NewCollaboratorButton() {
       occupation: occupation,
       status: accountStatus.value,
       role: role.value,
-      userImage:{
-        public_id:imagesId,
-        url:imagesUrl,
-      }
+      userImage: {
+        public_id: imagesId,
+        url: imagesUrl,
+      },
+      currentManager:managerStatus.value,
+      currentTechLead:techLeadStatus.value,
+      currentClient:clientStatus.value,
+      birthDay:birthDay,
+      hired:hired,
     };
     const res = await registerNewUser(body);
     setNewCollaboratorModal(false);
@@ -119,13 +142,43 @@ function NewCollaboratorButton() {
       alert(err.response.data.msg);
     }
   };
-  const handleList = async() => {
- let res = await getClientList()
-  }
+  const handleList = async () => {
+    let res = await getClientList();
 
-  useEffect(()=>{
-    handleList()
-  },[]);
+    setClientList(
+      res?.data?.result?.map((item) => ({
+        label: item.name,
+        value: item._id,
+      }))
+    );
+    setEnableManagerTechLeadHTML(true);
+  };
+  const handleManagerAndTechLead = async () => {
+    if (clientStatus.label != "N/A") {
+      let resManager = await getManager(clientStatus.value);
+      let resTechLead = await getTechLead(clientStatus.value);
+
+      setManagerList(
+        resManager?.data?.map((item) => ({
+          label: item.clientManagerName + ' '+item.clientManagerLastName,
+          value: item._id,
+        }))
+      ); 
+      setTeachLeadsList(
+        resTechLead?.data?.map((item) => ({
+          label: item.projectTechLeadName + ' '+item.projectTechLeadLastName,
+          value: item._id,
+        }))
+      )
+    }
+  };
+
+  useEffect(() => {
+    handleList();
+    if (enableManagerTechLeadHTML) {
+      handleManagerAndTechLead();
+    }
+  }, [enableManagerTechLeadHTML,clientStatus]);
   return (
     <>
       <div
@@ -289,6 +342,77 @@ function NewCollaboratorButton() {
                         required
                       />
                     </Col>
+
+                    <Col xs={12} md={12} aria-label="birthDay" className="mb-4">
+                      <span>Birth Day</span>
+                      <ReactDatePicker
+                        selected={birthDay}
+                        onChange={(date) => setBirthDay(date)}
+                      />
+                    </Col>
+
+                    <Col xs={12} md={12} aria-label="hired" className="mb-4">
+                      <span>Hired</span>
+                      <ReactDatePicker
+                        selected={hired}
+                        onChange={(date) => setHired(date)}
+                      />
+                    </Col>
+
+                    <Col xs={12} lg={12} className="mb-4">
+                      <label htmlFor="client" className="form-label">
+                        Current Project
+                      </label>
+                      <Select
+                        id="client"
+                        name="client"
+                        options={clientList}
+                        isSearchable={true}
+                        getOptionLabel={(option) => option.label || ""}
+                        getOptionValue={(option) => option.value || ""}
+                        value={clientStatus}
+                        onChange={(selected) => setClientStatus(selected)}
+                      />
+                    </Col>
+
+
+
+                    {clientStatus.label != "N/A" ? (
+                      <>
+                        <Col xs={12} lg={12} className="mb-4">
+                          <label htmlFor="manager" className="form-label">
+                            Current Manager
+                          </label>
+                          <Select
+                            id="manager"
+                            name="manager"
+                            options={managerList}
+                            isSearchable={true}
+                            getOptionLabel={(option) => option.label || ""}
+                            getOptionValue={(option) => option.value || ""}
+                            value={managerStatus}
+                            onChange={(selected) =>  setManagerStatus(selected)}
+                          />
+                        </Col>
+
+                        <Col xs={12} lg={12} className="mb-4">
+                          <label htmlFor="techLead" className="form-label">
+                            Current Tech Lead
+                          </label>
+                          <Select
+                            id="techLead"
+                            name="techLead"
+                            options={techLeadList}
+                            isSearchable={true}
+                            getOptionLabel={(option) => option.label || ""}
+                            getOptionValue={(option) => option.value || ""}
+                            value={techLeadStatus}
+                            onChange={(selected) =>  setTechLeadStatus(selected)}
+                          />
+                        </Col>
+
+                      </>
+                    ) : null}
                   </Row>
                 </Modal.Body>
               </Form>

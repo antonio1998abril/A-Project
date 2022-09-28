@@ -148,6 +148,9 @@ const controller = {
       userImage,
       status,
       manager,
+      currentClient,
+      currentTechLead,
+      currentManager
     } = req.body;
 
     if ((!name, !email, !lastName, !occupation))
@@ -166,7 +169,10 @@ const controller = {
       role,
       status,
       manager,
-      userImage
+      userImage,
+      currentManager,
+      currentTechLead,
+      currentClient
     });
 
     if (status === "public") {
@@ -187,6 +193,9 @@ const controller = {
       userImage,
       status,
       manager,
+      currentManager,
+      currentTechLead,
+      currentClient
     } = req.body;
 
     const user = await User.findOne({email});
@@ -204,6 +213,9 @@ const controller = {
       status,
       /*  password: passwordHash, */
       manager,
+      currentManager,
+      currentTechLead,
+      currentClient
     };
     if (status === "private") saveUser["password"] = passwordHash;
     if (user.status !== status && status === "private")

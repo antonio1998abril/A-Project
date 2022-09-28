@@ -47,7 +47,7 @@ const createRefreshToken = (user) => {
 
 const controller = {
   register: async (req, res, next) => {
-    const { name, email, lastName, password, occupation, repeatPassword } =
+    const { name, email, lastName, password, occupation, repeatPassword, currentManager, currentTechLead, currentClient} =
       req.body;
 
     if (!email)
@@ -71,6 +71,9 @@ const controller = {
       password: passwordHash,
       lastName,
       occupation,
+      currentManager,
+      currentTechLead,
+      currentClient
     });
     await newUser
       .save()

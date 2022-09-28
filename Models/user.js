@@ -60,12 +60,24 @@ const userSchema = new Schema({
     type:Array,
     default:[]
   },
-  clientProjects: [
+  currentManager: [
     {
       type:Schema.Types.ObjectId,
-      ref:'collaboratorProject'
+      ref:'clientTechLeads'
     }
   ],
+  currentTechLead: [
+    {
+      type:Schema.Types.ObjectId,
+      ref:'clientManagers'
+    }
+  ],
+  currentClient: [
+    {
+      type:Schema.Types.ObjectId,
+      ref:'client'
+    }
+  ]
 });
 
 module.exports = mongoose.model("user", userSchema);
