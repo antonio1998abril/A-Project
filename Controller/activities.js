@@ -41,6 +41,7 @@ const controller = {
       subject,
       dateToComplete,
       collaborator_id,
+      evidenceImage
     } = req.body;
     if (
       !description ||
@@ -59,6 +60,7 @@ const controller = {
       dateToComplete: dateToComplete,
       collaborator_id: collaborator_id,
       statusDone: "todo",
+      evidenceImage:evidenceImage
     });
     await newActivity
       .save()
@@ -75,12 +77,13 @@ const controller = {
       dateToComplete,
       collaborator_id,
       statusDone,
-      importanceLevel
+      importanceLevel,
+      evidenceImage
     } = req.body;
 
     await Act.findByIdAndUpdate(
       { _id: req.params.id },
-      { description, observable, subject, dateToComplete, collaborator_id, statusDone,importanceLevel }
+      { description, observable, subject, dateToComplete, collaborator_id, statusDone,importanceLevel,evidenceImage }
     )
       .then(() => {
         return res.json({ msg: "Activity updated" });
@@ -102,7 +105,7 @@ const controller = {
       { _id: req.params.id },
       { StatusDone: true }
     ).then(() => {
-      return res.json({ msg: "Activdad done" });
+      return res.json({ msg: "Activity done" });
     });
   },
 

@@ -3,32 +3,45 @@ import Link from "next/link";
 import { AuthContext } from "../../context";
 import UpdateUser from "../ModalComponents/UpdateCollaborator";
 import DeleteUserAdmin from "../ModalComponents/DeleteUserAdmin";
-
-function IconPersonCard({item}) {
+import Router from "next/router";
+import { OverlayTrigger, Tooltip } from "react-bootstrap";
+function IconPersonCard({ item }) {
   const state = useContext(AuthContext);
   const [isManager] = state.User.isManager;
   const [isCollaborator] = state.User.isCollaborator;
   const [isAdmin] = state.User.isAdmin;
+
+  const kanbaLink = (id, userId) => {
+    let paramID = id.substring(7);
+    Router.push({
+      pathname: `/KanbaBoard/${paramID}`,
+      query: { keyword: userId },
+    });
+  };
   return (
     <>
       {/* CHARTS*/}
       {isManager ? (
         <>
-          <Link href="/test">
+          <OverlayTrigger
+            overlay={
+              <Tooltip id={`tooltip-bottom`}>
+                <strong>Create a comment</strong>.
+              </Tooltip>
+            }
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="18"
               height="18"
               fill="currentColor"
-              className="bi bi-clipboard2-data"
+              className="bi bi-file-earmark-spreadsheet-fill"
               viewBox="0 0 16 16"
-              type="button"
             >
-              <path d="M9.5 0a.5.5 0 0 1 .5.5.5.5 0 0 0 .5.5.5.5 0 0 1 .5.5V2a.5.5 0 0 1-.5.5h-5A.5.5 0 0 1 5 2v-.5a.5.5 0 0 1 .5-.5.5.5 0 0 0 .5-.5.5.5 0 0 1 .5-.5h3Z" />
-              <path d="M3 2.5a.5.5 0 0 1 .5-.5H4a.5.5 0 0 0 0-1h-.5A1.5 1.5 0 0 0 2 2.5v12A1.5 1.5 0 0 0 3.5 16h9a1.5 1.5 0 0 0 1.5-1.5v-12A1.5 1.5 0 0 0 12.5 1H12a.5.5 0 0 0 0 1h.5a.5.5 0 0 1 .5.5v12a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5v-12Z" />
-              <path d="M10 7a1 1 0 1 1 2 0v5a1 1 0 1 1-2 0V7Zm-6 4a1 1 0 1 1 2 0v1a1 1 0 1 1-2 0v-1Zm4-3a1 1 0 0 0-1 1v3a1 1 0 1 0 2 0V9a1 1 0 0 0-1-1Z" />
+              <path d="M6 12v-2h3v2H6z" />
+              <path d="M9.293 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.707A1 1 0 0 0 13.707 4L10 .293A1 1 0 0 0 9.293 0zM9.5 3.5v-2l3 3h-2a1 1 0 0 1-1-1zM3 9h10v1h-3v2h3v1h-3v2H9v-2H6v2H5v-2H3v-1h2v-2H3V9z" />
             </svg>
-          </Link>
+          </OverlayTrigger>
           &nbsp;&nbsp;
           {/* MESSAGE */}
           <Link href="/test">
@@ -47,7 +60,13 @@ function IconPersonCard({item}) {
           </Link>
           &nbsp;&nbsp;
           {/* Activity */}
-          <Link href="/test">
+          <OverlayTrigger
+            overlay={
+              <Tooltip id={`tooltip-bottom`}>
+                <strong>KanbaBoard</strong>.
+              </Tooltip>
+            }
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="18"
@@ -55,7 +74,10 @@ function IconPersonCard({item}) {
               fill="currentColor"
               className="bi bi-list-task"
               viewBox="0 0 16 16"
-              type="button"
+              type="submit"
+              onClick={() =>
+                kanbaLink(`${item._id}&${item.name}&${item.lastName}`, item._id)
+              }
             >
               <path
                 fillRule="evenodd"
@@ -67,7 +89,7 @@ function IconPersonCard({item}) {
                 d="M1.5 7a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5H2a.5.5 0 0 1-.5-.5V7zM2 7h1v1H2V7zm0 3.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5H2zm1 .5H2v1h1v-1z"
               />
             </svg>
-          </Link>
+          </OverlayTrigger>
         </>
       ) : (
         <>
@@ -85,7 +107,6 @@ function IconPersonCard({item}) {
               <path d="M3 3.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zM3 6a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9A.5.5 0 0 1 3 6zm0 2.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5z" />
             </svg>
           </Link>
-          
           &nbsp;&nbsp;
           <DeleteUserAdmin item={item} />
         </>

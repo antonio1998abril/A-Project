@@ -12,13 +12,13 @@ function Manager() {
   const state = useContext(AuthContext);
   const [itemsDashBoard, setItemsDashBoard] = state.User.itemsDashBoard;
 
-  const kanbaLink = (id,userId) => {
+/*   const kanbaLink = (id,userId) => {
     let paramID = id.substring(7);
     Router.push({
       pathname: `/KanbaBoard/${paramID}`,
       query: { keyword: userId },
     });
-  };
+  }; */
   return (
     <>
       <NewCollaborator />
@@ -33,15 +33,15 @@ function Manager() {
                     placement="bottom"
                     overlay={
                       <Tooltip id={`tooltip-bottom`}>
-                        <strong>Kanban Board</strong>.
+                        <strong>{item.name} {item.lastName}</strong>.
                       </Tooltip>
                     }
                   >
                     <div
                       className="contentUser"
-                      onClick={() =>
+                   /*    onClick={() =>
                         kanbaLink(`${item._id}&${item.name}&${item.lastName}`,item._id)
-                      }
+                      } */
                     >
                       <div className="icon">
                         {item?.userImage?.url ? (

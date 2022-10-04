@@ -10,7 +10,8 @@ import moment from "moment";
 function TaskCard({ item, index, collaborator, column }) {
   const [levelDateImportance,setLevelDateImportance] = useState('')
   const { updateTask } = adminService();
-
+  /* Date */
+  const [momentAct,setMoment] = useState('')
   const updateTaskSelected = async (item, column) => {
     let statusDone = "";
     if (column === "To do") {
@@ -32,7 +33,8 @@ function TaskCard({ item, index, collaborator, column }) {
   };
   useEffect(() => {
     updateTaskSelected(item, column);
-    setLevelDateImportance(moment(item.dateToComplete).format("MMM Do YY"))
+    setLevelDateImportance(moment(item?.dateToComplete).format("MMM Do YY"))
+    setMoment(moment(item?.createdAt).format("MMM Do YY"))
   }, []);
   return (
     <Draggable key={item.id} draggableId={item._id} index={index}>
@@ -76,7 +78,8 @@ function TaskCard({ item, index, collaborator, column }) {
                   />
                 )}
               </div>
-              <div className="float-start">{item.subject}</div>
+              <div className="float-start">{item.subject}</div><br/>
+              <small><b>Created on </b>{momentAct}</small>
               &nbsp;
               <div className="float-end">
                 <KanbanUpdate item={item}/> <KanbanDelete item={item} />

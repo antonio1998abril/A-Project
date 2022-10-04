@@ -3,8 +3,8 @@ const Schema = mongoose.Schema;
 
 const userSchema = new Schema({
   status: {
-    type:String,
-    default:"public"
+    type: String,
+    default: "public",
   },
   name: {
     type: String,
@@ -35,49 +35,56 @@ const userSchema = new Schema({
     default: "Collaborator",
   },
   manager: {
-    type:Object,
-    required:false
+    type: Object,
+    required: false,
   },
   notifications: {
     type: Array,
     default: [],
   },
-/*   collaborators: [
+  /*   collaborators: [
     {
       type: Schema.Types.ObjectId,
       ref: "user",
     },
   ], */
   birthDay: {
-    type:String,
-    required:false
+    type: String,
+    required: false,
   },
-  hired:{
-    type:String,
-    required:false
+  hired: {
+    type: String,
+    required: false,
   },
   previousApexManager: {
-    type:Array,
-    default:[]
+    type: Array,
+    default: [],
   },
   currentManager: [
     {
-      type:Schema.Types.ObjectId,
-      ref:'clientTechLeads'
-    }
+      type: Schema.Types.ObjectId,
+      ref: "clientTechLeads",
+    },
   ],
   currentTechLead: [
     {
-      type:Schema.Types.ObjectId,
-      ref:'clientManagers'
-    }
+      type: Schema.Types.ObjectId,
+      ref: "clientManagers",
+    },
   ],
   currentClient: [
     {
-      type:Schema.Types.ObjectId,
-      ref:'client'
-    }
-  ]
+      type: Schema.Types.ObjectId,
+      ref: "client",
+    },
+  ],
+  isStillWorking: {
+    type: Boolean,
+    required: true,
+  },
+},
+{
+  timestamps: true
 });
 
 module.exports = mongoose.model("user", userSchema);

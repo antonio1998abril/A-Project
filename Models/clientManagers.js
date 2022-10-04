@@ -23,6 +23,9 @@ const clientManagersSchema = new Schema({
     ref:'user'
   }
 
+},
+{
+  timestamps: true
 });
 
 module.exports = mongoose.model("clientManagers", clientManagersSchema);

@@ -14,6 +14,10 @@ import ReactDatePicker from "react-datepicker";
 import CustomInput from "../../InputCustom";
 import { adminService } from "../../../service/adminService";
 import { AuthContext } from "../../../context";
+import Image from "next/image";
+import Back from "../../../public/fondo2.jpg";
+import Loading from "../../Loading";
+import TextAreaInput from "../../TextAreaInput/TextAreaInput";
 
 const importanceLevel = [
   { label: "Low", value: "low" },
@@ -28,7 +32,7 @@ const observable = [
 function KanbanUpdate({ item }) {
   const createTemplate = useRef(null);
   const [updateTaskModal, setUpdateTaskModal] = useState(false);
-  const { updateTask } = adminService();
+  const { updateTask, uploadFile, deleteFile } = adminService();
 
   const state = useContext(AuthContext);
   const [callback, setCallback] = state.User.callback;
@@ -69,26 +73,75 @@ function KanbanUpdate({ item }) {
 
   /* Date */
   const [startDate, setStartDate] = useState(new Date(item.dateToComplete));
+  /* iMAGES */
+  const [loading, setLoading] = useState(false);
+  const [imagesUrl, setImagesUrl] = useState(item?.evidenceImage?.url);
+  const [imagesId, setImagesId] = useState("");
+  /* iMAGES */
 
   const handleClose = () => {
     setUpdateTaskModal(false);
+    if (imagesId) handleDestroy();
+  };
+  /* IMAGE */
+  const styleUpload = {
+    display: imagesUrl ? "block" : "none",
   };
 
   const onSubmit = async (values) => {
     const { subject, description } = values;
-    let idTask = item._id
+    let idTask = item._id;
     const body = {
       subject: subject,
       description: description,
       importanceLevel: importanceStatus.value,
       observable: observableStatus.value,
       dateToComplete: startDate,
+      evidenceImage: {
+        public_id: imagesId,
+        url: imagesUrl,
+      },
     };
-    const res = await updateTask(idTask,body);
-    console.log(res);
+    const res = await updateTask(idTask, body);
     setUpdateTaskModal(false);
     setCallback(!callback);
   };
+
+  const handleUpload = async (e) => {
+    e.preventDefault();
+    try {
+      const file = e.target.files[0];
+
+      if (!file) return alert("file not exist");
+
+      if (file.size > 1024 * 1024) return alert("File not exist");
+
+      if (file.type !== "image/jpeg" && file.type !== "image/png")
+        return alert("File format is incorrect");
+      setLoading(true);
+      let formData = new FormData();
+      formData.append("file", file);
+      const res = await uploadFile(formData);
+
+      setLoading(false);
+      setImagesUrl(res.data.url);
+      setImagesId(res.data.public_id);
+    } catch (err) {
+      alert(err.response.data.msg);
+    }
+  };
+  const handleDestroy = async () => {
+    try {
+      setLoading(true);
+      const res = await deleteFile({ public_id: imagesId });
+      setLoading(false);
+      setImagesUrl("");
+      setImagesId("");
+    } catch (err) {
+      alert(err.response.data.msg);
+    }
+  };
+
   return (
     <>
       <svg
@@ -127,6 +180,37 @@ function KanbanUpdate({ item }) {
                   <Modal.Title>Create a new task</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
+                  <div className="imageTitle">Select a image: </div>
+
+                  <div className="upload">
+                    <input
+                    
+                      type="file"
+                      name="file"
+                      id="file_up"
+                      onChange={handleUpload}
+                    ></input>
+
+                    {loading ? (
+                      <div id="file_Loader">
+                        {" "}
+                        <Loading />{" "}
+                      </div>
+                    ) : (
+                      <div id="file_img" style={styleUpload}>
+                        <Image
+                          src={imagesUrl ? imagesUrl : Back}
+                          width={500}
+                          height={400}
+                          alt="Pro_Image"
+                        />
+
+                        <span id="file_img_delete" onClick={handleDestroy}>
+                          X
+                        </span>
+                      </div>
+                    )}
+                  </div>
                   <Row className="mb-6">
                     <Col xs={12} lg={12} className="mb-4">
                       <label htmlFor="importanceLevel" className="form-label">
@@ -177,7 +261,7 @@ function KanbanUpdate({ item }) {
                     </Col>
 
                     <Col xs={12} md={12} aria-label="lastName" className="mb-4">
-                      <CustomInput
+                      <TextAreaInput
                         label="Description"
                         name="description"
                         id="description"

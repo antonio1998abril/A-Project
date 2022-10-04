@@ -1,10 +1,13 @@
-import React, { useContext } from "react";
+import React, { useContext,useEffect } from "react";
 import { AuthContext } from "../../context";
 import withAuth from "../HOC/withAuth.jsx";
 
 import Admin from "../../components/Role/Admin/index";
 import Manager from "../../components/Role/Manager/index";
 import Collaborator from "../../components/Role/Collaborator/index";
+import LoadMore from "../../components/LoadMore";
+import io from 'Socket.IO-client'
+import Loading from "../../components/Loading";
 
 function Index() {
   const state = useContext(AuthContext);
@@ -22,6 +25,21 @@ function Index() {
   /*   setRole(e.target.value); */
     setSearch("");
   };
+
+  const socketInitializer = async () => {
+    let socket
+    await fetch('/api/socket')
+    socket = io()
+
+    socket.on('connect', () => {
+      console.log('connected')
+    })
+  }
+
+  useEffect(() => {socketInitializer()}, [])
+
+
+
   return (
     <>
       <div className="content-wrap">
@@ -55,7 +73,10 @@ function Index() {
         <Admin />
         <Manager />
         <Collaborator />
+        <LoadMore/>
+        {itemsDashBoard.length === 0 && <Loading/>}
       </div>
+      
     </>
   );
 }

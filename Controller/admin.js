@@ -116,18 +116,18 @@ const controller = {
   getAllUser: async (req, res, next) => {
     let features =
       (req.user.role === "Admin" &&
-        new APIfeature(User.find().lean(), req.query)
+        new APIfeature(User.find().select({'password':0}).lean(), req.query)
           .filtering()
           .sorting()
           .paginating()) ||
       (req.user.role === "Manager" &&
-        new APIfeature(User.find({ role: "Collaborator" }).lean(), req.query)
+        new APIfeature(User.find({ role: "Collaborator" }).select("-password").lean(), req.query)
           .filtering()
           .sorting()
           .paginating())
           ||
       (req.user.role === "Collaborator" &&
-        new APIfeature(Activities.find({ collaborator_id: req.user.id }).lean(), req.query)
+        new APIfeature(Activities.find({ collaborator_id: req.user.id }).select({'password':0}).lean(), req.query)
           .filtering()
           .sorting()
           .paginating());

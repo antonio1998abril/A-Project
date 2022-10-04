@@ -17,6 +17,8 @@ import CustomInput from "../../InputCustom/index";
 import { adminService } from "../../../service/adminService";
 import Back from "../../../public/fondo2.jpg";
 import Loading from "../../Loading";
+import { clientService } from "../../../service/clientService";
+import ReactDatePicker from "react-datepicker";
 
 const accountOptions = [
   { label: "Yes", value: "public" },
@@ -31,7 +33,8 @@ const roleOptions = [
 function UpdateUser({ item }) {
   const updateTemplate = useRef(null);
   const state = useContext(AuthContext);
-  const { updateUser } = adminService();
+  const { updateUser, uploadFile, deleteFile } = adminService();
+  const { getClientList, getManager, getTechLead } = clientService();
   const [updateCollaboratorModal, setUpdateCollaboratorModal] = useState(false);
 
   const [callback, setCallback] = state.User.callback;
@@ -40,9 +43,17 @@ function UpdateUser({ item }) {
 
   /* iMAGES */
   const [loading, setLoading] = useState(false);
-  const [imagesUrl, setImagesUrl] = useState("");
+  const [imagesUrl, setImagesUrl] = useState(item?.userImage?.url);
   const [imagesId, setImagesId] = useState("");
   /* iMAGES */
+
+  const [enableManagerTechLeadHTML, setEnableManagerTechLeadHTML] =
+  useState(false);
+const [hired, setHired] = useState(new Date());
+const [birthDay, setBirthDay] = useState(new Date());
+const [clientList, setClientList] = useState([]);
+const [managerList, setManagerList] = useState([]);
+const [techLeadList, setTeachLeadsList] = useState([]);
 
   const [accountStatus, setAccountStatus] = useState({
     label: "No",
@@ -54,8 +65,23 @@ function UpdateUser({ item }) {
     value: "Collaborator",
   });
 
+  const [clientStatus, setClientStatus] = useState({
+    label: "N/A",
+    value: "N/A",
+  });
+  const [managerStatus, setManagerStatus] = useState({
+    label: "N/A",
+    value: "N/A",
+  });
+  const [techLeadStatus, setTechLeadStatus] = useState({
+    label: "N/A",
+    value: "N/A",
+  });
+
+
   const handleClose = () => {
     setUpdateCollaboratorModal(false);
+    setClientStatus({ label: "N/A", value: "N/A" });
   };
 
   const onSubmit = async (values) => {
@@ -72,10 +98,16 @@ function UpdateUser({ item }) {
         public_id: imagesId,
         url: imagesUrl,
       },
+      currentManager:managerStatus.value,
+      currentTechLead:techLeadStatus.value,
+      currentClient:clientStatus.value,
+      birthDay:birthDay,
+      hired:hired,
     };
     const res = await updateUser(id, body);
-    setCallback(!callback);
     setUpdateCollaboratorModal(false);
+    setCallback(!callback);
+ 
   };
 
   useEffect(() => {
@@ -130,25 +162,70 @@ function UpdateUser({ item }) {
   };
   /* IMAGE */
 
+  const handleList = async () => {
+    let res = await getClientList();
+
+    setClientList(
+      res?.data?.result?.map((item) => ({
+        label: item.name,
+        value: item._id,
+      }))
+    );
+    setEnableManagerTechLeadHTML(true);
+  };
+  const handleManagerAndTechLead = async () => {
+    if (clientStatus.label != "N/A") {
+      let resManager = await getManager(clientStatus.value);
+      let resTechLead = await getTechLead(clientStatus.value);
+
+      setManagerList(
+        resManager?.data?.map((item) => ({
+          label: item.clientManagerName + ' '+item.clientManagerLastName,
+          value: item._id,
+        }))
+      ); 
+      setTeachLeadsList(
+        resTechLead?.data?.map((item) => ({
+          label: item.projectTechLeadName + ' '+item.projectTechLeadLastName,
+          value: item._id,
+        }))
+      )
+    }
+  };
+
+  useEffect(() => {
+    handleList();
+    if (enableManagerTechLeadHTML) {
+      handleManagerAndTechLead();
+    }
+  }, [enableManagerTechLeadHTML,clientStatus]);
+
   return (
     <>
-      <svg
-        onClick={() => setUpdateCollaboratorModal(true)}
-        xmlns="http://www.w3.org/2000/svg"
-        width="18"
-        height="18"
-        fill="currentColor"
-        className="bi bi-pencil-square"
-        viewBox="0 0 16 16"
-        type="submit"
+      <OverlayTrigger
+        overlay={
+          <Tooltip id={`tooltip-bottom`}>
+            <strong>Update {item.name}</strong>.
+          </Tooltip>
+        }
       >
-        <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
-        <path
-          fillRule="evenodd"
-          d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"
-        />
-      </svg>
-
+        <svg
+          onClick={() => setUpdateCollaboratorModal(true)}
+          xmlns="http://www.w3.org/2000/svg"
+          width="18"
+          height="18"
+          fill="currentColor"
+          className="bi bi-pencil-square"
+          viewBox="0 0 16 16"
+          type="submit"
+        >
+          <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
+          <path
+            fillRule="evenodd"
+            d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"
+          />
+        </svg>
+      </OverlayTrigger>
       <Modal show={updateCollaboratorModal} onHide={handleClose}>
         <div ref={updateTemplate}>
           <Formik
@@ -165,7 +242,7 @@ function UpdateUser({ item }) {
             }}
           >
             {(props) => (
-              <Form onSubmit={props.handleSubmit} id="formTemplate">
+              <Form onSubmit={props.handleSubmit} id="formTemplateUpdateUser">
                 <Modal.Header closeButton>
                   <Modal.Title>
                     Update info of {item.name} {item.lastName}
@@ -175,7 +252,7 @@ function UpdateUser({ item }) {
                   <div className="imageTitle">Select a image: </div>
                   <div className="upload">
                     <input
-                      required
+                      
                       type="file"
                       name="file"
                       id="file_up"
@@ -294,6 +371,77 @@ function UpdateUser({ item }) {
                         required
                       />
                     </Col>
+
+                    <Col xs={12} md={12} aria-label="birthDay" className="mb-4">
+                      <span>Birth Day</span>
+                      <ReactDatePicker
+                        selected={birthDay}
+                        onChange={(date) => setBirthDay(date)}
+                      />
+                    </Col>
+
+                    <Col xs={12} md={12} aria-label="hired" className="mb-4">
+                      <span>Hired</span>
+                      <ReactDatePicker
+                        selected={hired}
+                        onChange={(date) => setHired(date)}
+                      />
+                    </Col>
+
+                    <Col xs={12} lg={12} className="mb-4">
+                      <label htmlFor="client" className="form-label">
+                        Current Project
+                      </label>
+                      <Select
+                        id="client"
+                        name="client"
+                        options={clientList}
+                        isSearchable={true}
+                        getOptionLabel={(option) => option.label || ""}
+                        getOptionValue={(option) => option.value || ""}
+                        value={clientStatus}
+                        onChange={(selected) => setClientStatus(selected)}
+                      />
+                    </Col>
+
+
+
+                    {clientStatus.label != "N/A" ? (
+                      <>
+                        <Col xs={12} lg={12} className="mb-4">
+                          <label htmlFor="manager" className="form-label">
+                            Current Manager
+                          </label>
+                          <Select
+                            id="manager"
+                            name="manager"
+                            options={managerList}
+                            isSearchable={true}
+                            getOptionLabel={(option) => option.label || ""}
+                            getOptionValue={(option) => option.value || ""}
+                            value={managerStatus}
+                            onChange={(selected) =>  setManagerStatus(selected)}
+                          />
+                        </Col>
+
+                        <Col xs={12} lg={12} className="mb-4">
+                          <label htmlFor="techLead" className="form-label">
+                            Current Tech Lead
+                          </label>
+                          <Select
+                            id="techLead"
+                            name="techLead"
+                            options={techLeadList}
+                            isSearchable={true}
+                            getOptionLabel={(option) => option.label || ""}
+                            getOptionValue={(option) => option.value || ""}
+                            value={techLeadStatus}
+                            onChange={(selected) =>  setTechLeadStatus(selected)}
+                          />
+                        </Col>
+
+                      </>
+                    ) : null}
                   </Row>
                 </Modal.Body>
               </Form>
@@ -304,7 +452,7 @@ function UpdateUser({ item }) {
           <Button variant="secondary" onClick={handleClose}>
             Close
           </Button>
-          <Button type="submit" variant="primary" form="formTemplate">
+          <Button type="submit" variant="primary" form="formTemplateUpdateUser">
             Update user
           </Button>
         </Modal.Footer>

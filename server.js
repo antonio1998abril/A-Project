@@ -2,7 +2,6 @@ const express = require("express");
 require("dotenv").config();
 const cookieParser = require("cookie-parser");
 const fileUpload = require("express-fileupload");
-
 const app = express();
 // Call all Routes
 const routes = require("./Routes/routes");

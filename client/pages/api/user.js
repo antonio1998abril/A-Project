@@ -24,6 +24,7 @@ function User(token) {
   const [itemsDashBoard, setItemsDashBoard] = useState([]);
 
   const [userId, setUserId] = useState("");
+  const [result, setResult] = useState(0)
   /* Serch functionality */
 
   useEffect(() => {
@@ -50,13 +51,14 @@ function User(token) {
         try {
           const res = await axios.get(
             `/api/getAllUser?limit=${
-              page * 10
+              page * 6
             }&${role}&${sort}&email=${search}`,
             {
               headers: { Authorization: token },
             }
           );
           setItemsDashBoard(res.data.users);
+          setResult(res.data.result)
         } catch (err) {
           localStorage.removeItem("firstLogin");
         }
@@ -66,7 +68,7 @@ function User(token) {
       getUser();
     }
   }, [token, role, sort, search, page, callback]);
-  console.log(role) 
+
   return {
     alert: [alert, setAlert],
     infoUser: [infoUser, setInfoUser],
@@ -80,6 +82,7 @@ function User(token) {
     page: [page, setPage],
     itemsDashBoard: [itemsDashBoard, setItemsDashBoard],
     userId: [userId],
+    result: [result]
   };
 }
 export default User;
