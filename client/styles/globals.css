@@ -165,7 +165,7 @@ a {
 @import url("Login/login.css");
 @import url("Home/home.css");
 @import url("Client/client.css");
-
+@import url("SideBar/sideBar.css");
 .task-container {
   /* border: 1px dotted pink; */
   margin: 0;

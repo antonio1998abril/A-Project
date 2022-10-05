@@ -7,6 +7,7 @@ import { DataProvider } from "../context/index";
 import Header from "../components/Header";
 import { SSRProvider } from "react-bootstrap";
 import Alert from "../components/Alert/Alert";
+import Sidebar from "../components/NotifcationBar/Sidebar";
 
 function MyApp({ Component, pageProps }) {
   const router = useRouter();
@@ -21,9 +22,10 @@ function MyApp({ Component, pageProps }) {
             {!showBarLogin && !showBarRegister && (
               <>
                 <Header />
+                <Sidebar/>
               </>
             )}
-             <Alert />
+            <Alert />
             <Component {...pageProps} />
           </div>
         </DataProvider>

@@ -18,7 +18,7 @@ function Index() {
   const { getLogOut } = loginService();
   const state = useContext(AuthContext);
   const [isManager] = state.User.isManager;
-
+  const [enableSideBar,setEnableSideBar] = state.User.enableSideBar;
   const [userId] = state.User.userId;
 
   const logoutUser = async () => {
@@ -31,6 +31,10 @@ function Index() {
       });
   };
 
+  const showNotifications = ()=> {
+    if(enableSideBar) setEnableSideBar(false)
+    if(!enableSideBar) setEnableSideBar(true)
+  }
   return (
     <>
       <Navbar className="borderHeader" expand="lg" variant="light" sticky="top">
@@ -73,8 +77,8 @@ function Index() {
                 </NavDropdown.Item>
               </NavDropdown>
 
-              <div className="chat-icon">
-                <span>{sizeBel}</span>
+              <div className="chat-icon "  onClick={showNotifications}>
+                <span type="submit">{sizeBel}</span>
                 <Nav.Link>
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -83,6 +87,7 @@ function Index() {
                     fill="currentColor"
                     className="bi bi-bell-fill"
                     viewBox="0 0 16 16"
+                    onClick={showNotifications}
                   >
                     <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2zm.995-14.901a1 1 0 1 0-1.99 0A5.002 5.002 0 0 0 3 6c0 1.098-.5 6-2 7h14c-1.5-1-2-5.902-2-7 0-2.42-1.72-4.44-4.005-4.901z" />
                   </svg>

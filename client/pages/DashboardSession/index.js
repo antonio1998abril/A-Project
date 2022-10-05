@@ -8,6 +8,8 @@ import Collaborator from "../../components/Role/Collaborator/index";
 import LoadMore from "../../components/LoadMore";
 import io from 'Socket.IO-client'
 import Loading from "../../components/Loading";
+import Sidebar from "../../components/NotifcationBar/Sidebar";
+import axios from "axios";
 
 function Index() {
   const state = useContext(AuthContext);
@@ -28,7 +30,7 @@ function Index() {
 
   const socketInitializer = async () => {
     let socket
-    await fetch('/api/socket')
+    await axios('/api/socket')
     socket = io()
 
     socket.on('connect', () => {
@@ -76,7 +78,6 @@ function Index() {
         <LoadMore/>
         {itemsDashBoard.length === 0 && <Loading/>}
       </div>
-      
     </>
   );
 }

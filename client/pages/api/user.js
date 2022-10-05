@@ -24,7 +24,9 @@ function User(token) {
   const [itemsDashBoard, setItemsDashBoard] = useState([]);
 
   const [userId, setUserId] = useState("");
-  const [result, setResult] = useState(0)
+  const [result, setResult] = useState(0);
+
+  const [enableSideBar,setEnableSideBar] = useState(false);
   /* Serch functionality */
 
   useEffect(() => {
@@ -82,7 +84,8 @@ function User(token) {
     page: [page, setPage],
     itemsDashBoard: [itemsDashBoard, setItemsDashBoard],
     userId: [userId],
-    result: [result]
+    result: [result],
+    enableSideBar:[enableSideBar,setEnableSideBar]
   };
 }
 export default User;
