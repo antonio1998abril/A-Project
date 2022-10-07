@@ -5,6 +5,7 @@ const adminController = require('../Controller/admin');
 const collaboratorController = require('../Controller/collaborator');
 const taskController = require('../Controller/activities');
 const projectController = require('../Controller/clients');
+const chat = require('../Controller/chatRoom');
 
 
 const routes = {
@@ -47,7 +48,11 @@ const routes = {
     .post('/newClient',auth,projectController.createClient)
     .get('/getClient',auth,projectController.getClient)
     .put('/updateClient/:id',auth,projectController.updateClient)
-    .delete('/deleteClient/:id',auth,projectController.deleteClient)
+    .delete('/deleteClient/:id',auth,projectController.deleteClient),
+
+    chat:express.Router()
+    .get('/getDailyComment/:id',auth,chat.getDailyComment)
+    .post('/postDailyComment/:id',auth,chat.postDailyComment)
 }
 
 module.exports = routes

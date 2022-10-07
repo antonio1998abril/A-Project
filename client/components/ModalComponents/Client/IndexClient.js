@@ -65,7 +65,6 @@ function Index() {
                         &nbsp;
                         <button
                           type="button"
-                          /*  onClick={() => setInfoModal(true)} */
                           className="btn btn-warning btn-small"
                         >
                           Update information

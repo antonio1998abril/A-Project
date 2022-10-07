@@ -64,20 +64,20 @@ function NewCollaboratorButton() {
 
   const [clientStatus, setClientStatus] = useState({
     label: "N/A",
-    value: "N/A",
+    value: "",
   });
   const [managerStatus, setManagerStatus] = useState({
     label: "N/A",
-    value: "N/A",
+    value: "",
   });
   const [techLeadStatus, setTechLeadStatus] = useState({
     label: "N/A",
-    value: "N/A",
+    value: "",
   });
 
   const handleClose = () => {
     setNewCollaboratorModal(false);
-    setClientStatus({ label: "N/A", value: "N/A" });
+    setClientStatus({ label: "N/A", value: "" });
   };
   const onSubmit = async (values) => {
     const { email, lastName, name, occupation } = values;
@@ -221,7 +221,6 @@ function NewCollaboratorButton() {
 
                   <div className="upload">
                     <input
-                      required
                       type="file"
                       name="file"
                       id="file_up"

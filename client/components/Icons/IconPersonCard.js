@@ -27,7 +27,7 @@ function IconPersonCard({ item }) {
          <DailyInfo item={item}/>
           &nbsp;&nbsp;
           {/* MESSAGE */}
-          <Link href="/test">
+          <Link href="/messenger">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="18"

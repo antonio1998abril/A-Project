@@ -35,6 +35,10 @@ function Index() {
     if(enableSideBar) setEnableSideBar(false)
     if(!enableSideBar) setEnableSideBar(true)
   }
+
+  const sentToMessenger =() => {
+    Router.push("/messenger");
+  }
   return (
     <>
       <Navbar className="borderHeader" expand="lg" variant="light" sticky="top">
@@ -77,7 +81,7 @@ function Index() {
                 </NavDropdown.Item>
               </NavDropdown>
 
-              <div className="chat-icon "  onClick={showNotifications}>
+              <div className=" bell-icon"  onClick={showNotifications}>
                 <span type="submit">{sizeBel}</span>
                 <Nav.Link>
                   <svg
@@ -94,10 +98,10 @@ function Index() {
                 </Nav.Link>
               </div>
 
-              <div className="bell-icon">
-                <span>{sizeBel}</span>
+              <div className=" chat-icon" onClick={sentToMessenger}  >
+                <span type="submit" >{sizeBel}</span>
 
-                <Nav.Link>
+                <Nav.Link >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="20"
@@ -105,6 +109,8 @@ function Index() {
                     fill="currentColor"
                     className="bi bi-chat-dots-fill bellStyle"
                     viewBox="0 0 16 16"
+                    type="submit"
+                    onClick={sentToMessenger}
                   >
                     <path d="M16 8c0 3.866-3.582 7-8 7a9.06 9.06 0 0 1-2.347-.306c-.584.296-1.925.864-4.181 1.234-.2.032-.352-.176-.273-.362.354-.836.674-1.95.77-2.966C.744 11.37 0 9.76 0 8c0-3.866 3.582-7 8-7s8 3.134 8 7zM5 8a1 1 0 1 0-2 0 1 1 0 0 0 2 0zm4 0a1 1 0 1 0-2 0 1 1 0 0 0 2 0zm3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2z" />
                   </svg>

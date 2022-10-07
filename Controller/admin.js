@@ -3,6 +3,8 @@ const Activities = require("../Models/activities");
 const bCrypt = require("bcrypt");
 const nodemailer = require("nodemailer");
 const { generatePassword } = require("../utils/apiUtils");
+const ChatRoom = require("../Models/chatRoom");
+let mongoose = require("mongoose");
 
 /* Search Method */
 class APIfeature {
@@ -92,7 +94,7 @@ const notifyPassword = async ({ email, newPassword, res }) => {
     }
   });
 };
-
+/* Register */
 const createUserAndNotifyAccount = async ({ newUser, res, newPassword }) => {
   const email = newUser.email;
   await newUser.save().then(() => {
@@ -106,6 +108,18 @@ const createUserAndBlockAccount = async ({ newUser, res }) => {
   });
 };
 
+const updateCurrentUserLogged = async ({ newChatRoom, res, req }) => {
+  const logged = req.user.id;
+  await User.findById(logged).then((saveChat) => {
+    saveChat.chatRoom.push(newChatRoom);
+    saveChat.save();
+  });
+
+  newChatRoom.save();
+
+  /*  await User.findByIdAndUpdate({ _id:logged }, {chatRoom:newChatRoom})  */
+};
+
 const updateUserAndNotifyAccount = async ({ email, newPassword, res }) => {
   notifyPassword({ email, res, newPassword });
 };
@@ -116,18 +130,27 @@ const controller = {
   getAllUser: async (req, res, next) => {
     let features =
       (req.user.role === "Admin" &&
-        new APIfeature(User.find().select({'password':0}).lean(), req.query)
+        new APIfeature(User.find().select({ password: 0 }).lean(), req.query)
           .filtering()
           .sorting()
           .paginating()) ||
       (req.user.role === "Manager" &&
-        new APIfeature(User.find({ role: "Collaborator" }).select("-password").lean(), req.query)
+        new APIfeature(
+          User.find({ role: "Collaborator", owner: req.user.id })
+            .select("-password")
+            .lean(),
+          req.query
+        )
           .filtering()
           .sorting()
-          .paginating())
-          ||
+          .paginating()) ||
       (req.user.role === "Collaborator" &&
-        new APIfeature(Activities.find({ collaborator_id: req.user.id }).select({'password':0}).lean(), req.query)
+        new APIfeature(
+          Activities.find({ collaborator_id: req.user.id })
+            .select({ password: 0 })
+            .lean(),
+          req.query
+        )
           .filtering()
           .sorting()
           .paginating());
@@ -140,7 +163,7 @@ const controller = {
       users: user,
     });
   },
-  
+
   getAllManager: async (req, res, next) => {
     const getAllManagers = await User.find({ role: "Manager" });
     return res.status(200).json({ getAllManagers });
@@ -155,10 +178,9 @@ const controller = {
       userImage,
       status,
       manager,
-      currentClient,
-      currentTechLead,
-      currentManager
     } = req.body;
+
+    let { currentClient, currentTechLead, currentManager } = req.body;
 
     if ((!name, !email, !lastName, !occupation))
       return res.status(401).json({ msg: "Complete all fields" });
@@ -167,6 +189,11 @@ const controller = {
 
     const newPassword = generatePassword();
     const passwordHash = await bCrypt.hash(newPassword, 10);
+
+    if ((currentClient === "", currentTechLead === "", currentManager == ""))
+      (currentClient = null), (currentTechLead = null), (currentManager = null);
+    const passwordChatRoom = mongoose.Types.ObjectId();
+
     const newUser = new User({
       name,
       email,
@@ -179,8 +206,19 @@ const controller = {
       userImage,
       currentManager,
       currentTechLead,
-      currentClient
+      currentClient,
+      owner: req.user.id,
+      chatRoom: [],
     });
+
+    /*Create ChatRoom */
+    const newChatRoom = new ChatRoom({
+      chatRoomSharedId: passwordChatRoom,
+      guestUserA: req.user.id,
+      guestUserB: newUser._id,
+    });
+
+    newUser.chatRoom.push(newChatRoom);
 
     if (status === "public") {
       createUserAndNotifyAccount({ newUser, res, newPassword });
@@ -188,6 +226,19 @@ const controller = {
     if (status === "private") {
       createUserAndBlockAccount({ newUser, res });
     }
+
+    updateCurrentUserLogged({ newChatRoom, res, req });
+  },
+
+  addToManagerUserAccountAlreadyDone: async (req, res, next) => {
+    await User.findById({ _id: req.params.id })
+      .then((upToDate) => {
+        upToDate.owner = req.user.id;
+        upToDate.save();
+      })
+      .catch((err) => {
+        return next(err);
+      });
   },
 
   updateUserAccount: async (req, res, next) => {
@@ -200,12 +251,14 @@ const controller = {
       userImage,
       status,
       manager,
-      currentManager,
-      currentTechLead,
-      currentClient
     } = req.body;
 
-    const user = await User.findOne({email});
+    let { currentClient, currentTechLead, currentManager } = req.body;
+
+    if ((currentClient === "", currentTechLead === "", currentManager == ""))
+    (currentClient = null), (currentTechLead = null), (currentManager = null);
+
+    const user = await User.findOne({_id:req.params.id});
 
     const newPassword = generatePassword();
     const passwordHash = await bCrypt.hash(newPassword, 10);
@@ -222,22 +275,44 @@ const controller = {
       manager,
       currentManager,
       currentTechLead,
-      currentClient
+      currentClient,
     };
+console.log(user)
     if (status === "private") saveUser["password"] = passwordHash;
     if (user.status !== status && status === "private")
       notifyPassword({ email, res });
     if (user.status !== status && status === "public")
       updateUserAndNotifyAccount({ email, newPassword, res });
 
-    await User.findByIdAndUpdate({ _id: req.params.id }, saveUser).catch(
+    await User.findByIdAndUpdate({ _id: req.params.id }, saveUser).then(()=> {
+      res.json({ msg: "User Updated" });
+    }).catch(
       (err) => {
         return next(err);
       }
     );
   },
+
   deleteUserAccount: async (req, res, next) => {
     await User.findByIdAndDelete(req.params.id)
+      .then(() => {
+        res.json({ msg: "User account deleted" });
+      })
+      .catch((err) => {
+        return next({ msg: "not found" });
+      });
+  },
+
+  deleteUserAccountManager: async (req, res, next) => {
+    // Retrieve document
+    const user = await User.findOne(req.params.id);
+
+    // Delete role field
+    user.owner = undefined;
+
+    // Save changes
+    await user
+      .save()
       .then(() => {
         res.json({ msg: "User account deleted" });
       })

@@ -1,4 +1,4 @@
-const onLine =   'https://a-project-production.up.railway.app/api' 
+const onLine =   'http://localhost:5000/api'; /* 'https://a-project-production.up.railway.app/api' */ 
 
 module.exports = {
   reactStrictMode: false,
@@ -131,6 +131,18 @@ module.exports = {
         source: "/api/deleteClient/:id",
         destination: `${onLine}/deleteClient/:id`,
       },
+      {
+        source: "/api/deleteClient/:id",
+        destination: `${onLine}/deleteClient/:id`,
+      },
+      /* CHATS */
+      {
+        source: "/api/getDailyComment/:id",
+        destination: `${onLine}/getDailyComment/:id`,
+      },{
+        source: "/api/postDailyComment/:id",
+        destination: `${onLine}/postDailyComment/:id`,
+      }
     ];
   },
 };

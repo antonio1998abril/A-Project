@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import {
   Modal,
   OverlayTrigger,
@@ -12,22 +12,51 @@ import {
 import { Formik } from "formik";
 import TextAreaInput from "../TextAreaInput/TextAreaInput";
 
+import { chatService } from "../../service/chatServices";
+import { AuthContext } from "../../context";
+import moment from "moment";
+import { CSVLink, CSVDownload } from "react-csv";
+
 function DailyInfo({ item }) {
   const commentTemplate = useRef(null);
+  const state = useContext(AuthContext);
+  const [callback, setCallback] = state.User.callback;
   const [commentModal, setCommentModal] = useState(false);
+  const [commentList, setCommentList] = useState([]);
+  const { getDailyComment, postDailyComment } = chatService();
+  const [CSVlist, setCSVlist] = useState([]);
 
   const handleClose = () => {
     setCommentModal(false);
   };
 
   const onSubmit = async (values) => {
-    const { email, lastName, name, occupation } = values;
+    const { comment } = values;
 
-    const body = {};
-    /*         const res = await registerNewUser(body);
-        setNewCollaboratorModal(false);
-        setCallback(!callback); */
+    const body = { content: comment };
+    const idUser = item._id;
+    const res = await postDailyComment(idUser, body);
+    /*      setCommentModal(false); */
+    setCallback(!callback);
   };
+
+  const getDaily = async () => {
+    await getDailyComment(item._id).then((res) => {
+      setCommentList(res.data);
+      const newCSV = res.data.map((item) => {
+        return {
+          comment: item.content,
+          date: moment(item.createdAt).format("MMMM Do YYYY, h:mm:ss a"),
+        };
+      });
+      setCSVlist(newCSV);
+    });
+  };
+
+  useEffect(() => {
+    getDaily();
+  }, [callback]);
+
   return (
     <>
       <OverlayTrigger
@@ -51,19 +80,16 @@ function DailyInfo({ item }) {
           <path d="M9.293 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.707A1 1 0 0 0 13.707 4L10 .293A1 1 0 0 0 9.293 0zM9.5 3.5v-2l3 3h-2a1 1 0 0 1-1-1zM3 9h10v1h-3v2h3v1h-3v2H9v-2H6v2H5v-2H3v-1h2v-2H3V9z" />
         </svg>
       </OverlayTrigger>
-
       <Modal show={commentModal} onHide={handleClose}>
         <div ref={commentTemplate}>
           <Formik
             initialValues={{
-              name: item.name,
-              lastName: item.lastName,
-              email: item.email,
-              occupation: item.occupation,
+              comment: "",
             }}
             /*  validationSchema={newCollaboratorSchema} */
-            onSubmit={(values) => {
+            onSubmit={(values,actions) => {
               onSubmit(values);
+              actions.resetForm()
             }}
           >
             {(props) => (
@@ -77,34 +103,37 @@ function DailyInfo({ item }) {
                   <Table striped bordered hover>
                     <thead>
                       <tr>
-                        <th>First Name</th>
-                        <th>Last Name</th>
-                        <th>Username</th>
+                        <th>Date</th>
+                        <th>At</th>
+                        <th>Comment</th>
                       </tr>
                     </thead>
                     <tbody>
-                      <tr>
-                        <td>Mark</td>
-                        <td>Otto</td>
-                        <td>@mdo</td>
-                      </tr>
-                      <tr>
-                        <td>Jacob</td>
-                        <td>Thornton</td>
-                        <td>@fat</td>
-                      </tr>
+                      {commentList?.map((item) => {
+                        return (
+                          <tr key={item._id}>
+                            <td>
+                              {moment(item.createdAt).format("MMMM Do YYYY")}
+                            </td>
+                            <td>
+                              {moment(item.createdAt).format("h:mm:ss a")}
+                            </td>
+                            <td>{item.content}</td>
+                          </tr>
+                        );
+                      })}
                     </tbody>
                   </Table>
 
                   <Row className="mb-6">
-                    <Col xs={12} md={12} aria-label="lastName" className="mb-4">
+                    <Col xs={12} md={12} aria-label="Comment" className="mb-4">
                       <TextAreaInput
-                        label="Last Name"
-                        name="lastName"
-                        id="lastName"
+                        label="Comment"
+                        name="comment"
+                        id="comment"
                         type="text"
-                        placeholder="Last Name"
-                        value={props.values.lastName}
+                        placeholder="Write a new Comment"
+                        value={props.values.comment}
                         required
                       />
                     </Col>
@@ -121,9 +150,16 @@ function DailyInfo({ item }) {
           <Button type="submit" variant="primary" form="formTemplateComment">
             Create Comment
           </Button>
-          <Button type="submit" variant="danger" form="formTemplateComment">
+          <CSVLink
+            data={CSVlist}
+            className="btn btn-primary"
+            filename={`${item.name}_${item.lastName}_${moment().format(
+              "MMM Do YY"
+            )}.csv`}
+          >
             Export to CSV
-          </Button>
+          </CSVLink>
+          ;
         </Modal.Footer>
       </Modal>
     </>

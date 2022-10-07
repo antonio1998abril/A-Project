@@ -67,21 +67,21 @@ const [techLeadList, setTeachLeadsList] = useState([]);
 
   const [clientStatus, setClientStatus] = useState({
     label: "N/A",
-    value: "N/A",
+    value: "",
   });
   const [managerStatus, setManagerStatus] = useState({
     label: "N/A",
-    value: "N/A",
+    value: "",
   });
   const [techLeadStatus, setTechLeadStatus] = useState({
     label: "N/A",
-    value: "N/A",
+    value: "",
   });
 
 
   const handleClose = () => {
     setUpdateCollaboratorModal(false);
-    setClientStatus({ label: "N/A", value: "N/A" });
+    setClientStatus({ label: "N/A", value: "" });
   };
 
   const onSubmit = async (values) => {
@@ -236,7 +236,7 @@ const [techLeadList, setTeachLeadsList] = useState([]);
               email: item.email,
               occupation: item.occupation,
             }}
-            validationSchema={newCollaboratorSchema}
+            /* validationSchema={newCollaboratorSchema} */
             onSubmit={(values) => {
               onSubmit(values);
             }}

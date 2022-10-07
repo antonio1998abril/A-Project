@@ -1,4 +1,4 @@
-import React, { useContext,useEffect } from "react";
+import React, { useContext, useEffect } from "react";
 import { AuthContext } from "../../context";
 import withAuth from "../HOC/withAuth.jsx";
 
@@ -6,10 +6,9 @@ import Admin from "../../components/Role/Admin/index";
 import Manager from "../../components/Role/Manager/index";
 import Collaborator from "../../components/Role/Collaborator/index";
 import LoadMore from "../../components/LoadMore";
-import io from 'Socket.IO-client'
+
 import Loading from "../../components/Loading";
 import Sidebar from "../../components/NotifcationBar/Sidebar";
-import axios from "axios";
 
 function Index() {
   const state = useContext(AuthContext);
@@ -21,26 +20,12 @@ function Index() {
   const [role, setRole] = state.User.role;
   const [sort, setSort] = state.User.sort;
   const [search, setSearch] = state.User.search;
-  const [itemsDashBoard,setItemsDashBoard] = state.User.itemsDashBoard
+  const [itemsDashBoard, setItemsDashBoard] = state.User.itemsDashBoard;
 
   const handleRole = (e) => {
-  /*   setRole(e.target.value); */
+    /*   setRole(e.target.value); */
     setSearch("");
   };
-
-  const socketInitializer = async () => {
-    let socket
-    await axios('/api/socket')
-    socket = io()
-
-    socket.on('connect', () => {
-      console.log('connected')
-    })
-  }
-
-  useEffect(() => {socketInitializer()}, [])
-
-
 
   return (
     <>
@@ -75,8 +60,19 @@ function Index() {
         <Admin />
         <Manager />
         <Collaborator />
-        <LoadMore/>
-        {itemsDashBoard.length === 0 && <Loading/>}
+        <LoadMore />
+        {isManager ? 
+        <>
+         {itemsDashBoard.length === 0 && (
+          <>
+            <br />
+            <h1 className="text-center">Ups!... Create a new Collaborator</h1>
+          </>
+        )}
+        </>
+        : 
+        <>{itemsDashBoard.length === 0 && <Loading />}</>}
+       
       </div>
     </>
   );
