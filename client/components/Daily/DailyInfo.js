@@ -15,7 +15,7 @@ import TextAreaInput from "../TextAreaInput/TextAreaInput";
 import { chatService } from "../../service/chatServices";
 import { AuthContext } from "../../context";
 import moment from "moment";
-import { CSVLink, CSVDownload } from "react-csv";
+import { CSVLink } from "react-csv";
 
 function DailyInfo({ item }) {
   const commentTemplate = useRef(null);

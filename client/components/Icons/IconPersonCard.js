@@ -5,7 +5,8 @@ import UpdateUser from "../ModalComponents/UpdateCollaborator";
 import DeleteUserAdmin from "../ModalComponents/DeleteUserAdmin";
 import Router from "next/router";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
-import DailyInfo from "../Socket/DailyInfo";
+import DailyInfo from "../Daily/DailyInfo";
+
 function IconPersonCard({ item }) {
   const state = useContext(AuthContext);
   const [isManager] = state.User.isManager;

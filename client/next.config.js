@@ -1,4 +1,5 @@
-const onLine =   'http://localhost:5000/api'; /* 'https://a-project-production.up.railway.app/api' */ 
+const onLine =
+  "http://localhost:5000/api"; /* 'https://a-project-production.up.railway.app/api' */
 
 module.exports = {
   reactStrictMode: false,
@@ -61,7 +62,7 @@ module.exports = {
         source: "/api/updateAccount/:id",
         destination: `${onLine}/updateAccount/:id`,
       },
-        /* Collaborator */
+      /* Collaborator */
       {
         source: "/api/getCollaboratorInfo/:id",
         destination: `${onLine}/getCollaboratorInfo/:id`,
@@ -70,7 +71,8 @@ module.exports = {
       {
         source: "/api/newTask",
         destination: `${onLine}/newTask`,
-      }, {
+      },
+      {
         source: "/api/getTask/:id",
         destination: `${onLine}/getTask/:id`,
       },
@@ -135,14 +137,24 @@ module.exports = {
         source: "/api/deleteClient/:id",
         destination: `${onLine}/deleteClient/:id`,
       },
-      /* CHATS */
+      /* Daily */
       {
         source: "/api/getDailyComment/:id",
         destination: `${onLine}/getDailyComment/:id`,
-      },{
+      },
+      {
         source: "/api/postDailyComment/:id",
         destination: `${onLine}/postDailyComment/:id`,
-      }
+      },
+      /* CHATS */
+      {
+        source: "/api/getChatRooms/:id",
+        destination: `${onLine}/getChatRooms/:id`,
+      },
+      {
+        source: "/api/postComment/:id",
+        destination: `${onLine}/postComment/:id`,
+      },
     ];
   },
 };

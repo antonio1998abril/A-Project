@@ -166,6 +166,8 @@ a {
 @import url("Home/home.css");
 @import url("Client/client.css");
 @import url("SideBar/sideBar.css");
+@import url("Chats/Chats.css");
+
 .task-container {
   /* border: 1px dotted pink; */
   margin: 0;

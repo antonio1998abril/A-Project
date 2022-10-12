@@ -6,6 +6,7 @@ const collaboratorController = require('../Controller/collaborator');
 const taskController = require('../Controller/activities');
 const projectController = require('../Controller/clients');
 const chat = require('../Controller/chatRoom');
+const { get } = require('lodash');
 
 
 const routes = {
@@ -53,6 +54,8 @@ const routes = {
     chat:express.Router()
     .get('/getDailyComment/:id',auth,chat.getDailyComment)
     .post('/postDailyComment/:id',auth,chat.postDailyComment)
+    .get('/getChatRooms/:id',auth,chat.getChatRooms)
+    .post('/postComment/:id',auth,chat.postComment)
 }
 
 module.exports = routes

@@ -4,11 +4,13 @@ const Comment = require("../Models/dailyComment");
 
 const controller = {
   getChatRooms: async (req, res, next) => {
-    const getAllChats = await User.find({ _id: req.user.id })
-      .populate()
-      .select("chatRoom -password")
+  const result = await User.findById({ _id: req.params.id })/* .populate([{path:"chatRoom",model:"chats"},{path:"guestUserB",model:"user"}]) */
+  .populate([{path:'chatRoom',model:"chats",populate:{path:'guestUserB',model:'user',select:("-password")}  }])
+      .select("-password")
       .catch(next);
-    res.json(getAllChats);
+
+      return res.json(result)
+   
   },
   postComment: async (req, res, next) => {
     const { content } = req.body;
