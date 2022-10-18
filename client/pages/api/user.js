@@ -30,6 +30,11 @@ function User(token) {
 
   /* Serch functionality */
 
+  /* Notifications */
+
+
+  
+
   useEffect(() => {
     if (token) {
       const getRole = async () => {
@@ -83,7 +88,9 @@ function User(token) {
     itemsDashBoard: [itemsDashBoard, setItemsDashBoard],
     userId: [userId],
     result: [result],
-    enableSideBar:[enableSideBar,setEnableSideBar]
+    enableSideBar:[enableSideBar,setEnableSideBar],
+
+
   };
 }
 export default User;

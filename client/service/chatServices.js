@@ -13,14 +13,14 @@ export const chatService = () => {
     return post(url, body, "postDailyComment", {});
   };
 
-  const getChats = (id) => {
-    const url = `/api/getChatRooms/${id}`;
+  const getChats = () => {
+    const url = `/api/getChatRooms`;
     return get(url, "getChatRooms", {});
   };
 
 
-  const postComments = (id,body) => {
-    const url = `/api/postComment/${id}`;
+  const postComments = (body) => {
+    const url = `/api/postComment`;
     return post(url, body,"postComment", {});
   };
   return {

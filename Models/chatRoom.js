@@ -8,7 +8,7 @@ const chatRoomSchema = new Schema(
     },
     comments: {
       type: Array,
-      default: [{}],
+      default: [],
     },
     guestUserA: {
       type: Schema.Types.ObjectId,

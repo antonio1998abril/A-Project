@@ -18,21 +18,17 @@ function Messenger() {
   const { getChats, postComments } = chatService();
   const [chatListUser, setChatListUser] = useState([]);
   const [userInfoLogged, setUserInfoLogged] = useState({});
+  const [imageUserSelected, setImageUserSelected] = useState("");
 
   /* Selected ChatRoom */
-  const [currentSelectChat, setCurrentSelectChat] = useState({});
+  const [currentSelectChat, setCurrentSelectChat] = useState("");
+  const [name, setName] = useState("");
 
   const getAllChats = async () => {
-    const res = await getChats(userId);
-    setChatListUser(res.data?.chatRoom);
-    setUserInfoLogged(res.data);
-  };
-
-  const getChatRoom = ({ item }) => {
-    const FindIDRoom = chatListUser.find((obj) => {
-      return obj._id === item._id;
+    await getChats().then((res) => {
+      setChatListUser(res.data?.chatRoom);
+      setUserInfoLogged(res.data);
     });
-    setCurrentSelectChat(FindIDRoom._id);
   };
 
   const socketInitializer = async () => {
@@ -48,38 +44,56 @@ function Messenger() {
 
     socket.on("update-input", receiveMessage);
     divRef.current.scrollIntoView({ behavior: "smooth" });
+    getAllChats();
 
     return () => {
       socket.off("update-input", socketInitializer);
     };
   };
 
-  const handleSubmit = (e) => {
+  const getChatRoom = ({ item }) => {
+    chatListUser.find((obj) => {
+      if (obj._id === item._id) {
+        setMessages(item.comments.reverse());
+        setName(item.guestUserB.name + item.guestUserB.lastName);
+      }
+      return obj._id === item._id;
+    });
+
+    /*  setCurrentSelectChat(FindIDRoom._id); */
+  };
+
+  const handleSubmit = async (e) => {
+    console.log("chat selected", currentSelectChat);
+
     e.preventDefault();
     const newMessage = {
-      body: message,
-      from: "Me",
-      chatRoom: currentSelectChat
+      message: message,
+      sendBy: userId,
+      chatRoom: currentSelectChat,
     };
     setMessages([newMessage, ...messages]);
+    socket.emit(
+      "update-input",
+      newMessage.message,
+      currentSelectChat,
+      newMessage.sendBy
+    );
+    const result = await postComments(newMessage);
+
+    divRef.current.scrollIntoView({ behavior: "smooth" });
     setMessage("");
-    socket.emit("update-input", newMessage.body,newMessage.chatRoom);
+
+
+    
   };
 
   useEffect(() => {
     socketInitializer();
-
     return () => {
       socket.off("update-input", socketInitializer);
     };
-  }, [messages]);
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      getAllChats();
-    }, 2500);
-    return () => clearTimeout(timer);
-  }, [userId]);
+  }, [messages, userId, currentSelectChat]);
 
   return (
     <>
@@ -98,44 +112,67 @@ function Messenger() {
               </div>
             </div>
 
-            {chatListUser.map((item) => {
+            {chatListUser?.map((item) => {
               return (
                 <div
-                  onClick={() => getChatRoom({ item })}
+                  onClick={() => {
+                    getAllChats(),
+                      getChatRoom({ item }),
+                      setCurrentSelectChat(item._id),
+                      socket.emit("joinRoom", item._id);
+                    userId === item?.guestUserA?._id
+                      ? setImageUserSelected(item?.guestUserB?.userImage?.url)
+                      : setImageUserSelected(item?.guestUserA?.userImage?.url);
+                  }}
                   type="submit"
                   className="p-2 border-bottom"
                   key={item._id}
                 >
-                  <a href="#!" className="d-flex justify-content-between">
+                  <div className="d-flex justify-content-between">
                     <div className="d-flex flex-row">
-                      {/* <img
-                        src="https://mdbcdn.b-cdn.net/img/Photos/Avatars/avatar-8.webp"
-                        alt="avatar"
-                        className="rounded-circle d-flex align-self-center me-3 shadow-1-strong"
-                        width="60"
-                      /> */}
-
-                      {item?.guestUserB?.userImage?.url ? (
-                        <img
-                          src={item?.guestUserB?.userImage?.url}
-                          className="rounded-circle d-flex align-self-center me-3 shadow-1-strong"
-                          alt="Sharon Lessman"
-                          width="60"
-                          height="50"
-                        />
+                      {item?.guestUserB?._id !== userId ? (
+                        <>
+                          <img
+                            src={
+                              item?.guestUserB?.userImage?.url
+                                ? item?.guestUserB?.userImage?.url
+                                : "https://res.cloudinary.com/antoapex19/image/upload/v1662361498/A-Project/avatar_gebnpv.webp"
+                            }
+                            className="rounded-circle d-flex align-self-center me-3 shadow-1-strong"
+                            alt="Sharon Lessman"
+                            width="60"
+                            height="50"
+                          />
+                        </>
                       ) : (
-                        <img
-                          src="https://www.iconpacks.net/icons/2/free-user-icon-3296-thumb.png"
-                          className="rounded-circle d-flex align-self-center me-3 shadow-1-strong"
-                          alt="Sharon Lessman"
-                          width="60"
-                          height="50"
-                        />
+                        <>
+                          <img
+                            src={
+                              item?.guestUserA?.userImage?.url
+                                ? item?.guestUserA?.userImage?.url
+                                : "https://res.cloudinary.com/antoapex19/image/upload/v1662361498/A-Project/avatar_gebnpv.webp"
+                            }
+                            className="rounded-circle d-flex align-self-center me-3 shadow-1-strong"
+                            alt="Sharon Lessman"
+                            width="60"
+                            height="50"
+                          />
+                        </>
                       )}
 
                       <div className="pt-1">
                         <p className="fw-bold mb-0">
-                          {item?.guestUserB?.name} {item?.guestUserB?.lastName}
+                          {item?.guestUserB?._id !== userId ? (
+                            <>
+                              {item?.guestUserB?.name}{" "}
+                              {item?.guestUserB?.lastName}
+                            </>
+                          ) : (
+                            <>
+                              {item?.guestUserA?.name}{" "}
+                              {item?.guestUserA?.lastName}
+                            </>
+                          )}
                         </p>
                         <p className="small text-muted">
                           {/*  Hello, Are you there? */}
@@ -146,7 +183,7 @@ function Messenger() {
                       <p className="small text-muted mb-1">Just now</p>
                       <span className="badge bg-danger float-end">1</span>
                     </div>
-                  </a>
+                  </div>
                 </div>
               );
             })}
@@ -157,23 +194,17 @@ function Messenger() {
             <div className="py-2 px-4 border-bottom d-none d-lg-block">
               <div className="d-flex align-items-center py-1">
                 <div className="position-relative">
-                  {userInfoLogged.userImage?.url ? (
-                    <img
-                      src={userInfoLogged.userImage?.url}
-                      className="rounded-circle mr-1"
-                      alt="Sharon Lessman"
-                      width="40"
-                      height="40"
-                    />
-                  ) : (
-                    <img
-                      src="https://cdn-icons-png.flaticon.com/512/1511/1511084.png"
-                      className="rounded-circle mr-1"
-                      alt="Sharon Lessman"
-                      width="40"
-                      height="40"
-                    />
-                  )}
+                  <img
+                    src={
+                      userInfoLogged.userImage?.url
+                        ? userInfoLogged.userImage?.url
+                        : "https://res.cloudinary.com/antoapex19/image/upload/v1662361498/A-Project/avatar_gebnpv.webp"
+                    }
+                    className="rounded-circle mr-1"
+                    alt="Sharon Lessman"
+                    width="40"
+                    height="40"
+                  />
                 </div>
                 <div className="flex-grow-1 pl-3">
                   <strong>
@@ -192,54 +223,70 @@ function Messenger() {
                   <div className="text-center">
                     <h1>!!! Select a user to start talking.</h1>
                   </div>
-                ) : null}
-                {messages
-                  .map((message, index) => (
-                    <li
-                      className="d-flex justify-content-between mb-4"
-                      key={index}
-                    >
-                      {message.from !== "Me" ? (
-                        <>
-                          {" "}
-                          <img
-                            src="https://mdbcdn.b-cdn.net/img/Photos/Avatars/avatar-6.webp"
-                            alt="avatar"
-                            className="rounded-circle d-flex align-self-start me-3 shadow-1-strong"
-                            width="60"
-                          />{" "}
-                        </>
-                      ) : null}
+                ) : (
+                  <>
+                    {messages
+                      .map((item, index) => (
+                        <li
+                          className="d-flex justify-content-between mb-4"
+                          key={index}
+                        >
+                          {item.sendBy !== userId ? (
+                            <>
+                              {" "}
+                              <img
+                                src={
+                                  imageUserSelected
+                                    ? imageUserSelected
+                                    : "https://res.cloudinary.com/antoapex19/image/upload/v1662361498/A-Project/avatar_gebnpv.webp"
+                                }
+                                alt="avatar"
+                                className="rounded-circle d-flex align-self-start me-3 shadow-1-strong"
+                                width="60"
+                              />{" "}
+                            </>
+                          ) : null}
 
-                      <div
-                        className={`card ${
-                          message.from === "Me" ? "w-100" : ""
-                        }`}
-                      >
-                        <div className="card-header d-flex justify-content-between p-3">
-                          <p className="fw-bold mb-0">{message.from} </p>
-                          <p className="text-muted small mb-0">
-                            <i className="far fa-clock"></i> 10 mins ago
-                          </p>
-                        </div>
-                        <div className="card-body">
-                          <p className="mb-0">{message.body}</p>
-                        </div>
-                      </div>
-                      {message.from === "Me" ? (
-                        <>
-                          {" "}
-                          <img
-                            src="https://mdbcdn.b-cdn.net/img/Photos/Avatars/avatar-5.webp"
-                            alt="avatar"
-                            className="rounded-circle d-flex align-self-start ms-3 shadow-1-strong"
-                            width="60"
-                          />{" "}
-                        </>
-                      ) : null}
-                    </li>
-                  ))
-                  .reverse()}
+                          <div
+                            className={`card ${
+                              item.sendBy === userId
+                                ? "w-100 bg-primary text-white"
+                                : ""
+                            }`}
+                          >
+                            <div className="card-header d-flex justify-content-between p-3">
+                              <p className="fw-bold mb-0">
+                                {/*       {item.from} */}
+                                {item.sendBy === userId ? "Me" : name}
+                              </p>
+                              <p className="text-muted small mb-0">
+                                <i className="far fa-clock"></i> 10 mins ago
+                              </p>
+                            </div>
+                            <div className="card-body">
+                              <p className="mb-0">{item.message}</p>
+                            </div>
+                          </div>
+                          {item.sendBy === userId ? (
+                            <>
+                              {" "}
+                              <img
+                                src={
+                                  userInfoLogged.userImage?.url
+                                    ? userInfoLogged.userImage?.url
+                                    : "https://res.cloudinary.com/antoapex19/image/upload/v1662361498/A-Project/avatar_gebnpv.webp"
+                                }
+                                alt="avatar"
+                                className="rounded-circle d-flex align-self-start ms-3 shadow-1-strong"
+                                width="60"
+                              />{" "}
+                            </>
+                          ) : null}
+                        </li>
+                      ))
+                      .reverse()}
+                  </>
+                )}
               </div>
             </div>
 
@@ -262,142 +309,6 @@ function Messenger() {
           </div>
         </div>
       </div>
-
-      {/*       <section>
-        <div className="content-wrap py-5">
-          <div className="row">
-            <div className="col-md-6 col-lg-5 col-xl-4 mb-4 mb-md-0">
-              <h5 className="font-weight-bold mb-3 text-center text-lg-start">
-                Members
-              </h5>
-
-              <div className="card">
-                <div className="card-body">
-                  <ul className="list-unstyled mb-0">
-                    {itemsDashBoard.map((item) => {
-                      return (
-                        <div
-                          onClick={() => getCatRoom({ item })}
-                          type="submit"
-                          className="p-2 border-bottom"
-                          key={item._id}
-                        >
-                          <a
-                            href="#!"
-                            className="d-flex justify-content-between"
-                          >
-                            <div className="d-flex flex-row">
-                              <img
-                                src="https://mdbcdn.b-cdn.net/img/Photos/Avatars/avatar-8.webp"
-                                alt="avatar"
-                                className="rounded-circle d-flex align-self-center me-3 shadow-1-strong"
-                                width="60"
-                              />
-                              <div className="pt-1">
-                                <p className="fw-bold mb-0">
-                                  {item.name} {item.lastName}
-                                </p>
-                                <p className="small text-muted">
-                                  Hello, Are you there?
-                                </p>
-                              </div>
-                            </div>
-                            <div className="pt-1">
-                              <p className="small text-muted mb-1">Just now</p>
-                              <span className="badge bg-danger float-end">
-                                1
-                              </span>
-                            </div>
-                          </a>
-                        </div>
-                      );
-                    })}
-                  </ul>
-                </div>
-              </div>
-              <br />
-              <LoadMore />
-            </div>
-
-            <div className="col-md-6 col-lg-7 col-xl-8">
-              <form onSubmit={handleSubmit}>
-                <ul className="list-unstyled">
-                  {messages
-                    .map((message, index) => (
-                      <li
-                        className="d-flex justify-content-between mb-4"
-                        key={index}
-                      >
-                        {message.from !== "Me" ? (
-                          <>
-                            {" "}
-                            <img
-                              src="https://mdbcdn.b-cdn.net/img/Photos/Avatars/avatar-6.webp"
-                              alt="avatar"
-                              className="rounded-circle d-flex align-self-start me-3 shadow-1-strong"
-                              width="60"
-                            />{" "}
-                          </>
-                        ) : null}
-
-                        <div
-                          className={`card ${
-                            message.from === "Me" ? "w-100" : ""
-                          }`}
-                        >
-                          <div className="card-header d-flex justify-content-between p-3">
-                            <p className="fw-bold mb-0">{message.from} </p>
-                            <p className="text-muted small mb-0">
-                              <i className="far fa-clock"></i> 10 mins ago
-                            </p>
-                          </div>
-                          <div className="card-body">
-                            <p className="mb-0">{message.body}</p>
-                          </div>
-                        </div>
-                        {message.from === "Me" ? (
-                          <>
-                            {" "}
-                            <img
-                              src="https://mdbcdn.b-cdn.net/img/Photos/Avatars/avatar-5.webp"
-                              alt="avatar"
-                              className="rounded-circle d-flex align-self-start ms-3 shadow-1-strong"
-                              width="60"
-                            />{" "}
-                          </>
-                        ) : null}
-                      </li>
-                    ))
-                    .reverse()}
-
-                  <li className="bg-white mb-3" ref={divRef}>
-                    <div className="form-outline">
-                      <textarea
-                        name="message"
-                        value={message}
-                        onChange={(e) => setMessage(e.target.value)}
-                        className="form-control"
-                        id="textAreaExample2"
-                        rows="2"
-                      ></textarea>
-
-                      <label className="form-label" htmlFor="textAreaExample2">
-                        Message
-                      </label>
-                    </div>
-                  </li>
-                  <button
-                    type="submit"
-                    className="btn btn-info btn-rounded float-end"
-                  >
-                    Send
-                  </button>
-                </ul>
-              </form>
-            </div>
-          </div>
-        </div>
-      </section> */}
     </>
   );
 }

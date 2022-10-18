@@ -4,26 +4,44 @@ const Comment = require("../Models/dailyComment");
 
 const controller = {
   getChatRooms: async (req, res, next) => {
-  const result = await User.findById({ _id: req.params.id })/* .populate([{path:"chatRoom",model:"chats"},{path:"guestUserB",model:"user"}]) */
-  .populate([{path:'chatRoom',model:"chats",populate:{path:'guestUserB',model:'user',select:("-password")}  }])
+    const result = await User.findById({
+      _id: req.user.id,
+    }) /* .populate([{path:"chatRoom",model:"chats"},{path:"guestUserB",model:"user"}]) */
+      .populate([
+        {
+          path: "chatRoom",
+          model: "chats",
+          populate: [
+            { path: "guestUserB", model: "user", select: "-password" },
+            { path: "guestUserA", model: "user", select: "-password" },
+          ],
+        },
+      ])
       .select("-password")
       .catch(next);
 
-      return res.json(result)
-   
+    return res.json(result);
   },
   postComment: async (req, res, next) => {
-    const { content } = req.body;
-    if (!content)
-      return res.status(302).json({ msg: "Content message is necessary" });
+    const { message, chatRoom } = req.body;
 
-    const newMessage = new Rooms({
-      content: content,
+    const listMessage = await Rooms.findById({ _id: chatRoom }).select(
+      "comments"
+    );
+    /* const newMessage = listMessage.comments.push({message:body,sendBy:req.user.id}) */
+
+    let newArray = listMessage.comments.concat({
+      message: message,
+      sendBy: req.user.id,
     });
-    await newMessage
-      .save()
+    newArray = [
+      ...listMessage.comments,
+      { message: message, sendBy: req.user.id },
+    ];
+
+    await Rooms.findByIdAndUpdate({ _id: chatRoom }, { comments: newArray })
       .then(() => {
-        return res.json({ msg: "New comment added" });
+        return res.json({ msg: "Comment Done" });
       })
       .catch(next);
   },
@@ -31,8 +49,9 @@ const controller = {
   /* Daily comments */
 
   getDailyComment: async (req, res, next) => {
-    const getAllComments = await Comment.find({ user: req.user.id })
-      .catch(next);
+    const getAllComments = await Comment.find({ user: req.user.id }).catch(
+      next
+    );
     res.json(getAllComments);
   },
   postDailyComment: async (req, res, next) => {

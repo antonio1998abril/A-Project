@@ -148,12 +148,12 @@ module.exports = {
       },
       /* CHATS */
       {
-        source: "/api/getChatRooms/:id",
-        destination: `${onLine}/getChatRooms/:id`,
+        source: "/api/getChatRooms",
+        destination: `${onLine}/getChatRooms`,
       },
       {
-        source: "/api/postComment/:id",
-        destination: `${onLine}/postComment/:id`,
+        source: "/api/postComment",
+        destination: `${onLine}/postComment`,
       },
     ];
   },

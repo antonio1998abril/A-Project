@@ -54,8 +54,8 @@ const routes = {
     chat:express.Router()
     .get('/getDailyComment/:id',auth,chat.getDailyComment)
     .post('/postDailyComment/:id',auth,chat.postDailyComment)
-    .get('/getChatRooms/:id',auth,chat.getChatRooms)
-    .post('/postComment/:id',auth,chat.postComment)
+    .get('/getChatRooms',auth,chat.getChatRooms)
+    .post('/postComment',auth,chat.postComment)
 }
 
 module.exports = routes
