@@ -1,6 +1,6 @@
 import { Server } from "socket.io";
 let users = [];
-const SocketHandler = (req, res) => {
+const SocketHandlerNotify = (req, res) => {
   if (res.socket.server.io) {
     /*  console.log('Socket is already running') */
   } else {
@@ -9,7 +9,7 @@ const SocketHandler = (req, res) => {
     res.socket.server.io = io;
 
     io.on("connection", (socket) => {
-      socket.on("joinRoom", (id) => {
+      socket.on("joinRoomNotification", (id) => {
         const user = { userId: socket.id, room: id };
         const check = users.every((user) => user.userId !== socket.id);
         if (check) {
@@ -28,21 +28,22 @@ const SocketHandler = (req, res) => {
         }
       });
 
-      socket.on("update-input", async (message, chatRoom, sendBy) => {
-        socket.to(chatRoom).emit("update-input", {
-          message,
+      socket.on("newNotification", async (fromName,typeNotification, message, notificationRoom, sendBy) => {
+        socket.to(notificationRoom).emit("newNotification", {
+            fromName,
           from: socket.id.slice(8),
-          chatRoom,
+          typeNotification,
+          message,
           sendBy,
         });
       });
 
       socket.on("disconnect", () => {
-     /*    console.log(socket.id + "disconnected"); */
+       /*  console.log(socket.id + "disconnected"); */
       });
     });
   }
   res.end();
 };
 
-export default SocketHandler;
+export default SocketHandlerNotify;

@@ -1,5 +1,4 @@
-const onLine =
-  "http://localhost:5000/api"; /* 'https://a-project-production.up.railway.app/api' */
+const onLine =  'https://a-project-production.up.railway.app/api'
 
 module.exports = {
   reactStrictMode: false,
@@ -61,6 +60,10 @@ module.exports = {
       {
         source: "/api/updateAccount/:id",
         destination: `${onLine}/updateAccount/:id`,
+      },
+      {
+        source: "/api/deleteUserAccountManager/:id",
+        destination:`${onLine}/deleteUserAccountManager/:id`
       },
       /* Collaborator */
       {
@@ -155,6 +158,14 @@ module.exports = {
         source: "/api/postComment",
         destination: `${onLine}/postComment`,
       },
+      /* User Not Added*/
+      {
+        source: "/api/getAllUserNotAdded",
+        destination: `${onLine}/getAllUserNotAdded`,
+      }, {
+        source: "/api/addNewUserToMyList/:id",
+        destination: `${onLine}/addNewUserToMyList/:id`,
+      }
     ];
   },
 };

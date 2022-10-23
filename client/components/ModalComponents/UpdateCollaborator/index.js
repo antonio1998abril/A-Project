@@ -205,7 +205,7 @@ const [techLeadList, setTeachLeadsList] = useState([]);
       <OverlayTrigger
         overlay={
           <Tooltip id={`tooltip-bottom`}>
-            <strong>Update {item.name}</strong>.
+            <strong>Update information of {item.name}</strong>.
           </Tooltip>
         }
       >

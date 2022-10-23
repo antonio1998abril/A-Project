@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useCallback, useContext, useEffect, useRef, useState } from "react";
 import {
   Modal,
   OverlayTrigger,
@@ -8,6 +8,7 @@ import {
   Col,
   Row,
   Table,
+  Pagination,
 } from "react-bootstrap";
 import { Formik } from "formik";
 import TextAreaInput from "../TextAreaInput/TextAreaInput";
@@ -20,11 +21,49 @@ import { CSVLink } from "react-csv";
 function DailyInfo({ item }) {
   const commentTemplate = useRef(null);
   const state = useContext(AuthContext);
-  const [callback, setCallback] = state.User.callback;
+  const [callback, setCallback] = useState(false);
+  const [userId] = state.User.userId;
   const [commentModal, setCommentModal] = useState(false);
   const [commentList, setCommentList] = useState([]);
   const { getDailyComment, postDailyComment } = chatService();
   const [CSVlist, setCSVlist] = useState([]);
+  /* Pagination */
+  const [getId,setId] = useState("");
+  const [sort, setSort] = useState("");
+  const [search, setSearch] = useState("");
+  const [page, setPage] = useState(1);
+
+
+  const [current, setCurrent] = useState("");
+ 
+  const [postsPerPage] = useState(10);
+
+/*   const handleChangePage = useCallback((page) => {
+    setPage(page)
+      },[]) */
+
+/*    let items = [];
+
+
+  if (current > 1) {
+    items.push(<Pagination.Prev key="prev" onClick={() =>setPage(page - 1)}/>);
+  }
+
+  for(let page = 1; page <= total; page++) {
+    items.push(
+      <Pagination.Item key={page} data-page={page} active={page === current} onClick={() =>setPage(page)}>
+        {page}
+      </Pagination.Item>
+    )
+  }
+
+  if (current < total) {
+    items.push(<Pagination.Next key="next" onClick={() => {setPage(page + 1)}}/>);
+  }  */
+
+
+
+  /* Pagination */
 
   const handleClose = () => {
     setCommentModal(false);
@@ -35,28 +74,76 @@ function DailyInfo({ item }) {
 
     const body = { content: comment };
     const idUser = item._id;
-    const res = await postDailyComment(idUser, body);
+    const res = await postDailyComment(getId, body);
     /*      setCommentModal(false); */
     setCallback(!callback);
   };
 
   const getDaily = async () => {
-    await getDailyComment(item._id).then((res) => {
-      setCommentList(res.data);
-      const newCSV = res.data.map((item) => {
-        return {
-          comment: item.content,
-          date: moment(item.createdAt).format("MMMM Do YYYY, h:mm:ss a"),
-        };
+    if(getId){
+      await getDailyComment(getId).then((res) => {
+        console.log(res)
+    
+          setCommentList(res.data);
+       
+       
+     /*    setTotal(res.data.length) */
+/*         setCurrent(page) */
+        const newCSV = res.data?.map((item) => {
+          return {
+            comment: item.content,
+            date: moment(item.createdAt).format("MMMM Do YYYY, h:mm:ss a"),
+          };
+        });
+        setCSVlist(newCSV);
       });
-      setCSVlist(newCSV);
-    });
+      
+    }
+
   };
 
-  useEffect(() => {
-    getDaily();
-  }, [callback]);
 
+  // Get current posts
+  const indexOfLastPost = page * postsPerPage;
+  const indexOfFirstPost = indexOfLastPost - postsPerPage;
+  const currentPosts = commentList.slice(indexOfFirstPost, indexOfLastPost);
+
+  const pageNumbers = [];
+
+  for (let i = 1; i <= Math.ceil(commentList.length / postsPerPage); i++) {
+    pageNumbers.push(i);
+  }
+
+     
+/* const l =Math.ceil(commentList.length / postsPerPage)
+
+  if (current > 1) {
+    pageNumbers.push(<Pagination.Prev key="prev" onClick={() =>setPage(page - 1)}/>);
+  }
+
+  for(let page = 1; page <= l; page++) {
+    pageNumbers.push(
+      <Pagination.Item key={page} data-page={page} active={page === current} onClick={() =>setPage(page)}>
+        {page}
+      </Pagination.Item>
+    )
+  }
+
+  if (current < l) {
+    pageNumbers.push(<Pagination.Next key="next" onClick={() => {setPage(page + 1)}}/>);
+  }   */
+
+
+  // Change page
+  const paginate = pageNumber => setPage(pageNumber);
+
+  useEffect(() => {   
+    setId(item._id)
+    getDaily();
+
+  }, [getId]);
+
+  console.log(commentList)
   return (
     <>
       <OverlayTrigger
@@ -87,9 +174,9 @@ function DailyInfo({ item }) {
               comment: "",
             }}
             /*  validationSchema={newCollaboratorSchema} */
-            onSubmit={(values,actions) => {
+            onSubmit={(values, actions) => {
               onSubmit(values);
-              actions.resetForm()
+              actions.resetForm();
             }}
           >
             {(props) => (
@@ -103,15 +190,17 @@ function DailyInfo({ item }) {
                   <Table striped bordered hover>
                     <thead>
                       <tr>
+                      <th>#</th>
                         <th>Date</th>
                         <th>At</th>
                         <th>Comment</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {commentList?.map((item) => {
+                      {currentPosts?.map((item,index) => {
                         return (
                           <tr key={item._id}>
+                            <td>{(page- 1) * 10 + (index + 1)}</td>
                             <td>
                               {moment(item.createdAt).format("MMMM Do YYYY")}
                             </td>
@@ -119,11 +208,28 @@ function DailyInfo({ item }) {
                               {moment(item.createdAt).format("h:mm:ss a")}
                             </td>
                             <td>{item.content}</td>
+                            
                           </tr>
                         );
                       })}
                     </tbody>
                   </Table>
+                 
+                   {pageNumbers.map(number => (
+          <div key={number} className='page-item'>
+            <button type="button" onClick={() => paginate(number)} >
+              {number}
+            </button>
+          </div>
+        ))} 
+        
+                  
+              
+    
+
+                    
+                  
+                  
 
                   <Row className="mb-6">
                     <Col xs={12} md={12} aria-label="Comment" className="mb-4">

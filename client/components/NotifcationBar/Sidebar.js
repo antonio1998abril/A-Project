@@ -7,31 +7,18 @@ import {
   NavDropdown,
   Button,
   Card,
- Toast 
+  Toast,
 } from "react-bootstrap";
 import { AuthContext } from "../../context";
 
 function Sidebar() {
   const state = useContext(AuthContext);
   const [enableSideBar, setEnableSideBar] = state.User.enableSideBar;
-
+  const [notifications, setNotifications] = state.User.notifications;
   const showNotifications = () => {
     if (enableSideBar) setEnableSideBar(false);
     if (!enableSideBar) setEnableSideBar(true);
   };
-
-  const data = [
-    {
-      _id: "1a",
-      title: "New Notification",
-      content: "content to end",
-    },
-    {
-      _id: "2b",
-      title: "New Notification 2",
-      content: "content to end 2",
-    },
-  ];
 
   return (
     <nav className={enableSideBar ? "sidebar displayBar" : "sidebar"}>
@@ -42,32 +29,26 @@ function Sidebar() {
           Close SideBar
         </Button>
         <br /> <br />
-        <Toast>
-          <Toast.Header>
-           
-            <strong className="me-auto">Bootstrap</strong>
-            <small>11 mins ago</small>
-          </Toast.Header>
-          <Toast.Body>Hello, world! This is a toast message.</Toast.Body>
-        </Toast>
-        <br />
-        <Toast>
-          <Toast.Header>
-       
-            <strong className="me-auto">Bootstrap</strong>
-            <small>11 mins ago</small>
-          </Toast.Header>
-          <Toast.Body>Hello, world! This is a toast message.</Toast.Body>
-        </Toast>
-        <br />
-        <Toast>
-          <Toast.Header>
-      
-            <strong className="me-auto">Bootstrap</strong>
-            <small>11 mins ago</small>
-          </Toast.Header>
-          <Toast.Body>Hello, world! This is a toast message.</Toast.Body>
-        </Toast>
+        {notifications.map((item, index) => (
+          <>
+            <Toast key={index}>
+              <Toast.Header closeButton={false}>
+                <strong className="me-auto">
+                  new Notification from {item.fromName}
+                </strong>
+                {/*  <small>11 mins ago</small> */}
+              </Toast.Header>
+              {item.typeNotification === "message" ? (
+                <>
+                  {" "}
+                  <Toast.Body>{item.message}</Toast.Body>
+                </>
+              ) : null}
+            </Toast>
+            <br />
+        
+          </>
+        ))}
       </div>
     </nav>
   );

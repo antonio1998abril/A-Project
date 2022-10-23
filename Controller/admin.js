@@ -54,7 +54,7 @@ class APIfeature {
     const page = this.queryString.page * 1 || 1;
     const limit = this.queryString.limit * 1 || 6;
     const skip = (page - 1) * limit;
-    this.quey = this.query.skip(skip).limit(limit);
+    this.query = this.query.skip(skip).limit(limit);
     return this;
   }
 }
@@ -277,7 +277,6 @@ const controller = {
       currentTechLead,
       currentClient,
     };
-console.log(user)
     if (status === "private") saveUser["password"] = passwordHash;
     if (user.status !== status && status === "private")
       notifyPassword({ email, res });
@@ -305,10 +304,11 @@ console.log(user)
 
   deleteUserAccountManager: async (req, res, next) => {
     // Retrieve document
-    const user = await User.findOne(req.params.id);
+    const user = await User.findById(req.params.id);
 
     // Delete role field
-    user.owner = undefined;
+    user.owner = null;
+    
 
     // Save changes
     await user

@@ -43,7 +43,8 @@ app.use("/api", routes.admin);
 app.use("/api", routes.apiCollaborator);
 app.use("/api", routes.task);
 app.use("/api", routes.project);
-app.use("/api", routes.chat)
+app.use("/api", routes.chat);
+app.use("/api", routes.manager);
 app.use("/api", uploadRoute);
 /* app.use('/api',uploadRoute) */
 // catch Error

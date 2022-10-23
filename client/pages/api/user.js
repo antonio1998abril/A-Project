@@ -32,7 +32,7 @@ function User(token) {
 
   /* Notifications */
 
-
+  const [notifications, setNotifications] = useState([]);
   
 
   useEffect(() => {
@@ -89,7 +89,7 @@ function User(token) {
     userId: [userId],
     result: [result],
     enableSideBar:[enableSideBar,setEnableSideBar],
-
+    notifications:[notifications, setNotifications]
 
   };
 }

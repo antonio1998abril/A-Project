@@ -61,18 +61,36 @@ function Index() {
         <Manager />
         <Collaborator />
         <LoadMore />
-        {isManager ? 
-        <>
-         {itemsDashBoard.length === 0 && (
+        {/* 
+        {isCollaborator ? (
           <>
-            <br />
-            <h1 className="text-center">Ups!... Create a new Collaborator</h1>
+            {itemsDashBoard.length === 0 && (
+              <>
+                <br />
+                <h1 className="text-center">
+                  Nice!... You don't have pending
+                </h1>
+              </>
+            )}
           </>
+        ) : (
+          
+        )} */}
+
+        {isManager ? (
+          <>
+            {itemsDashBoard.length === 0 && (
+              <>
+                <br />
+                <h1 className="text-center">
+                  Ups! nothing here... Create a new Collaborator
+                </h1>
+              </>
+            )}
+          </>
+        ) : (
+          <>{itemsDashBoard.length === 0 && <Loading />}</>
         )}
-        </>
-        : 
-        <>{itemsDashBoard.length === 0 && <Loading />}</>}
-       
       </div>
     </>
   );

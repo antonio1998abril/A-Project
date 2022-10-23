@@ -2,6 +2,7 @@ const User = require("../Models/user");
 const Rooms = require("../Models/chatRoom");
 const Comment = require("../Models/dailyComment");
 
+
 const controller = {
   getChatRooms: async (req, res, next) => {
     const result = await User.findById({
@@ -49,10 +50,12 @@ const controller = {
   /* Daily comments */
 
   getDailyComment: async (req, res, next) => {
-    const getAllComments = await Comment.find({ user: req.user.id }).catch(
-      next
+
+    const getAllComments = await Comment.find({commentTo: req.params.id })
+    res.json(
+     getAllComments,
+ 
     );
-    res.json(getAllComments);
   },
   postDailyComment: async (req, res, next) => {
     const { content } = req.body;

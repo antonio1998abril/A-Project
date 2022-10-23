@@ -6,6 +6,7 @@ let socket;
 import io from "socket.io-client";
 import axios from "axios";
 import { chatService } from "../service/chatServices";
+import { set } from "lodash";
 socket = io();
 
 function Messenger() {
@@ -24,18 +25,31 @@ function Messenger() {
   const [currentSelectChat, setCurrentSelectChat] = useState("");
   const [name, setName] = useState("");
 
+  /* Notification */
+  const [notifications, setNotifications] = state.User.notifications;
+  const [idUserNotification, setIdUser] = useState("");
+
   const getAllChats = async () => {
-    await getChats().then((res) => {
-      setChatListUser(res.data?.chatRoom);
-      setUserInfoLogged(res.data);
-    });
+    try {
+      await getChats().then((res) => {
+        setChatListUser(res.data?.chatRoom);
+        setUserInfoLogged(res.data);
+      });
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   const socketInitializer = async () => {
     await axios("/api/socket");
-
+    
     const receiveMessage = (message) => {
+      divRef.current?.scrollIntoView({ behavior: "smooth" });
       setMessages([message, ...messages]);
+    };
+
+    const receiveNotification = (message) => {
+      setNotifications([message, ...notifications]);
     };
 
     socket.on("connect", () => {
@@ -43,9 +57,7 @@ function Messenger() {
     });
 
     socket.on("update-input", receiveMessage);
-    divRef.current.scrollIntoView({ behavior: "smooth" });
-    getAllChats();
-
+    socket.on("newNotification", receiveNotification);
     return () => {
       socket.off("update-input", socketInitializer);
     };
@@ -64,7 +76,7 @@ function Messenger() {
   };
 
   const handleSubmit = async (e) => {
-    console.log("chat selected", currentSelectChat);
+    divRef.current?.scrollIntoView({ behavior: "smooth" });
 
     e.preventDefault();
     const newMessage = {
@@ -80,37 +92,52 @@ function Messenger() {
       newMessage.sendBy
     );
     const result = await postComments(newMessage);
-
-    divRef.current.scrollIntoView({ behavior: "smooth" });
     setMessage("");
 
+    const newNotification = {
+      fromName: userInfoLogged.name + " " + userInfoLogged.lastName,
+      typeNotification: "message",
+    };
 
-    
+    socket.emit(
+      "newNotification",
+      newNotification.fromName,
+      newNotification.typeNotification,
+      newMessage.message,
+      idUserNotification,
+      newMessage.sendBy
+    );
+    /*   setNotifications([newMessage, ...notifications]); */
   };
 
   useEffect(() => {
+    getAllChats();
     socketInitializer();
+    if (divRef?.current !== null) {
+      divRef?.current?.scrollIntoView({ behavior: "smooth" });
+    }
     return () => {
       socket.off("update-input", socketInitializer);
     };
-  }, [messages, userId, currentSelectChat]);
-
+  }, [messages, userId, currentSelectChat, idUserNotification]);
   return (
     <>
       <div className="card">
         <div className="row g-0">
           <div className="col-12 col-lg-5 col-xl-3 border-end">
-            <div className="px-4 d-none d-md-block">
+{/*             <div className="px-4 d-none d-md-block">
               <div className="d-flex align-items-center">
                 <div className="flex-grow-1">
                   <input
                     type="text"
                     className="form-control my-3"
                     placeholder="Search..."
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
                   />
                 </div>
               </div>
-            </div>
+            </div> */}
 
             {chatListUser?.map((item) => {
               return (
@@ -121,8 +148,10 @@ function Messenger() {
                       setCurrentSelectChat(item._id),
                       socket.emit("joinRoom", item._id);
                     userId === item?.guestUserA?._id
-                      ? setImageUserSelected(item?.guestUserB?.userImage?.url)
-                      : setImageUserSelected(item?.guestUserA?.userImage?.url);
+                      ? (setImageUserSelected(item?.guestUserB?.userImage?.url),
+                        setIdUser(item?.guestUserB?._id))
+                      : (setImageUserSelected(item?.guestUserA?.userImage?.url),
+                        setIdUser(item?.guestUserA?._id));
                   }}
                   type="submit"
                   className="p-2 border-bottom"
@@ -179,10 +208,10 @@ function Messenger() {
                         </p>
                       </div>
                     </div>
-                    <div className="pt-1">
+                 {/*    <div className="pt-1">
                       <p className="small text-muted mb-1">Just now</p>
                       <span className="badge bg-danger float-end">1</span>
-                    </div>
+                    </div> */}
                   </div>
                 </div>
               );
@@ -259,11 +288,18 @@ function Messenger() {
                                 {/*       {item.from} */}
                                 {item.sendBy === userId ? "Me" : name}
                               </p>
-                              <p className="text-muted small mb-0">
+                              {/* <p className="text-muted small mb-0">
                                 <i className="far fa-clock"></i> 10 mins ago
-                              </p>
+                              </p> */}
                             </div>
-                            <div className="card-body">
+                            <div
+                              className="card-body"
+                              /* ref={divRef} */ ref={
+                                messages[0]?.message === item?.message
+                                  ? divRef
+                                  : null
+                              }
+                            >
                               <p className="mb-0">{item.message}</p>
                             </div>
                           </div>

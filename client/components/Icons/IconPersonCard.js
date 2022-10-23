@@ -6,6 +6,7 @@ import DeleteUserAdmin from "../ModalComponents/DeleteUserAdmin";
 import Router from "next/router";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import DailyInfo from "../Daily/DailyInfo";
+import DeleteUserManager from "../ModalComponents/DeleteUserManager/DeleteUserManager";
 
 function IconPersonCard({ item }) {
   const state = useContext(AuthContext);
@@ -26,22 +27,6 @@ function IconPersonCard({ item }) {
       {isManager ? (
         <>
          <DailyInfo item={item}/>
-          &nbsp;&nbsp;
-          {/* MESSAGE */}
-          <Link href="/messenger">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="18"
-              height="18"
-              fill="currentColor"
-              className="bi bi-chat-right-text"
-              viewBox="0 0 16 16"
-              type="button"
-            >
-              <path d="M2 1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h9.586a2 2 0 0 1 1.414.586l2 2V2a1 1 0 0 0-1-1H2zm12-1a2 2 0 0 1 2 2v12.793a.5.5 0 0 1-.854.353l-2.853-2.853a1 1 0 0 0-.707-.293H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h12z" />
-              <path d="M3 3.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zM3 6a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9A.5.5 0 0 1 3 6zm0 2.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5z" />
-            </svg>
-          </Link>
           &nbsp;&nbsp;
           {/* Activity */}
           <OverlayTrigger
@@ -74,6 +59,9 @@ function IconPersonCard({ item }) {
               />
             </svg>
           </OverlayTrigger>
+          {/* Delete user */}
+          &nbsp;&nbsp;
+          <DeleteUserManager item={item}/>
         </>
       ) : (
         <>

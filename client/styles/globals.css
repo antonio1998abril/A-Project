@@ -50,6 +50,24 @@ a {
 }
 
 /* Header Icons */
+
+.chatIconSeparator {
+  position: absolute;
+
+  margin-left: 440px;
+}
+
+@media (max-width: 1000px) {
+  .chatIconSeparator {
+    margin-left: 233px;
+  }
+}
+@media (max-width: 280px) {
+  .chatIconSeparator {
+    margin-left: 200px;
+  }
+}
+
 .bell-icon {
   position: absolute;
 

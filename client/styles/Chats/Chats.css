@@ -1,5 +1,7 @@
+
 .chatRoom {
-  height: 100vh;
+
+height: 100vh;
 }
 .chat-online {
     color: #34ce57
@@ -12,7 +14,7 @@
 .chat-messages {
     display: flex;
     flex-direction: column;
-    max-height: 850px;
+    max-height: 1130px;
     overflow-y: scroll
 }
 

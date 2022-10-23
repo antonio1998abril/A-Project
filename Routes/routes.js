@@ -6,7 +6,7 @@ const collaboratorController = require('../Controller/collaborator');
 const taskController = require('../Controller/activities');
 const projectController = require('../Controller/clients');
 const chat = require('../Controller/chatRoom');
-const { get } = require('lodash');
+const managerPage = require('../Controller/Manager')
 
 
 const routes = {
@@ -24,6 +24,7 @@ const routes = {
     .get('/getAllUser',auth,adminController.getAllUser)
     .get('/getAllManager',adminController.getAllManager)
     .delete('/deleteUserAccount/:id',adminController.deleteUserAccount)
+    .post('/deleteUserAccountManager/:id',adminController.deleteUserAccountManager)
     .put('/updateAccount/:id',adminController.updateUserAccount),
 
     apiCollaborator: express.Router()
@@ -55,7 +56,11 @@ const routes = {
     .get('/getDailyComment/:id',auth,chat.getDailyComment)
     .post('/postDailyComment/:id',auth,chat.postDailyComment)
     .get('/getChatRooms',auth,chat.getChatRooms)
-    .post('/postComment',auth,chat.postComment)
+    .post('/postComment',auth,chat.postComment),
+
+    manager:express.Router()
+    .get('/getAllUserNotAdded',auth,managerPage.getAllUserNotAdded)
+    .delete('/addNewUserToMyList/:id',auth,managerPage.updateUserAccount)
 }
 
 module.exports = routes
