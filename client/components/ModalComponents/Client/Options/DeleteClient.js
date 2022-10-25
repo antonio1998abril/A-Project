@@ -25,8 +25,8 @@ function DeleteClient({ item, clientStatus, techLeadStatus, managerStatus }) {
     }
 
     setCallback(!callback);
+    setDeleteModal(false)
   };
-  console.log(item);
 
   return (
     <>

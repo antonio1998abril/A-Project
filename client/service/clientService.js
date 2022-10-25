@@ -50,7 +50,7 @@ export const clientService = () => {
   const getClientList = () => {
     const url = `/api/getClient`;
     return get(url, "getClient", {});
-  };
+  }; 
   const updateClient = (id, body) => {
     const url = `/api/updateClient/${id}`;
     return put(url, body, "updateClient", {});

@@ -28,8 +28,8 @@ function User(token) {
 
   const [enableSideBar,setEnableSideBar] = useState(false);
 
-  /* Serch functionality */
-
+  /* Clients functionality */
+const [itemsClients,setItemsClients] = useState([]);
   /* Notifications */
 
   const [notifications, setNotifications] = useState([]);
@@ -69,8 +69,23 @@ function User(token) {
         }
       };
 
+      const getClient = async () => {
+        try {
+          const res = await axios.get(
+            `/api/getClient`,
+            {
+              headers: { Authorization: token },
+            }
+          );
+          setItemsClients(res.data.result);
+        } catch (err) {
+          localStorage.removeItem("firstLogin");
+        }
+      };
+
       getRole();
       getUser();
+      getClient()
     }
   }, [token, role, sort, search, page, callback]);
 
@@ -89,7 +104,8 @@ function User(token) {
     userId: [userId],
     result: [result],
     enableSideBar:[enableSideBar,setEnableSideBar],
-    notifications:[notifications, setNotifications]
+    notifications:[notifications, setNotifications],
+    itemsClients:[itemsClients]
 
   };
 }

@@ -1,4 +1,10 @@
-import React, { useCallback, useContext, useEffect, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import {
   Modal,
   OverlayTrigger,
@@ -28,21 +34,20 @@ function DailyInfo({ item }) {
   const { getDailyComment, postDailyComment } = chatService();
   const [CSVlist, setCSVlist] = useState([]);
   /* Pagination */
-  const [getId,setId] = useState("");
+  const [getId, setId] = useState("");
   const [sort, setSort] = useState("");
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
 
-
   const [current, setCurrent] = useState("");
- 
+
   const [postsPerPage] = useState(10);
 
-/*   const handleChangePage = useCallback((page) => {
+  /*   const handleChangePage = useCallback((page) => {
     setPage(page)
       },[]) */
 
-/*    let items = [];
+  /*    let items = [];
 
 
   if (current > 1) {
@@ -61,8 +66,6 @@ function DailyInfo({ item }) {
     items.push(<Pagination.Next key="next" onClick={() => {setPage(page + 1)}}/>);
   }  */
 
-
-
   /* Pagination */
 
   const handleClose = () => {
@@ -80,15 +83,12 @@ function DailyInfo({ item }) {
   };
 
   const getDaily = async () => {
-    if(getId){
+    if (getId) {
       await getDailyComment(getId).then((res) => {
-        console.log(res)
-    
-          setCommentList(res.data);
-       
-       
-     /*    setTotal(res.data.length) */
-/*         setCurrent(page) */
+        setCommentList(res.data);
+
+        /*    setTotal(res.data.length) */
+        /*         setCurrent(page) */
         const newCSV = res.data?.map((item) => {
           return {
             comment: item.content,
@@ -97,11 +97,8 @@ function DailyInfo({ item }) {
         });
         setCSVlist(newCSV);
       });
-      
     }
-
   };
-
 
   // Get current posts
   const indexOfLastPost = page * postsPerPage;
@@ -114,8 +111,7 @@ function DailyInfo({ item }) {
     pageNumbers.push(i);
   }
 
-     
-/* const l =Math.ceil(commentList.length / postsPerPage)
+  /* const l =Math.ceil(commentList.length / postsPerPage)
 
   if (current > 1) {
     pageNumbers.push(<Pagination.Prev key="prev" onClick={() =>setPage(page - 1)}/>);
@@ -133,17 +129,14 @@ function DailyInfo({ item }) {
     pageNumbers.push(<Pagination.Next key="next" onClick={() => {setPage(page + 1)}}/>);
   }   */
 
-
   // Change page
-  const paginate = pageNumber => setPage(pageNumber);
+  const paginate = (pageNumber) => setPage(pageNumber);
 
-  useEffect(() => {   
-    setId(item._id)
+  useEffect(() => {
+    setId(item._id);
     getDaily();
-
   }, [getId]);
 
-  console.log(commentList)
   return (
     <>
       <OverlayTrigger
@@ -190,17 +183,17 @@ function DailyInfo({ item }) {
                   <Table striped bordered hover>
                     <thead>
                       <tr>
-                      <th>#</th>
+                        <th>#</th>
                         <th>Date</th>
                         <th>At</th>
                         <th>Comment</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {currentPosts?.map((item,index) => {
+                      {currentPosts?.map((item, index) => {
                         return (
                           <tr key={item._id}>
-                            <td>{(page- 1) * 10 + (index + 1)}</td>
+                            <td>{(page - 1) * 10 + (index + 1)}</td>
                             <td>
                               {moment(item.createdAt).format("MMMM Do YYYY")}
                             </td>
@@ -208,28 +201,19 @@ function DailyInfo({ item }) {
                               {moment(item.createdAt).format("h:mm:ss a")}
                             </td>
                             <td>{item.content}</td>
-                            
                           </tr>
                         );
                       })}
                     </tbody>
                   </Table>
-                 
-                   {pageNumbers.map(number => (
-          <div key={number} className='page-item'>
-            <button type="button" onClick={() => paginate(number)} >
-              {number}
-            </button>
-          </div>
-        ))} 
-        
-                  
-              
-    
 
-                    
-                  
-                  
+                  {pageNumbers.map((number) => (
+                    <div key={number} className="page-item">
+                      <button type="button" onClick={() => paginate(number)}>
+                        {number}
+                      </button>
+                    </div>
+                  ))}
 
                   <Row className="mb-6">
                     <Col xs={12} md={12} aria-label="Comment" className="mb-4">

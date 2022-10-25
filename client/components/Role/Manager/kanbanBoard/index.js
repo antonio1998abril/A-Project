@@ -71,17 +71,17 @@ function Index() {
     setColumns({
       [uuid()]: {
         name: "To do",
-        color: "#FFFAE6",
+        color: "#D5DBDB",
         items: res?.data?.todo,
       },
       [uuid()]: {
         name: "In Progress",
-        color: "#EAE6FF",
+        color: "#D5DBDB",
         items: res?.data?.inProgress,
       },
       [uuid()]: {
         name: "Review",
-        color: "#DEEBFF",
+        color: "#D5DBDB",
         items: res?.data?.review,
       },
       [uuid()]: {

@@ -16,16 +16,22 @@ function Index() {
   const [infoModal, setInfoModal] = useState(false);
   const [itemMT, setItemMT] = useState();
   const [client, setClients] = useState([]);
-  const { getClientList } = clientService();
+  const [itemsClients] = state.User.itemsClients
+/*   const { getClientList } = clientService();
 
   const getClient = async () => {
-    await getClientList().then((res) => {
-      setClients(res.data.result);
-    });
+    
+      await getClientList().then((res) => {
+       setClients(res.data.result);
+        
+  
+      }); 
+    
+     
   };
   useEffect(() => {
     getClient();
-  }, [callback]);
+  }, []); */
 
   return (
     <>
@@ -34,8 +40,8 @@ function Index() {
         <NewClientButton />
         <br />
         <div className="gridClient">
-          {Array.isArray(client)
-            ? client.map((item) => {
+          {Array.isArray(itemsClients)
+            ? itemsClients.map((item) => {
                 return (
                   <div
                     className="card mb-3"
@@ -62,13 +68,13 @@ function Index() {
                         >
                           See more
                         </button>
-                        &nbsp;
+                        {/* &nbsp;
                         <button
                           type="button"
                           className="btn btn-warning btn-small"
                         >
                           Update information
-                        </button>
+                        </button> */}
                         &nbsp;
                         <DeleteClient item={item} clientStatus={true}/>
                         <ClientInfo

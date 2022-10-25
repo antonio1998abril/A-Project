@@ -1,4 +1,4 @@
-const onLine =  'https://a-project-production.up.railway.app/api'
+const onLine =  'https://a-project-production.up.railway.app/api';
 
 module.exports = {
   reactStrictMode: false,

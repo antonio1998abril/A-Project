@@ -46,7 +46,7 @@ function Collaborator() {
                   </div>
                 </div>
               ) : (
-                <h1 className="text-center">Nice!... You don't have pending</h1>
+                <h1 className="text-center">Nice!... You don not have pending</h1>
               )}
             </div>
           );
