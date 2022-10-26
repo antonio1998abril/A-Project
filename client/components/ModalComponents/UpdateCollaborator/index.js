@@ -46,14 +46,13 @@ function UpdateUser({ item }) {
   const [imagesUrl, setImagesUrl] = useState(item?.userImage?.url);
   const [imagesId, setImagesId] = useState("");
   /* iMAGES */
-
   const [enableManagerTechLeadHTML, setEnableManagerTechLeadHTML] =
-  useState(false);
-const [hired, setHired] = useState(new Date());
-const [birthDay, setBirthDay] = useState(new Date());
-const [clientList, setClientList] = useState([]);
-const [managerList, setManagerList] = useState([]);
-const [techLeadList, setTeachLeadsList] = useState([]);
+    useState(false);
+  const [hired, setHired] = useState(new Date());
+  const [birthDay, setBirthDay] = useState(new Date());
+  const [clientList, setClientList] = useState([]);
+  const [managerList, setManagerList] = useState([]);
+  const [techLeadList, setTeachLeadsList] = useState([]);
 
   const [accountStatus, setAccountStatus] = useState({
     label: "No",
@@ -65,7 +64,7 @@ const [techLeadList, setTeachLeadsList] = useState([]);
     value: "Collaborator",
   });
 
-  const [clientStatus, setClientStatus] = useState({
+  const [clientStatusUpdate, setClientStatusUpdate] = useState({
     label: "N/A",
     value: "",
   });
@@ -78,10 +77,9 @@ const [techLeadList, setTeachLeadsList] = useState([]);
     value: "",
   });
 
-
   const handleClose = () => {
     setUpdateCollaboratorModal(false);
-    setClientStatus({ label: "N/A", value: "" });
+    /*     setClientStatusUpdate({ label: "N/A", value: "" }); */
   };
 
   const onSubmit = async (values) => {
@@ -98,16 +96,15 @@ const [techLeadList, setTeachLeadsList] = useState([]);
         public_id: imagesId,
         url: imagesUrl,
       },
-      currentManager:managerStatus.value,
-      currentTechLead:techLeadStatus.value,
-      currentClient:clientStatus.value,
-      birthDay:birthDay,
-      hired:hired,
+      currentManager: managerStatus.value,
+      currentTechLead: techLeadStatus.value,
+      currentClient: clientStatusUpdate.value,
+      birthDay: birthDay,
+      hired: hired,
     };
     const res = await updateUser(id, body);
     setUpdateCollaboratorModal(false);
     setCallback(!callback);
- 
   };
 
   useEffect(() => {
@@ -162,23 +159,44 @@ const [techLeadList, setTeachLeadsList] = useState([]);
   };
   /* IMAGE */
 
-  const handleList = async () => {
-    let res = await getClientList();
+  const handleList = async ({ item }) => {
+    try {
+      await getClientList().then(async (response) => {
+        const setClientListToDropDown = response?.data?.result.find(
+          (o) => o._id === item?.currentClient
+        );
+        setClientStatusUpdate({
+          label: setClientListToDropDown?.name,
+          value: item?.currentClient,
+        });
 
-    setClientList(
-      res?.data?.result?.map((item) => ({
-        label: item.name,
-        value: item._id,
-      }))
-    );
-    setEnableManagerTechLeadHTML(true);
+        setClientList(
+          response?.data?.result?.map((item) => ({
+            label: item?.name,
+            value: item?._id,
+          }))
+        );
+      });
+
+      /*  setClientStatusUpdate({ label: setClientListToDropDown, value: item?.currentClient });  */
+
+      setEnableManagerTechLeadHTML(true);
+    } catch (err) {
+      console.log(err);
+    }
   };
-  const handleManagerAndTechLead = async () => {
-    if (clientStatus.label != "N/A") {
-      let resManager = await getManager(clientStatus.value);
+  const handleManagerAndTechLead = async (item) => {
+    /* if (clientStatus.label != "N/A") {
+       let resManager = await getManager(clientStatus.value).then((response)=> {
+        console.log(response)
+        const setManagerListToDropDown = response?.data?.find((o) => o._id === item?.currentManager)
+        setManagerStatus({ label: setManagerListToDropDown.name, value: item?.currentManager }) 
+       });
       let resTechLead = await getTechLead(clientStatus.value);
+     
 
-      setManagerList(
+      
+       setManagerList(
         resManager?.data?.map((item) => ({
           label: item.clientManagerName + ' '+item.clientManagerLastName,
           value: item._id,
@@ -189,16 +207,74 @@ const [techLeadList, setTeachLeadsList] = useState([]);
           label: item.projectTechLeadName + ' '+item.projectTechLeadLastName,
           value: item._id,
         }))
-      )
+      );
+
+
+    }  */
+  };
+
+  useEffect(
+    () => {
+      handleList({ item });
+
+      /*     if (enableManagerTechLeadHTML) {
+      handleManagerAndTechLead();
+    } */
+    },
+    [
+      /* enableManagerTechLeadHTML */
+    ]
+  );
+
+  const newData = async (get) => {
+    if (get) {
+      await getManager(get).then(async (response) => {
+        const setClientListToDropDown = response?.data?.find(
+          (o) => o._id === item?.currentManager
+        );
+        setManagerStatus({
+          label: setClientListToDropDown?.clientManagerName || "N/A",
+          value: item?.currentManager || "",
+        });
+
+        setManagerList(
+          response?.data?.map((item) => ({
+            label: item.clientManagerName + " " + item.clientManagerLastName || "N/A",
+            value: item._id || "",
+          }))
+        );
+      });
+
+      await getTechLead(get).then(async (response) => {
+        const setTechLeadListToDropDown = response?.data?.find(
+          (o) => o._id === item?.currentTechLead
+        );
+        setTechLeadStatus({
+          label:
+            setTechLeadListToDropDown?.projectTechLeadName +
+            " " +
+            setTechLeadListToDropDown?.projectTechLeadLastName || "N/A",
+          value: item?.currentTechLead  || "",
+        });
+
+        setTeachLeadsList(
+          response?.data?.map((item) => ({
+            label:
+              item?.projectTechLeadName + " " + item.projectTechLeadLastName || "N/A",
+            value: item?._id || "",
+          }))
+        );
+      });
     }
   };
 
   useEffect(() => {
-    handleList();
-    if (enableManagerTechLeadHTML) {
-      handleManagerAndTechLead();
+    if (clientStatusUpdate != item?.currentClient) {
+      newData(clientStatusUpdate.value);
+    } else {
+      newData(item?.currentClient);
     }
-  }, [enableManagerTechLeadHTML,clientStatus]);
+  }, [clientStatusUpdate]);
 
   return (
     <>
@@ -252,7 +328,6 @@ const [techLeadList, setTeachLeadsList] = useState([]);
                   <div className="imageTitle">Select a image: </div>
                   <div className="upload">
                     <input
-                      
                       type="file"
                       name="file"
                       id="file_up"
@@ -390,23 +465,21 @@ const [techLeadList, setTeachLeadsList] = useState([]);
 
                     <Col xs={12} lg={12} className="mb-4">
                       <label htmlFor="client" className="form-label">
-                        Current Project
+                        Current Client
                       </label>
                       <Select
                         id="client"
                         name="client"
                         options={clientList}
                         isSearchable={true}
-                        getOptionLabel={(option) => option.label || ""}
+                        getOptionLabel={(option) => option.label || "N/A"}
                         getOptionValue={(option) => option.value || ""}
-                        value={clientStatus}
-                        onChange={(selected) => setClientStatus(selected)}
+                        value={clientStatusUpdate}
+                        onChange={(selected) => setClientStatusUpdate(selected)}
                       />
                     </Col>
 
-
-
-                    {clientStatus.label != "N/A" ? (
+                    {clientStatusUpdate.label != "N/A" ? (
                       <>
                         <Col xs={12} lg={12} className="mb-4">
                           <label htmlFor="manager" className="form-label">
@@ -417,10 +490,10 @@ const [techLeadList, setTeachLeadsList] = useState([]);
                             name="manager"
                             options={managerList}
                             isSearchable={true}
-                            getOptionLabel={(option) => option.label || ""}
+                            getOptionLabel={(option) => option.label || "N/A"}
                             getOptionValue={(option) => option.value || ""}
                             value={managerStatus}
-                            onChange={(selected) =>  setManagerStatus(selected)}
+                            onChange={(selected) => setManagerStatus(selected)}
                           />
                         </Col>
 
@@ -433,13 +506,12 @@ const [techLeadList, setTeachLeadsList] = useState([]);
                             name="techLead"
                             options={techLeadList}
                             isSearchable={true}
-                            getOptionLabel={(option) => option.label || ""}
+                            getOptionLabel={(option) => option.label || "N/A"}
                             getOptionValue={(option) => option.value || ""}
                             value={techLeadStatus}
-                            onChange={(selected) =>  setTechLeadStatus(selected)}
+                            onChange={(selected) => setTechLeadStatus(selected)}
                           />
                         </Col>
-
                       </>
                     ) : null}
                   </Row>

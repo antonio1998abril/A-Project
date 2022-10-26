@@ -180,7 +180,7 @@ const controller = {
       manager,
     } = req.body;
 
-    let { currentClient, currentTechLead, currentManager } = req.body;
+   let {currentClient, currentTechLead, currentManager} = req.body
 
     if ((!name, !email, !lastName, !occupation))
       return res.status(401).json({ msg: "Complete all fields" });
@@ -190,8 +190,9 @@ const controller = {
     const newPassword = generatePassword();
     const passwordHash = await bCrypt.hash(newPassword, 10);
 
-    if ((currentClient === "", currentTechLead === "", currentManager == ""))
-      (currentClient = null), (currentTechLead = null), (currentManager = null);
+     if(currentClient === "" ) (currentClient = null)
+    if(currentTechLead === "") (currentTechLead = null)
+    if(currentManager === "") (currentManager = null)
     const passwordChatRoom = mongoose.Types.ObjectId();
 
     const newUser = new User({
@@ -255,8 +256,9 @@ const controller = {
 
     let { currentClient, currentTechLead, currentManager } = req.body;
 
-    if ((currentClient === "", currentTechLead === "", currentManager == ""))
-    (currentClient = null), (currentTechLead = null), (currentManager = null);
+    if(currentClient === "" ) (currentClient = null)
+    if(currentTechLead === "") (currentTechLead = null)
+    if(currentManager === "") (currentManager = null)
 
     const user = await User.findOne({_id:req.params.id});
 

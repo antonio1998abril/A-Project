@@ -133,9 +133,9 @@ function Index() {
                 id="collapsable-nav-dropdown"
                 className="fontNavBar "
               >
-                <NavDropdown.Item href="#action/3.3" className="fontNavBar ">
+              {/*   <NavDropdown.Item href="#action/3.3" className="fontNavBar ">
                   Settings
-                </NavDropdown.Item>
+                </NavDropdown.Item> */}
                 <NavDropdown.Divider />
                 <NavDropdown.Item onClick={logoutUser} className="fontNavBar ">
                   Log out

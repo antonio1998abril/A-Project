@@ -74,27 +74,24 @@ const userSchema = new Schema(
       type: Array,
       default: [],
     },
-    currentManager: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "clientTechLeads",
-        required: false,
-      },
-    ],
-    currentTechLead: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "clientManagers",
-        required: false,
-      },
-    ],
-    currentClient: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "client",
-        required: false,
-      },
-    ],
+    currentManager: {
+      type: Schema.Types.ObjectId,
+      ref: "clientTechLeads",
+      required: false,
+    },
+
+    currentTechLead: {
+      type: Schema.Types.ObjectId,
+      ref: "clientManagers",
+      required: false,
+    },
+
+    currentClient: {
+      type: Schema.Types.ObjectId,
+      ref: "client",
+      required: false,
+    },
+
     isStillWorking: {
       type: Boolean,
       required: false,
