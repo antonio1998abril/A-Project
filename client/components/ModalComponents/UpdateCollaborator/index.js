@@ -158,7 +158,6 @@ function UpdateUser({ item }) {
     }
   };
   /* IMAGE */
-
   const handleList = async ({ item }) => {
     try {
       await getClientList().then(async (response) => {
