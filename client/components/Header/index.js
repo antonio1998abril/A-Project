@@ -65,14 +65,14 @@ function Index() {
 
   /* New notification */
   const socketInitializerNotification = async () => {
-    await axios("/api/notifications");
+    await axios("/api/socket");
 
     const receiveNotification = (message) => {
       setNotifications([message, ...notifications]);
     };
 
     socket.on("connect", () => {
-      console.log("connected");
+     
     });
 
     socket.on("newNotification", receiveNotification);
@@ -83,7 +83,8 @@ function Index() {
   };
 
   useEffect(() => {
-    socket.emit("joinRoomNotification", userId);
+/*     socket.emit("joinRoomNotification", userId);  */
+    socket.emit("joinRoom",userId);
     socketInitializerNotification();
     setSizeBell(notifications.length);
     return () => {

@@ -37,6 +37,17 @@ const SocketHandler = (req, res) => {
         });
       });
 
+      socket.on("newNotification", async (fromName,typeNotification, message, notificationRoom, sendBy) => {
+        console.log(fromName)
+        socket.to(notificationRoom).emit("newNotification", {
+            fromName,
+          from: socket.id.slice(8),
+          typeNotification,
+          message,
+          sendBy,
+        });
+      });
+
       socket.on("disconnect", () => {
      /*    console.log(socket.id + "disconnected"); */
       });

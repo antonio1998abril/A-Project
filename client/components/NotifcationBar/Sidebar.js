@@ -30,10 +30,10 @@ function Sidebar() {
         </Button>
         <br /> <br />
         {notifications.map((item, index) => (
-          <>
-            <Toast key={index}>
+       <div key={index}>
+            <Toast >
               <Toast.Header closeButton={false}>
-                <strong className="me-auto">
+                <strong className="me-auto" >
                   new Notification from {item.fromName}
                 </strong>
                 {/*  <small>11 mins ago</small> */}
@@ -47,7 +47,7 @@ function Sidebar() {
             </Toast>
             <br />
         
-          </>
+         </div>
         ))}
       </div>
     </nav>

@@ -1,12 +1,8 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { loginService } from "../../service/loginService";
-import { adminService } from "../../service/adminService";
+
 
 function User(token) {
-  const { getInfoUser } = loginService();
-  const { getAllUser } = adminService();
-
   const [infoUser, setInfoUser] = useState([]);
   const [callback, setCallback] = useState(false);
   const [isManager, setIsManager] = useState(false);
@@ -33,6 +29,9 @@ const [itemsClients,setItemsClients] = useState([]);
   /* Notifications */
 
   const [notifications, setNotifications] = useState([]);
+  /* Get all chats rooms */
+  const [chatListUser, setChatListUser] = useState([]);
+  const [userInfoLogged, setUserInfoLogged] = useState({});
   
 
   useEffect(() => {
@@ -82,10 +81,25 @@ const [itemsClients,setItemsClients] = useState([]);
           localStorage.removeItem("firstLogin");
         }
       };
+      const getChatRooms = async () => {
+        try {
 
+          const res = await axios.get("/api/getChatRooms", {
+            headers: { Authorization: token },
+          });
+        
+          setChatListUser(res.data?.chatRoom);
+          setUserInfoLogged(res.data);
+
+        } catch (err) {
+          console.log(err);
+        }
+      };
+      getChatRooms()
       getRole();
       getUser();
-      getClient()
+      getClient();
+     
     }
   }, [token, role, sort, search, page, callback]);
 
@@ -105,7 +119,10 @@ const [itemsClients,setItemsClients] = useState([]);
     result: [result],
     enableSideBar:[enableSideBar,setEnableSideBar],
     notifications:[notifications, setNotifications],
-    itemsClients:[itemsClients]
+    itemsClients:[itemsClients],
+    /* Get all chats */
+    chatListUser: [chatListUser],
+    userInfoLogged: [userInfoLogged]
 
   };
 }
