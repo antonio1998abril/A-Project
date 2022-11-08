@@ -178,9 +178,11 @@ const controller = {
       userImage,
       status,
       manager,
+      birthDay,
+      hired,
     } = req.body;
 
-   let {currentClient, currentTechLead, currentManager} = req.body
+    let { currentClient, currentTechLead, currentManager } = req.body;
 
     if ((!name, !email, !lastName, !occupation))
       return res.status(401).json({ msg: "Complete all fields" });
@@ -190,9 +192,9 @@ const controller = {
     const newPassword = generatePassword();
     const passwordHash = await bCrypt.hash(newPassword, 10);
 
-     if(currentClient === "" ) (currentClient = null)
-    if(currentTechLead === "") (currentTechLead = null)
-    if(currentManager === "") (currentManager = null)
+    if (currentClient === "") currentClient = null;
+    if (currentTechLead === "") currentTechLead = null;
+    if (currentManager === "") currentManager = null;
     const passwordChatRoom = mongoose.Types.ObjectId();
 
     const newUser = new User({
@@ -205,6 +207,8 @@ const controller = {
       status,
       manager,
       userImage,
+      birthDay: new Date(birthDay),
+      hired: new Date(hired),
       currentManager,
       currentTechLead,
       currentClient,
@@ -228,7 +232,7 @@ const controller = {
       createUserAndBlockAccount({ newUser, res });
     }
 
-    updateCurrentUserLogged({ newChatRoom, res, req });
+    /* updateCurrentUserLogged({ newChatRoom, res, req }); */
   },
 
   addToManagerUserAccountAlreadyDone: async (req, res, next) => {
@@ -252,15 +256,17 @@ const controller = {
       userImage,
       status,
       manager,
+      birthDay,
+      hired,
     } = req.body;
 
     let { currentClient, currentTechLead, currentManager } = req.body;
 
-    if(currentClient === "" ) (currentClient = null)
-    if(currentTechLead === "") (currentTechLead = null)
-    if(currentManager === "") (currentManager = null)
+    if (currentClient === "") currentClient = null;
+    if (currentTechLead === "") currentTechLead = null;
+    if (currentManager === "") currentManager = null;
 
-    const user = await User.findOne({_id:req.params.id});
+    const user = await User.findOne({ _id: req.params.id });
 
     const newPassword = generatePassword();
     const passwordHash = await bCrypt.hash(newPassword, 10);
@@ -274,6 +280,8 @@ const controller = {
       userImage,
       status,
       /*  password: passwordHash, */
+      birthDay: new Date(birthDay),
+      hired: new Date(hired),
       manager,
       currentManager,
       currentTechLead,
@@ -285,13 +293,13 @@ const controller = {
     if (user.status !== status && status === "public")
       updateUserAndNotifyAccount({ email, newPassword, res });
 
-    await User.findByIdAndUpdate({ _id: req.params.id }, saveUser).then(()=> {
-      res.json({ msg: "User Updated" });
-    }).catch(
-      (err) => {
+    await User.findByIdAndUpdate({ _id: req.params.id }, saveUser)
+      .then(() => {
+        res.json({ msg: "User Updated" });
+      })
+      .catch((err) => {
         return next(err);
-      }
-    );
+      });
   },
 
   deleteUserAccount: async (req, res, next) => {
@@ -310,7 +318,6 @@ const controller = {
 
     // Delete role field
     user.owner = null;
-    
 
     // Save changes
     await user

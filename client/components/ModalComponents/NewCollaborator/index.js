@@ -19,6 +19,7 @@ import { AuthContext } from "../../../context";
 import Loading from "../../Loading/index";
 import { clientService } from "../../../service/clientService";
 import ReactDatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 const accountOptions = [
   { label: "Yes", value: "public" },
@@ -37,6 +38,7 @@ function NewCollaboratorButton() {
   const state = useContext(AuthContext);
   const [callback, setCallback] = state.User.callback;
   const [isAdmin] = state.User.isAdmin;
+  const [showAlert, setShowAlert] = state.User.alert;
   /* iMAGES */
   const [loading, setLoading] = useState(false);
   const [imagesUrl, setImagesUrl] = useState("");
@@ -100,6 +102,23 @@ function NewCollaboratorButton() {
       hired:hired,
     };
     const res = await registerNewUser(body);
+    if (res.status !== 200) {
+      setShowAlert({
+        status: true,
+        message: "there was an error please try again!!!",
+        type: "ERROR",
+        duration: 3000,
+        position: "top-right",
+      });
+    } else {
+      setShowAlert({
+        status: true,
+        message: "New Collaborator created",
+        type: "SUCCESS",
+        duration: 5000,
+        position: "top-right",
+      });
+    }
     setNewCollaboratorModal(false);
     setCallback(!callback);
   };

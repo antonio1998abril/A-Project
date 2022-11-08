@@ -38,7 +38,6 @@ const SocketHandler = (req, res) => {
       });
 
       socket.on("newNotification", async (fromName,typeNotification, message, notificationRoom, sendBy) => {
-        console.log(fromName)
         socket.to(notificationRoom).emit("newNotification", {
             fromName,
           from: socket.id.slice(8),
@@ -48,7 +47,22 @@ const SocketHandler = (req, res) => {
         });
       });
 
-      socket.on("disconnect", () => {
+
+      socket.emit("me", socket.id)
+
+      socket.on("disconnect", async() => {
+        socket.broadcast.emit("callEnded")
+      })
+    
+      socket.on("callUser", async(data) => {
+        socket.to(data.userToCall).emit("callUser", { signal: data.signalData, from: data.from, name: data.name })
+      })
+    
+      socket.on("answerCall", async(data) => {
+        socket.to(data.to).emit("callAccepted", data.signal)
+      })
+
+      socket.on("disconnect", async() => {
      /*    console.log(socket.id + "disconnected"); */
       });
     });

@@ -8,12 +8,30 @@ function DeleteUserAdmin({ item }) {
   const [callback, setCallback] = state.User.callback;
   const { deleteUser } = adminService();
   const [updateCollaboratorModal, setUpdateCollaboratorModal] = useState(false);
+  const [showAlert, setShowAlert] = state.User.alert;
   const handleClose = () => {
     setUpdateCollaboratorModal(false);
   };
 
   const submit = async () => {
     const res = await deleteUser(item._id);
+    if (res.status !== 200) {
+      setShowAlert({
+        status: true,
+        message: "there was an error please try again!!!",
+        type: "ERROR",
+        duration: 3000,
+        position: "top-right",
+      });
+    } else {
+      setShowAlert({
+        status: true,
+        message: "Deleted",
+        type: "SUCCESS",
+        duration: 5000,
+        position: "top-right",
+      });
+    }
     setCallback(!callback);
   };
 

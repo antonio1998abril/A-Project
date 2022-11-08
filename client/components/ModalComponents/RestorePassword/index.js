@@ -36,7 +36,7 @@ function RestorePassWordButton() {
     } else {
       setShowAlert({
         status: true,
-        message: "Hello again",
+        message: "Hello again!!",
         type: "SUCCESS",
         duration: 10000,
         position: "top-right",

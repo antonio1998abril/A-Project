@@ -8,6 +8,8 @@ function DeleteClient({ item, clientStatus, techLeadStatus, managerStatus }) {
   const [callback, setCallback] = state.User.callback;
   const { deleteClient,deleteTechLead,deleteManager  } = clientService();
   const [deleteModal, setDeleteModal ] = useState(false);
+  const [showAlert, setShowAlert] = state.User.alert;
+
   const handleClose = () => {
     setDeleteModal(false);
   };
@@ -22,6 +24,23 @@ function DeleteClient({ item, clientStatus, techLeadStatus, managerStatus }) {
     }
     if (managerStatus) {
       res = await deleteManager(item._id);
+    }
+    if (res.status !== 200) {
+      setShowAlert({
+        status: true,
+        message: "there was an error please try again!!!",
+        type: "ERROR",
+        duration: 3000,
+        position: "top-right",
+      });
+    } else {
+      setShowAlert({
+        status: true,
+        message: "Deleted",
+        type: "SUCCESS",
+        duration: 5000,
+        position: "top-right",
+      });
     }
 
     setCallback(!callback);
@@ -65,10 +84,10 @@ function DeleteClient({ item, clientStatus, techLeadStatus, managerStatus }) {
       <Modal show={deleteModal} onHide={handleClose}>
         <Modal.Header closeButton>
           <Modal.Title>
-            Are you sure you want to delete {item.subject}?
+            Are you sure you want to delete {item.name}?
           </Modal.Title>
         </Modal.Header>
-        <Modal.Body>This task will be deleted for ever</Modal.Body>
+        <Modal.Body><b>Everything related with this Client will be deleted for ever</b></Modal.Body>
 
         <Modal.Footer>
           <Button variant="secondary" onClick={handleClose}>
@@ -81,7 +100,7 @@ function DeleteClient({ item, clientStatus, techLeadStatus, managerStatus }) {
               submit();
             }}
           >
-            Delete {item.subject}
+            Delete {item.name}
           </Button>
         </Modal.Footer>
       </Modal>

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useCallback, useContext, useEffect, useRef, useState } from "react";
 import {
   Modal,
   OverlayTrigger,
@@ -19,6 +19,7 @@ import Back from "../../../public/fondo2.jpg";
 import Loading from "../../Loading";
 import { clientService } from "../../../service/clientService";
 import ReactDatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 const accountOptions = [
   { label: "Yes", value: "public" },
@@ -34,13 +35,13 @@ function UpdateUser({ item }) {
   const updateTemplate = useRef(null);
   const state = useContext(AuthContext);
   const { updateUser, uploadFile, deleteFile } = adminService();
-  const { getClientList, getManager, getTechLead } = clientService();
+  const { getManager, getTechLead } = clientService();
   const [updateCollaboratorModal, setUpdateCollaboratorModal] = useState(false);
-
+  const [showAlert, setShowAlert] = state.User.alert;
   const [callback, setCallback] = state.User.callback;
   const [isAdmin] = state.User.isAdmin;
   const [id, setId] = useState("");
-
+  const [itemsClients] = state.User.itemsClients
   /* iMAGES */
   const [loading, setLoading] = useState(false);
   const [imagesUrl, setImagesUrl] = useState(item?.userImage?.url);
@@ -48,8 +49,12 @@ function UpdateUser({ item }) {
   /* iMAGES */
   const [enableManagerTechLeadHTML, setEnableManagerTechLeadHTML] =
     useState(false);
-  const [hired, setHired] = useState(new Date());
-  const [birthDay, setBirthDay] = useState(new Date());
+  const [hired, setHired] = useState(
+    item?.hired ? new Date(item?.hired) : new Date()
+  );
+  const [birthDay, setBirthDay] = useState(
+    item?.birthDay ? new Date(item?.birthDay) : new Date()
+  );
   const [clientList, setClientList] = useState([]);
   const [managerList, setManagerList] = useState([]);
   const [techLeadList, setTeachLeadsList] = useState([]);
@@ -66,7 +71,7 @@ function UpdateUser({ item }) {
 
   const [clientStatusUpdate, setClientStatusUpdate] = useState({
     label: "N/A",
-    value: "",
+    value: null || "",
   });
   const [managerStatus, setManagerStatus] = useState({
     label: "N/A",
@@ -79,12 +84,17 @@ function UpdateUser({ item }) {
 
   const handleClose = () => {
     setUpdateCollaboratorModal(false);
-    /*     setClientStatusUpdate({ label: "N/A", value: "" }); */
+    if(item?.currentClient){
+      handleList({ item });
+    }
+/*     setManagerStatus({ label: "N/A", value: "" });
+    setTechLeadStatus({ label: "N/A", value: "" });
+    setClientStatusUpdate({label: "N/A",
+    value: ""}) */ 
   };
 
   const onSubmit = async (values) => {
     const { email, lastName, name, occupation } = values;
-
     const body = {
       email: email,
       lastName: lastName,
@@ -103,6 +113,23 @@ function UpdateUser({ item }) {
       hired: hired,
     };
     const res = await updateUser(id, body);
+    if (res.status !== 200) {
+      setShowAlert({
+        status: true,
+        message: "there was an error please try again!!!",
+        type: "ERROR",
+        duration: 3000,
+        position: "top-right",
+      });
+    } else {
+      setShowAlert({
+        status: true,
+        message: "User Updated",
+        type: "SUCCESS",
+        duration: 5000,
+        position: "top-right",
+      });
+    }
     setUpdateCollaboratorModal(false);
     setCallback(!callback);
   };
@@ -117,7 +144,21 @@ function UpdateUser({ item }) {
     if (item.status === "public") {
       setAccountStatus({ label: "Yes", value: "public" });
     }
-  }, []);
+
+    if( clientStatusUpdate.value !== null){
+      setEnableManagerTechLeadHTML(true);
+      setManagerStatus({
+        label: "N/A",
+        value: "",
+      });
+      setTechLeadStatus({
+        label: "N/A",
+        value: "",
+      });
+    getDataTM(clientStatusUpdate.value);
+}   
+
+  }, [clientStatusUpdate]);
 
   /* IMAGE */
   const styleUpload = {
@@ -160,8 +201,9 @@ function UpdateUser({ item }) {
   /* IMAGE */
   const handleList = async ({ item }) => {
     try {
-      await getClientList().then(async (response) => {
-        const setClientListToDropDown = response?.data?.result.find(
+
+      if(item?.currentClient !== null) {
+        const  setClientListToDropDown =itemsClients.find(
           (o) => o._id === item?.currentClient
         );
         setClientStatusUpdate({
@@ -169,111 +211,125 @@ function UpdateUser({ item }) {
           value: item?.currentClient,
         });
 
-        setClientList(
-          response?.data?.result?.map((item) => ({
-            label: item?.name,
-            value: item?._id,
-          }))
-        );
-      });
+        newData(item?.currentClient);
+        setEnableManagerTechLeadHTML(true);
+      }else {
+        setClientStatusUpdate({value:null})
+       
+      }
+      
+     
+  
+  
 
       /*  setClientStatusUpdate({ label: setClientListToDropDown, value: item?.currentClient });  */
 
-      setEnableManagerTechLeadHTML(true);
+      
     } catch (err) {
       console.log(err);
     }
   };
-  const handleManagerAndTechLead = async (item) => {
-    /* if (clientStatus.label != "N/A") {
-       let resManager = await getManager(clientStatus.value).then((response)=> {
-        console.log(response)
-        const setManagerListToDropDown = response?.data?.find((o) => o._id === item?.currentManager)
-        setManagerStatus({ label: setManagerListToDropDown.name, value: item?.currentManager }) 
-       });
-      let resTechLead = await getTechLead(clientStatus.value);
-     
-
-      
-       setManagerList(
-        resManager?.data?.map((item) => ({
-          label: item.clientManagerName + ' '+item.clientManagerLastName,
-          value: item._id,
-        }))
-      ); 
-      setTeachLeadsList(
-        resTechLead?.data?.map((item) => ({
-          label: item.projectTechLeadName + ' '+item.projectTechLeadLastName,
-          value: item._id,
-        }))
-      );
 
 
-    }  */
-  };
-
-  useEffect(
-    () => {
-      handleList({ item });
-
-      /*     if (enableManagerTechLeadHTML) {
-      handleManagerAndTechLead();
-    } */
-    },
-    [
-      /* enableManagerTechLeadHTML */
-    ]
-  );
 
   const newData = async (get) => {
-    if (get) {
+
+    if (get !== null) {
+
       await getManager(get).then(async (response) => {
         const setClientListToDropDown = response?.data?.find(
-          (o) => o._id === item?.currentManager
+          (o) => o._id === item?.currentManager 
         );
         setManagerStatus({
           label: setClientListToDropDown?.clientManagerName || "N/A",
           value: item?.currentManager || "",
         });
 
+       
+
         setManagerList(
           response?.data?.map((item) => ({
-            label: item.clientManagerName + " " + item.clientManagerLastName || "N/A",
-            value: item._id || "",
+            label:
+              item?.clientManagerName + " " + item?.clientManagerLastName ||
+              "N/A",
+            value: item?._id || "",
           }))
         );
       });
 
       await getTechLead(get).then(async (response) => {
         const setTechLeadListToDropDown = response?.data?.find(
-          (o) => o._id === item?.currentTechLead
+          (o) => o._id === item?.currentTechLead 
         );
         setTechLeadStatus({
           label:
-            setTechLeadListToDropDown?.projectTechLeadName +
-            " " +
-            setTechLeadListToDropDown?.projectTechLeadLastName || "N/A",
-          value: item?.currentTechLead  || "",
+            setTechLeadListToDropDown?.projectTechLeadName ||
+            "N/A" + " " + setTechLeadListToDropDown?.projectTechLeadLastName ||
+            "N/A",
+          value: item?.currentTechLead || "",
         });
 
         setTeachLeadsList(
           response?.data?.map((item) => ({
-            label:
-              item?.projectTechLeadName + " " + item.projectTechLeadLastName || "N/A",
+            label: item?.projectTechLeadName || "N/A",
             value: item?._id || "",
           }))
         );
       });
-    }
+    } 
   };
 
+  const getDataTM = async (clientID) => {
+console.log('selected',clientID)
+console.log('type',typeof(clientID))
+
+if(clientID !== ""){
+    const resManager = await getManager(clientID);
+    
+    setManagerList(resManager?.data.map((item) => ({
+      label:
+        item?.clientManagerName + " " + item?.clientManagerLastName ||
+        "N/A",
+      value: item?._id || "",
+    })));
+ 
+    const resTechLead = await getTechLead(clientID);     setTeachLeadsList(resTechLead?.data.map((item) => ({
+      label: item?.projectTechLeadName || "N/A",
+      value: item?._id || "",
+    })));
+ 
+
+  }
+  };
+
+/* const changeData = useCallback(()=>{
+  setClientStatusUpdate({value:item?.currentClient})
+},[])
+ */
   useEffect(() => {
-    if (clientStatusUpdate != item?.currentClient) {
-      newData(clientStatusUpdate.value);
-    } else {
-      newData(item?.currentClient);
-    }
-  }, [clientStatusUpdate]);
+
+/*     if(item?.currentClient != null){ */
+  /*     setClientStatusUpdate({value:item?.currentClient}) */
+  if(item?.currentClient){
+    handleList({ item });
+  }
+      
+      setClientList(
+        itemsClients.map((item) => ({
+          label: item?.name,
+          value: item?._id,
+        }))
+      ); 
+
+
+  /*   } else{
+      getDataTM(clientStatusUpdate.value);
+    } */
+    
+    
+    
+ 
+  }, []);
 
   return (
     <>

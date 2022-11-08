@@ -9,6 +9,7 @@ function NewManager({ show, onHide, item }) {
   const { newManager } = clientService();
   const state = useContext(AuthContext);
   const [callback, setCallback] = state.User.callback;
+  const [showAlert, setShowAlert] = state.User.alert;
 
   const managerClient = useRef(null);
 
@@ -26,6 +27,23 @@ function NewManager({ show, onHide, item }) {
       client: item,
     };
     const res = await newManager(body);
+    if (res.status !== 200) {
+      setShowAlert({
+        status: true,
+        message: "there was an error please try again!!!",
+        type: "ERROR",
+        duration: 3000,
+        position: "top-right",
+      });
+    } else {
+      setShowAlert({
+        status: true,
+        message: "Action Completed",
+        type: "SUCCESS",
+        duration: 5000,
+        position: "top-right",
+      });
+    }
     setCallback(!callback);
     onHide();
   };

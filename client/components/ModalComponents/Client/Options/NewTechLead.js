@@ -11,6 +11,7 @@ function NewTechLead({ show, onHide, item }) {
   const { newTechLead } = clientService();
   const state = useContext(AuthContext);
   const [callback, setCallback] = state.User.callback;
+  const [showAlert, setShowAlert] = state.User.alert;
 
   const handleClose = () => {
     onHide();
@@ -27,6 +28,23 @@ function NewTechLead({ show, onHide, item }) {
       client: item,
     };
     const res = await newTechLead(body);
+    if (res.status !== 200) {
+      setShowAlert({
+        status: true,
+        message: "there was an error please try again!!!",
+        type: "ERROR",
+        duration: 3000,
+        position: "top-right",
+      });
+    } else {
+      setShowAlert({
+        status: true,
+        message: "Action Completed",
+        type: "SUCCESS",
+        duration: 5000,
+        position: "top-right",
+      });
+    }
     setCallback(!callback);
     onHide();
   };

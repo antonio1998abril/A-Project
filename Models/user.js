@@ -63,11 +63,11 @@ const userSchema = new Schema(
       },
     ],
     birthDay: {
-      type: String,
+      type:Date,
       required: false,
     },
     hired: {
-      type: String,
+      type: Date,
       required: false,
     },
     previousApexManager: {

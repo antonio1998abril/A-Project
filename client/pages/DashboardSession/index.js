@@ -8,7 +8,7 @@ import Collaborator from "../../components/Role/Collaborator/index";
 import LoadMore from "../../components/LoadMore";
 
 import Loading from "../../components/Loading";
-import Sidebar from "../../components/NotifcationBar/Sidebar";
+
 
 function Index() {
   const state = useContext(AuthContext);

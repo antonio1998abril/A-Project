@@ -65,6 +65,7 @@ function ClientInfo({ show, onHide, item }) {
                   <div className="card-text text-center">
                     <h2>Managers: </h2>
                   </div>
+
                   <Table
                     responsive="xl"
                     striped

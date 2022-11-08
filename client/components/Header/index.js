@@ -26,6 +26,8 @@ function Index() {
   const [enableSideBar, setEnableSideBar] = state.User.enableSideBar;
   const [userId] = state.User.userId;
   const [notifications, setNotifications] = state.User.notifications;
+  const [showAlert, setShowAlert] = state.User.alert;
+
   const logoutUser = async () => {
     await getLogOut()
       .then(function (e) {
@@ -68,6 +70,16 @@ function Index() {
     await axios("/api/socket");
 
     const receiveNotification = (message) => {
+      if(message){
+        console.log('new notification')
+        setShowAlert({
+          status: true,
+          message: "you have a new notification",
+          type: "SUCCESS",
+          duration: 3000,
+          position: "top-right",
+        });
+      }
       setNotifications([message, ...notifications]);
     };
 

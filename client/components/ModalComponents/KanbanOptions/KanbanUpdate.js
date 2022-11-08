@@ -77,6 +77,7 @@ function KanbanUpdate({ item }) {
   const [loading, setLoading] = useState(false);
   const [imagesUrl, setImagesUrl] = useState(item?.evidenceImage?.url);
   const [imagesId, setImagesId] = useState("");
+  const [showAlert, setShowAlert] = state.User.alert;
   /* iMAGES */
 
   const handleClose = () => {
@@ -103,6 +104,23 @@ function KanbanUpdate({ item }) {
       },
     };
     const res = await updateTask(idTask, body);
+    if (res.status !== 200) {
+      setShowAlert({
+        status: true,
+        message: "there was an error please try again!!!",
+        type: "ERROR",
+        duration: 3000,
+        position: "top-right",
+      });
+    } else {
+      setShowAlert({
+        status: true,
+        message: "Deleted",
+        type: "SUCCESS",
+        duration: 5000,
+        position: "top-right",
+      });
+    }
     setUpdateTaskModal(false);
     setCallback(!callback);
   };

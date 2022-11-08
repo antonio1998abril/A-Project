@@ -6,7 +6,7 @@ let socket;
 import io from "socket.io-client";
 import axios from "axios";
 import { chatService } from "../service/chatServices";
-
+import Peer from "simple-peer"
 socket = io();
 
 function Messenger() {
@@ -16,7 +16,7 @@ function Messenger() {
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
   const divRef = useRef(null);
-  const {  postComments } = chatService();
+  const { postComments } = chatService();
   const [imageUserSelected, setImageUserSelected] = useState("");
 
   /* Selected ChatRoom */
@@ -32,11 +32,30 @@ function Messenger() {
   const [userInfoLogged] = state.User.userInfoLogged;
   const [callback, setCallback] = state.User.callback;
 
-  /* FirstElement */
-  const [firstElement,setFirstElement] = useState({})
+  /* Call */
+  const [meCall, setMeCall] = useState("");
+	const [ stream, setStream ] = useState()
+	const [ receivingCall, setReceivingCall ] = useState(false)
+	const [ caller, setCaller ] = useState("")
+	const [ callerSignal, setCallerSignal ] = useState()
+	const [ callAccepted, setCallAccepted ] = useState(false)
+	const [ idToCall, setIdToCall ] = useState("")
+	const [ callEnded, setCallEnded] = useState(false)
+  const [nameCall, setNameCall] = useState();
+
+  const myVideo = useRef();
+  const userVideo = useRef();
+  const connectionRef = useRef();
+
+  /* useEffect(() => {
+navigator.mediaDevices.getDisplayMedia({video:true, audio:true}).then((stream)=>{
+setStream(stream)
+myVideo.current.srcObject = stream;
+})
+},[]) */
+  /* Call ended */
 
   const socketInitializer = async () => {
-   
     await axios("/api/socket");
 
     const receiveMessage = (message) => {
@@ -47,16 +66,32 @@ function Messenger() {
     const receiveNotification = (message) => {
       setNotifications([message, ...notifications]);
     };
-   
-    socket.on("connect", () => {
-    
-    });
+
+    /* Video */
+ /*    socket.on("me", (id) => {
+      setMeCall(id)
+      console.log("id",id)
+    }) */
+
+
+    socket.on("callUser", (data) => {
+      setReceivingCall(true)
+      setCaller(data.from)
+      setNameCall(name)
+      setCallerSignal(data.signal)
+    })
+    /* Video */
+
+    socket.on("connect", () => {});
 
     socket.on("update-input", receiveMessage);
     socket.on("newNotification", receiveNotification);
-    
+
+
+
     return () => {
       socket.off("update-input", socketInitializer);
+     
     };
   };
 
@@ -64,7 +99,9 @@ function Messenger() {
     chatListUser.find((obj) => {
       if (obj._id === item._id) {
         setMessages(item.comments.reverse());
-        setName(item.guestUserB.name + " " + item.guestUserB.lastName);
+        console.log(userInfoLogged.name, item.guestUserB.name )
+        userInfoLogged.name !== item.guestUserB.name ? setName(item.guestUserB.name + " " + item.guestUserB.lastName) :setName(item.guestUserA.name + " " + item.guestUserA.lastName) 
+       
       }
       return obj._id === item._id;
     });
@@ -106,23 +143,97 @@ function Messenger() {
     );
     setCallback(!callback);
     /*   setNotifications([newMessage, ...notifications]); */
-    
-
   };
+/* CALL */
+const callUser = (id) => {
+  const peer = new Peer({
+    initiator: true,
+    trickle: false,
+    stream: stream
+  })
+  peer.on("signal", (data) => {
+    socket.emit("callUser", {
+      userToCall: id,
+      signalData: data,
+      from: meCall,
+      name: nameCall
+    })
+  })
+  peer.on("stream", (stream) => {
+    
+      userVideo.current.srcObject = stream
+    
+  })
+  socket.on("callAccepted", (signal) => {
+    setCallAccepted(true)
+    peer.signal(signal)
+  })
+
+  connectionRef.current = peer
+}
+
+const answerCall =() =>  {
+  setCallAccepted(true)
+  const peer = new Peer({
+    initiator: false,
+    trickle: false,
+    stream: stream
+  })
+  peer.on("signal", (data) => {
+    socket.emit("answerCall", { signal: data, to: caller })
+  })
+  peer.on("stream", (stream) => {
+    userVideo.current.srcObject = stream
+  })
+
+  peer.signal(callerSignal)
+  connectionRef.current = peer
+}
+
+const leaveCall = () => {
+  setCallEnded(true)
+  connectionRef.current.destroy()
+}
+
+ /* Call */
 
   useEffect(() => {
     socketInitializer();
-
-  
     if (divRef?.current !== null) {
       divRef?.current?.scrollIntoView({ behavior: "smooth" });
     }
     return () => {
       socket.off("update-input", socketInitializer);
     };
-  }, [messages,userId, currentSelectChat, idUserNotification,callback]);
-/*   let lastElement = messages[messages.length - 1];
-console.log(messages) */
+  }, [messages, userId, currentSelectChat, idUserNotification, callback]);
+  /*   let lastElement = messages[messages.length - 1]; */
+
+
+  useEffect(() => {
+    const getDeviceMedia = async () => {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: true
+      })
+      setStream(stream)
+      if(myVideo.current){
+        myVideo.current.srcObject = stream;
+    
+    
+
+      }
+    }
+    getDeviceMedia();
+  },[])
+
+
+/*   useEffect(() => {
+		navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then((stream) => {
+			setStream(stream)
+				myVideo.current.srcObject = stream
+		})
+
+
+	}, []) */
   return (
     <>
       {chatListUser.length === 0 ? (
@@ -152,6 +263,8 @@ console.log(messages) */
                       setCallback(!callback);
                       getChatRoom({ item }),
                         setCurrentSelectChat(item._id),
+                        setMeCall(item._id)
+                        setIdToCall(item._id)
                         socket.emit("joinRoom", item._id);
                       userId === item?.guestUserA?._id
                         ? (setImageUserSelected(
@@ -252,7 +365,8 @@ console.log(messages) */
                   <div className="flex-grow-1 pl-3">
                     <strong>
                       {/*  {userInfoLogged.name} {userInfoLogged.lastName} */}
-                      {name}
+                    
+                      {name} <button type="submit"> Call</button>
                     </strong>
                     {/* <div className="text-muted small">
                     <em>Typing...</em>
@@ -315,8 +429,9 @@ console.log(messages) */
                               </p> */}
                               </div>
                               <div
-                                className="card-body"
-                                /* ref={divRef} */ /* ref={messages[0] ? divRef : null} */>
+                                className="card-body" /* ref={messages[0] ? divRef : null} */
+                                /* ref={divRef} */
+                              >
                                 <p className="mb-0">{item.message}</p>
                               </div>
                             </div>
@@ -336,8 +451,8 @@ console.log(messages) */
                               </>
                             ) : null}
                           </li>
-                        )).reverse()
-                        }
+                        ))
+                        .reverse()}
                     </>
                   )}
                 </div>
@@ -351,7 +466,6 @@ console.log(messages) */
                 <div className="flex-grow-0 py-3 px-4 border-top">
                   <div className="input-group">
                     <input
-                    
                       type="text"
                       className="form-control"
                       placeholder="Type your message"
@@ -369,6 +483,9 @@ console.log(messages) */
           </div>
         </div>
       )}
+
+
+      
       {/*      {itemsDashBoard.length === 0 && (
               <>
                 <br />
@@ -377,6 +494,69 @@ console.log(messages) */
                 </h1>
               </>
             )} */}
+
+<div>
+<h1 >Zoomish</h1>
+		<div className="container">
+			<div className="video-container">
+				<div className="video">
+					{stream &&  <video playsInline muted ref={myVideo} autoPlay style={{ width: "300px" }} />}
+				</div>
+				<div className="video">
+					{callAccepted && !callEnded ?
+					<video playsInline ref={userVideo} autoPlay style={{ width: "300px"}} />:
+					null}
+				</div>
+			</div>
+			<div className="myId">
+	{/* 			<input
+					id="filled-basic"
+					label="Name"
+					variant="filled"
+					value={nameCall}
+					onChange={(e) => setNameCall(e.target.value)}
+					style={{ marginBottom: "20px" }}
+				/> */}
+		{/* 		<CopyToClipboard text={me} style={{ marginBottom: "2rem" }}>
+					<button variant="contained" color="primary" startIcon={<AssignmentIcon fontSize="large" />}>
+						Copy ID
+					</button>
+				</CopyToClipboard> */}
+
+	{/* 			<input
+					id="filled-basic"
+					label="ID to call"
+					variant="filled"
+					value={idToCall}
+					onChange={(e) => setIdToCall(e.target.value)}
+				/> */}
+
+        <p>{meCall} id</p>
+				<div className="call-button">
+					{callAccepted && !callEnded ? (
+						<button variant="contained" color="secondary" onClick={leaveCall}>
+							End Call
+						</button>
+					) : (
+						<button color="primary" aria-label="call" onClick={() => callUser(idToCall)}>
+					{/* 		<PhoneIcon fontSize="large" /> */} call
+						</button>
+					)}
+					{idToCall}
+				</div>
+			</div>
+			<div>
+				{receivingCall && !callAccepted ? (
+						<div className="caller">
+						<h1 >{nameCall} is calling...</h1>
+						<button variant="contained" color="primary" onClick={answerCall}>
+							Answer
+						</button>
+					</div>
+				) : null}
+			</div>
+		</div>
+    </div>
     </>
   );
 }

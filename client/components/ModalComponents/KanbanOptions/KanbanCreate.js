@@ -37,6 +37,7 @@ function KanbanCreate({ id }) {
   const createTemplate = useRef(null);
   const state = useContext(AuthContext);
   const [callback, setCallback] = state.User.callback;
+  const [showAlert, setShowAlert] = state.User.alert;
 
   const [newTaskModal, setNewTaskModal] = useState(false);
   const [importanceStatus, setImportanceStatus] = useState({
@@ -78,6 +79,23 @@ function KanbanCreate({ id }) {
       },
     };
     const res = await postTask(body);
+    if (res.status !== 200) {
+      setShowAlert({
+        status: true,
+        message: "there was an error please try again!!!",
+        type: "ERROR",
+        duration: 3000,
+        position: "top-right",
+      });
+    } else {
+      setShowAlert({
+        status: true,
+        message: "Task Created",
+        type: "SUCCESS",
+        duration: 5000,
+        position: "top-right",
+      });
+    }
     setNewTaskModal(false);
     setCallback(!callback);
   };

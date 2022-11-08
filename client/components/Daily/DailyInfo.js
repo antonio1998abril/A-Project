@@ -135,7 +135,7 @@ function DailyInfo({ item }) {
   useEffect(() => {
     setId(item._id);
     getDaily();
-  }, [getId]);
+  }, [getId,callback]);
 
   return (
     <>
