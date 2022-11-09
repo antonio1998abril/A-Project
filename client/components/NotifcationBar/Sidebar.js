@@ -38,7 +38,7 @@ function Sidebar() {
                 </strong>
                 {/*  <small>11 mins ago</small> */}
               </Toast.Header>
-              {item.typeNotification === "message" ? (
+              {item.typeNotification === "message" || item.typeNotification === "videoCall"? (
                 <>
                   {" "}
                   <Toast.Body>{item.message}</Toast.Body>

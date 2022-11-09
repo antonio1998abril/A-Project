@@ -33,7 +33,7 @@ function Messenger() {
   const [callback, setCallback] = state.User.callback;
 
   /* Call */
-  const [meCall, setMeCall] = useState("");
+/*   const [meCall, setMeCall] = useState("");
 	const [ stream, setStream ] = useState()
 	const [ receivingCall, setReceivingCall ] = useState(false)
 	const [ caller, setCaller ] = useState("")
@@ -45,7 +45,7 @@ function Messenger() {
 
   const myVideo = useRef();
   const userVideo = useRef();
-  const connectionRef = useRef();
+  const connectionRef = useRef(); */
 
   /* useEffect(() => {
 navigator.mediaDevices.getDisplayMedia({video:true, audio:true}).then((stream)=>{
@@ -74,12 +74,12 @@ myVideo.current.srcObject = stream;
     }) */
 
 
-    socket.on("callUser", (data) => {
+/*     socket.on("callUser", (data) => {
       setReceivingCall(true)
       setCaller(data.from)
       setNameCall(name)
       setCallerSignal(data.signal)
-    })
+    }) */
     /* Video */
 
     socket.on("connect", () => {});
@@ -145,7 +145,7 @@ myVideo.current.srcObject = stream;
     /*   setNotifications([newMessage, ...notifications]); */
   };
 /* CALL */
-const callUser = (id) => {
+/* const callUser = (id) => {
   const peer = new Peer({
     initiator: true,
     trickle: false,
@@ -194,7 +194,7 @@ const leaveCall = () => {
   setCallEnded(true)
   connectionRef.current.destroy()
 }
-
+ */
  /* Call */
 
   useEffect(() => {
@@ -208,7 +208,7 @@ const leaveCall = () => {
   }, [messages, userId, currentSelectChat, idUserNotification, callback]);
   /*   let lastElement = messages[messages.length - 1]; */
 
-
+/* 
   useEffect(() => {
     const getDeviceMedia = async () => {
       const stream = await navigator.mediaDevices.getUserMedia({
@@ -223,7 +223,7 @@ const leaveCall = () => {
       }
     }
     getDeviceMedia();
-  },[])
+  },[]) */
 
 
 /*   useEffect(() => {
@@ -263,8 +263,8 @@ const leaveCall = () => {
                       setCallback(!callback);
                       getChatRoom({ item }),
                         setCurrentSelectChat(item._id),
-                        setMeCall(item._id)
-                        setIdToCall(item._id)
+                    /*     setMeCall(item._id)
+                        setIdToCall(item._id) */
                         socket.emit("joinRoom", item._id);
                       userId === item?.guestUserA?._id
                         ? (setImageUserSelected(
@@ -495,7 +495,7 @@ const leaveCall = () => {
               </>
             )} */}
 
-<div>
+{/* <div>
 <h1 >Zoomish</h1>
 		<div className="container">
 			<div className="video-container">
@@ -509,27 +509,7 @@ const leaveCall = () => {
 				</div>
 			</div>
 			<div className="myId">
-	{/* 			<input
-					id="filled-basic"
-					label="Name"
-					variant="filled"
-					value={nameCall}
-					onChange={(e) => setNameCall(e.target.value)}
-					style={{ marginBottom: "20px" }}
-				/> */}
-		{/* 		<CopyToClipboard text={me} style={{ marginBottom: "2rem" }}>
-					<button variant="contained" color="primary" startIcon={<AssignmentIcon fontSize="large" />}>
-						Copy ID
-					</button>
-				</CopyToClipboard> */}
 
-	{/* 			<input
-					id="filled-basic"
-					label="ID to call"
-					variant="filled"
-					value={idToCall}
-					onChange={(e) => setIdToCall(e.target.value)}
-				/> */}
 
         <p>{meCall} id</p>
 				<div className="call-button">
@@ -539,7 +519,7 @@ const leaveCall = () => {
 						</button>
 					) : (
 						<button color="primary" aria-label="call" onClick={() => callUser(idToCall)}>
-					{/* 		<PhoneIcon fontSize="large" /> */} call
+					 	 call
 						</button>
 					)}
 					{idToCall}
@@ -556,7 +536,7 @@ const leaveCall = () => {
 				) : null}
 			</div>
 		</div>
-    </div>
+    </div> */}
     </>
   );
 }

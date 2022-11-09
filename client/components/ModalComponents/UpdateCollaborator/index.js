@@ -280,8 +280,6 @@ function UpdateUser({ item }) {
   };
 
   const getDataTM = async (clientID) => {
-console.log('selected',clientID)
-console.log('type',typeof(clientID))
 
 if(clientID !== ""){
     const resManager = await getManager(clientID);

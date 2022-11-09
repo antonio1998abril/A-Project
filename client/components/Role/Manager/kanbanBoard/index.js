@@ -58,6 +58,10 @@ function Index() {
   const { getCollaboratorInfo, getTasks } = adminService();
   const [collaborator, setCollaborator] = useState({});
   const router = useRouter();
+  /* Totals */
+  const [lowGraph, setLowGraph] = useState([]);
+  const [mediumGraph, setMediumGraph] = useState([]);
+  const [highGraph, setHighGraph] = useState([]);
 
   /* functions callbacks */
   const catchCollaborator = async (id) => {
@@ -67,6 +71,34 @@ function Index() {
 
   const catchListTasks = async (id) => {
     const res = await getTasks(id);
+
+    const lowLevel = res?.data?.todo.map((item, index) => {
+      if (item.importanceLevel === "low") lowGraph.push(item.importanceLevel);
+      if (item.importanceLevel === "medium")
+mediumGraph.push(item.importanceLevel)
+      if (item.importanceLevel === "high") highGraph.push(item.importanceLevel);
+    });
+
+    const mediumLevel = res?.data?.inProgress.map((item, index) => {
+      if (item.importanceLevel === "low")  lowGraph.push(item.importanceLevel);
+      if (item.importanceLevel === "medium")
+      mediumGraph.push(item.importanceLevel)
+      if (item.importanceLevel === "high") highGraph.push(item.importanceLevel);
+    });
+
+    const hightLevel = res?.data?.review.map((item, index) => {
+      if (item.importanceLevel === "low")  lowGraph.push(item.importanceLevel);
+      if (item.importanceLevel === "medium")
+      mediumGraph.push(item.importanceLevel)
+      if (item.importanceLevel === "high") highGraph.push(item.importanceLevel);
+    });
+
+    const completedLevel = res?.data?.completed.map((item, index) => {
+      if (item.importanceLevel === "low") lowGraph.push(item.importanceLevel);
+      if (item.importanceLevel === "medium")
+      mediumGraph.push(item.importanceLevel)
+      if (item.importanceLevel === "high") highGraph.push(item.importanceLevel);
+    });
 
     setColumns({
       [uuid()]: {
@@ -89,9 +121,7 @@ function Index() {
         color: "#E3FCEF",
         items: res?.data?.completed,
       },
-    })
-
-  
+    });
   };
 
   useEffect(() => {
@@ -102,6 +132,19 @@ function Index() {
   return (
     <div className="content-wrap">
       <br />
+
+ {/*      <div className="card">
+        <div className="card-body">
+          <h5 className="card-title">Total Task</h5>
+          <p className="card-text">
+            Low Priority:{lowGraph.length} &nbsp;
+            Medium Priority:{mediumGraph.length} &nbsp;
+            hight Priority: {highGraph.length}
+          </p>
+        </div>
+      </div>
+      <br />
+      <br /> */}
       <div className="cardKanban">
         <div className="card position-kanban-tools">
           <div className="card-body">

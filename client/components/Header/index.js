@@ -71,12 +71,12 @@ function Index() {
 
     const receiveNotification = (message) => {
       if(message){
-        console.log('new notification')
+        
         setShowAlert({
           status: true,
-          message: "you have a new notification",
-          type: "SUCCESS",
-          duration: 3000,
+          message: "You have a new notification",
+          type: "WARNING",
+          duration: 3500,
           position: "top-right",
         });
       }
@@ -120,9 +120,19 @@ function Index() {
                 A-Project
               </Navbar.Brand>
 
-              <Nav.Link href="/DashboardSession" onClick={home} className="fontNavBar ">
+           {/*    <Nav.Link href="/DashboardSession" onClick={home} className="fontNavBar ">
                 Home
-              </Nav.Link>
+              </Nav.Link> */}
+
+<span
+                    type="submit"
+                    onClick={home} 
+                    className="fontNavBar"
+                    style={style}
+                  >
+                    Home &nbsp;
+                  </span>
+
               {isManager && (
                 <>
                 <br/>

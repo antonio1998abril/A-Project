@@ -115,7 +115,7 @@ function KanbanUpdate({ item }) {
     } else {
       setShowAlert({
         status: true,
-        message: "Deleted",
+        message: "Task Updated",
         type: "SUCCESS",
         duration: 5000,
         position: "top-right",

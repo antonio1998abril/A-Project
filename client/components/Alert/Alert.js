@@ -10,6 +10,19 @@ function Alert() {
   const alertType = (message, type) => {
     if(type === 'SUCCESS') return toast.success(message); 
     if(type === 'ERROR') return toast.error(message) 
+    if(type === 'WARNING') return toast(message, {
+      style: {
+        border: '1px solid #525252 ',
+        padding: '16px',
+        color: 'dark',
+        fontWeight:'bold'
+      },
+      iconTheme: {
+        primary: '#ECE553',
+        secondary: '#FFFAEE',
+      },
+      icon: '❗'
+    }); 
   };
 
   useEffect(() => {
