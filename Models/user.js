@@ -51,7 +51,7 @@ const userSchema = new Schema(
     chatRoom: [
       {
         type: Schema.Types.ObjectId,
-        ref: "chats",
+        ref: "chatRooms",
         default: [],
       },
     ],

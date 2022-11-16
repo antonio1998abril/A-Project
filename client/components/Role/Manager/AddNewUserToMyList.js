@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import Image from "next/image";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import { adminService } from "../../../service/adminService";
@@ -6,29 +6,74 @@ import IconPersonCard from "../../Icons/IconPersonCard";
 import LoadMore from "../../LoadMore";
 import roleAccess from "./roleAccess";
 import PersonIcon from "../../Icons/PersonIcon";
-
+import Router from "next/router";
 import { Modal, Button } from "react-bootstrap";
+import { AuthContext } from "../../../context";
+import axios from "axios";
 
 function AddNewUserToMyList() {
+  const state = useContext(AuthContext);
   const { getAllUserNotAdded, addNewUserToMyList } = adminService();
 
   const [sort, setSort] = useState("");
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
-  const [itemsDashBoard, setItemsDashBoard] = useState([]);
+  const [itemsDashBoardAdmin, setItemsDashBoardAdmin] = useState([]);
   const [addUserModal, setAddUserModal] = useState(false);
   const [item, setItem] = useState({});
   const [callback, setCallback] = useState(false);
 
+  const [tokenAdmin]=state.User.tokenAdmin
+  const [itemsDashBoard, setItemsDashBoard] = state.User.itemsDashBoard
+const [setChatListUser] = state.User.setChatListUser
+const [showAlert, setShowAlert] = state.User.alert;
+
   const getAllUser = async () => {
     const res = await getAllUserNotAdded("Manager", sort, search, page);
-    setItemsDashBoard(res.data.users);
+    setItemsDashBoardAdmin(res.data.users);
   };
 
   const submit = async () => {
-    const res = await addNewUserToMyList(item._id);
-   
+    const result = await addNewUserToMyList(item._id);
+
+
+     if (result.status !== 200) {
+      setShowAlert({
+        status: true,
+        message: "there was an error please try again!!!",
+        type: "ERROR",
+        duration: 3000,
+        position: "top-right",
+      });
+    } else {
+      setShowAlert({
+        status: true,
+        message: "User Added",
+        type: "SUCCESS",
+        duration: 5000,
+        position: "top-right",
+      });
+    }
+
+
+    const res = await axios.get(
+      `/api/getAllUser?limit=${
+        page * 6
+      }&${""}&${sort}&email=${search}`,
+      {
+        headers: { Authorization: tokenAdmin},
+      }
+    );
+
+    const resChat = await axios.get("/api/getChatRooms", {
+      headers: { Authorization: tokenAdmin},
+    });
+    setChatListUser(resChat.data?.chatRoom)
     setCallback(!callback);
+    setItemsDashBoard(res.data.users);
+
+
+   
     handleClose();
   };
 
@@ -65,7 +110,7 @@ function AddNewUserToMyList() {
         <br />
         <br />
         <div className="cards ">
-          {itemsDashBoard.map((item) => {
+          {itemsDashBoardAdmin.map((item) => {
             return (
               <div
                 className="containerUser container general_Top"

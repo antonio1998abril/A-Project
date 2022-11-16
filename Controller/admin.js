@@ -88,9 +88,9 @@ const notifyPassword = async ({ email, newPassword, res }) => {
 
   await transporter.sendMail(mailOptions, async (error, info) => {
     if (error) {
-      return res.status(302).json({ msg: "Something went wrong" });
+      /* return res.status(302).json({ msg: "Something went wrong" }); */
     } else {
-      return res.status(200).json({ msg: "Email send" });
+  /*     return res.status(200).json({ msg: "Email send" }); */
     }
   });
 };
@@ -232,7 +232,7 @@ const controller = {
       createUserAndBlockAccount({ newUser, res });
     }
 
-    /* updateCurrentUserLogged({ newChatRoom, res, req }); */
+     updateCurrentUserLogged({ newChatRoom, res, req }); 
   },
 
   addToManagerUserAccountAlreadyDone: async (req, res, next) => {
@@ -287,6 +287,7 @@ const controller = {
       currentTechLead,
       currentClient,
     };
+    
     if (status === "private") saveUser["password"] = passwordHash;
     if (user.status !== status && status === "private")
       notifyPassword({ email, res });

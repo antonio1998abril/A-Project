@@ -38,6 +38,7 @@ function NewCollaboratorButton() {
   const state = useContext(AuthContext);
   const [callback, setCallback] = state.User.callback;
   const [isAdmin] = state.User.isAdmin;
+  const [isManager] = state.User.isManager;
   const [showAlert, setShowAlert] = state.User.alert;
   /* iMAGES */
   const [loading, setLoading] = useState(false);
@@ -95,11 +96,11 @@ function NewCollaboratorButton() {
         public_id: imagesId,
         url: imagesUrl,
       },
-      currentManager:managerStatus.value,
-      currentTechLead:techLeadStatus.value,
-      currentClient:clientStatus.value,
-      birthDay:birthDay,
-      hired:hired,
+      currentManager: managerStatus.value,
+      currentTechLead: techLeadStatus.value,
+      currentClient: clientStatus.value,
+      birthDay: birthDay,
+      hired: hired,
     };
     const res = await registerNewUser(body);
     if (res.status !== 200) {
@@ -179,16 +180,16 @@ function NewCollaboratorButton() {
 
       setManagerList(
         resManager?.data?.map((item) => ({
-          label: item.clientManagerName + ' '+item.clientManagerLastName,
+          label: item.clientManagerName + " " + item.clientManagerLastName,
           value: item._id,
         }))
-      ); 
+      );
       setTeachLeadsList(
         resTechLead?.data?.map((item) => ({
-          label: item.projectTechLeadName + ' '+item.projectTechLeadLastName,
+          label: item.projectTechLeadName + " " + item.projectTechLeadLastName,
           value: item._id,
         }))
-      )
+      );
     }
   };
 
@@ -197,7 +198,7 @@ function NewCollaboratorButton() {
     if (enableManagerTechLeadHTML) {
       handleManagerAndTechLead();
     }
-  }, [enableManagerTechLeadHTML,clientStatus]);
+  }, [enableManagerTechLeadHTML, clientStatus]);
   return (
     <>
       <div
@@ -377,60 +378,65 @@ function NewCollaboratorButton() {
                       />
                     </Col>
 
-                    <Col xs={12} lg={12} className="mb-4">
-                      <label htmlFor="client" className="form-label">
-                        Current Project
-                      </label>
-                      <Select
-                        id="client"
-                        name="client"
-                        options={clientList}
-                        isSearchable={true}
-                        getOptionLabel={(option) => option.label || ""}
-                        getOptionValue={(option) => option.value || ""}
-                        value={clientStatus}
-                        onChange={(selected) => setClientStatus(selected)}
-                      />
-                    </Col>
-
-
-
-                    {clientStatus.label != "N/A" ? (
+                    {isManager && (
                       <>
                         <Col xs={12} lg={12} className="mb-4">
-                          <label htmlFor="manager" className="form-label">
-                            Current Manager
+                          <label htmlFor="client" className="form-label">
+                            Current Project
                           </label>
                           <Select
-                            id="manager"
-                            name="manager"
-                            options={managerList}
+                            id="client"
+                            name="client"
+                            options={clientList}
                             isSearchable={true}
                             getOptionLabel={(option) => option.label || ""}
                             getOptionValue={(option) => option.value || ""}
-                            value={managerStatus}
-                            onChange={(selected) =>  setManagerStatus(selected)}
+                            value={clientStatus}
+                            onChange={(selected) => setClientStatus(selected)}
                           />
                         </Col>
 
-                        <Col xs={12} lg={12} className="mb-4">
-                          <label htmlFor="techLead" className="form-label">
-                            Current Tech Lead
-                          </label>
-                          <Select
-                            id="techLead"
-                            name="techLead"
-                            options={techLeadList}
-                            isSearchable={true}
-                            getOptionLabel={(option) => option.label || ""}
-                            getOptionValue={(option) => option.value || ""}
-                            value={techLeadStatus}
-                            onChange={(selected) =>  setTechLeadStatus(selected)}
-                          />
-                        </Col>
+                        {clientStatus.label != "N/A" ? (
+                          <>
+                            <Col xs={12} lg={12} className="mb-4">
+                              <label htmlFor="manager" className="form-label">
+                                Current Manager
+                              </label>
+                              <Select
+                                id="manager"
+                                name="manager"
+                                options={managerList}
+                                isSearchable={true}
+                                getOptionLabel={(option) => option.label || ""}
+                                getOptionValue={(option) => option.value || ""}
+                                value={managerStatus}
+                                onChange={(selected) =>
+                                  setManagerStatus(selected)
+                                }
+                              />
+                            </Col>
 
+                            <Col xs={12} lg={12} className="mb-4">
+                              <label htmlFor="techLead" className="form-label">
+                                Current Tech Lead
+                              </label>
+                              <Select
+                                id="techLead"
+                                name="techLead"
+                                options={techLeadList}
+                                isSearchable={true}
+                                getOptionLabel={(option) => option.label || ""}
+                                getOptionValue={(option) => option.value || ""}
+                                value={techLeadStatus}
+                                onChange={(selected) =>
+                                  setTechLeadStatus(selected)
+                                }
+                              />
+                            </Col>
+                          </>
+                        ) : null}
                       </>
-                    ) : null}
+                    )}
                   </Row>
                 </Modal.Body>
               </Form>

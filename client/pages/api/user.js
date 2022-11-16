@@ -32,10 +32,11 @@ const [itemsClients,setItemsClients] = useState([]);
   /* Get all chats rooms */
   const [chatListUser, setChatListUser] = useState([]);
   const [userInfoLogged, setUserInfoLogged] = useState({});
-  
+  const [tokenAdmin,setTokenAdmin] = useState("")
 
   useEffect(() => {
     if (token) {
+      setTokenAdmin(token)
       const getRole = async () => {
         try {
           const res = await axios.get("/api/role", {
@@ -122,8 +123,9 @@ const [itemsClients,setItemsClients] = useState([]);
     itemsClients:[itemsClients],
     /* Get all chats */
     chatListUser: [chatListUser],
-    userInfoLogged: [userInfoLogged]
-
+    setChatListUser:[setChatListUser],
+    userInfoLogged: [userInfoLogged],
+    tokenAdmin: [tokenAdmin]
   };
 }
 export default User;

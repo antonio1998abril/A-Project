@@ -6,9 +6,8 @@ import Admin from "../../components/Role/Admin/index";
 import Manager from "../../components/Role/Manager/index";
 import Collaborator from "../../components/Role/Collaborator/index";
 import LoadMore from "../../components/LoadMore";
-
+import Swal from "sweetalert2";
 import Loading from "../../components/Loading";
-
 
 function Index() {
   const state = useContext(AuthContext);
@@ -22,38 +21,56 @@ function Index() {
   const [search, setSearch] = state.User.search;
   const [itemsDashBoard, setItemsDashBoard] = state.User.itemsDashBoard;
 
-  const handleRole = (e) => {
-    /*   setRole(e.target.value); */
-    setSearch("");
-  };
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      let timerInterval;
+      Swal.fire({
+        title: "Loading Elements!",
+        html: "...",
+        timer: 2000,
+        timerProgressBar: true,
+        didOpen: () => {
+          Swal.showLoading();
+        },
+        willClose: () => {
+          clearInterval(timerInterval);
+        },
+      })
+    }, 1000);
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
     <>
       <div className="content-wrap">
-        <div className="cardSearch container">
-          <div className="card-body">
-            <div className="input-group">
-              <input
-                size="100"
-                type="text"
-                className="form-control"
-                placeholder={
-                  isAdmin
-                    ? "Find Managers or Users"
-                    : isManager
-                    ? "Find Collaborators"
-                    : isCollaborator
-                    ? "Find your activities"
-                    : null
-                }
-                aria-label="Username"
-                aria-describedby="basic-addon1"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-              />
+        {itemsDashBoard.length >= 1 && (
+          <>
+            <div className="cardSearch container">
+              <div className="card-body">
+                <div className="input-group">
+                  <input
+                    size="100"
+                    type="text"
+                    className="form-control"
+                    placeholder={
+                      isAdmin
+                        ? "Find Managers or Users"
+                        : isManager
+                        ? "Find Collaborators"
+                        : isCollaborator
+                        ? "Find your activities"
+                        : null
+                    }
+                    aria-label="Username"
+                    aria-describedby="basic-addon1"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                  />
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
+          </>
+        )}
         <br />
         <br />
         <br />
@@ -89,7 +106,35 @@ function Index() {
             )}
           </>
         ) : (
-          <>{itemsDashBoard.length === 0 && <Loading />}</>
+          <>{/* {itemsDashBoard.length === 0 && <Loading />} */}</>
+        )}
+
+        {isCollaborator ? (
+          <>
+            {itemsDashBoard.length === 0 && (
+              <>
+                <br />
+                <h1 className="text-center">
+                  Ups! nothing here... you don not have pending
+                </h1>
+              </>
+            )}
+          </>
+        ) : (
+          <>{/* {itemsDashBoard.length === 0 && <Loading />} */}</>
+        )}
+
+        {isAdmin ? (
+          <>
+            {itemsDashBoard.length === 0 && (
+              <>
+                <br />
+                <h1 className="text-center">Ups! nothing here...</h1>
+              </>
+            )}
+          </>
+        ) : (
+          <>{/* {itemsDashBoard.length === 0 && <Loading />} */}</>
         )}
       </div>
     </>

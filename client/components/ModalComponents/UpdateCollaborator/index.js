@@ -1,4 +1,10 @@
-import React, { useCallback, useContext, useEffect, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import {
   Modal,
   OverlayTrigger,
@@ -34,14 +40,15 @@ const roleOptions = [
 function UpdateUser({ item }) {
   const updateTemplate = useRef(null);
   const state = useContext(AuthContext);
+  const [isAdmin] = state.User.isAdmin;
   const { updateUser, uploadFile, deleteFile } = adminService();
   const { getManager, getTechLead } = clientService();
   const [updateCollaboratorModal, setUpdateCollaboratorModal] = useState(false);
   const [showAlert, setShowAlert] = state.User.alert;
   const [callback, setCallback] = state.User.callback;
-  const [isAdmin] = state.User.isAdmin;
+  const [isManager] = state.User.isManager;
   const [id, setId] = useState("");
-  const [itemsClients] = state.User.itemsClients
+  const [itemsClients] = state.User.itemsClients;
   /* iMAGES */
   const [loading, setLoading] = useState(false);
   const [imagesUrl, setImagesUrl] = useState(item?.userImage?.url);
@@ -84,13 +91,13 @@ function UpdateUser({ item }) {
 
   const handleClose = () => {
     setUpdateCollaboratorModal(false);
-    if(item?.currentClient){
+    if (item?.currentClient) {
       handleList({ item });
     }
-/*     setManagerStatus({ label: "N/A", value: "" });
+    /*     setManagerStatus({ label: "N/A", value: "" });
     setTechLeadStatus({ label: "N/A", value: "" });
     setClientStatusUpdate({label: "N/A",
-    value: ""}) */ 
+    value: ""}) */
   };
 
   const onSubmit = async (values) => {
@@ -145,7 +152,7 @@ function UpdateUser({ item }) {
       setAccountStatus({ label: "Yes", value: "public" });
     }
 
-    if( clientStatusUpdate.value !== null){
+    if (clientStatusUpdate.value !== null) {
       setEnableManagerTechLeadHTML(true);
       setManagerStatus({
         label: "N/A",
@@ -155,9 +162,8 @@ function UpdateUser({ item }) {
         label: "N/A",
         value: "",
       });
-    getDataTM(clientStatusUpdate.value);
-}   
-
+      getDataTM(clientStatusUpdate.value);
+    }
   }, [clientStatusUpdate]);
 
   /* IMAGE */
@@ -201,9 +207,8 @@ function UpdateUser({ item }) {
   /* IMAGE */
   const handleList = async ({ item }) => {
     try {
-
-      if(item?.currentClient !== null) {
-        const  setClientListToDropDown =itemsClients.find(
+      if (item?.currentClient !== null) {
+        const setClientListToDropDown = itemsClients.find(
           (o) => o._id === item?.currentClient
         );
         setClientStatusUpdate({
@@ -213,39 +218,26 @@ function UpdateUser({ item }) {
 
         newData(item?.currentClient);
         setEnableManagerTechLeadHTML(true);
-      }else {
-        setClientStatusUpdate({value:null})
-       
+      } else {
+        setClientStatusUpdate({ value: null });
       }
-      
-     
-  
-  
 
       /*  setClientStatusUpdate({ label: setClientListToDropDown, value: item?.currentClient });  */
-
-      
     } catch (err) {
       console.log(err);
     }
   };
 
-
-
   const newData = async (get) => {
-
     if (get !== null) {
-
       await getManager(get).then(async (response) => {
         const setClientListToDropDown = response?.data?.find(
-          (o) => o._id === item?.currentManager 
+          (o) => o._id === item?.currentManager
         );
         setManagerStatus({
           label: setClientListToDropDown?.clientManagerName || "N/A",
           value: item?.currentManager || "",
         });
-
-       
 
         setManagerList(
           response?.data?.map((item) => ({
@@ -259,7 +251,7 @@ function UpdateUser({ item }) {
 
       await getTechLead(get).then(async (response) => {
         const setTechLeadListToDropDown = response?.data?.find(
-          (o) => o._id === item?.currentTechLead 
+          (o) => o._id === item?.currentTechLead
         );
         setTechLeadStatus({
           label:
@@ -276,57 +268,53 @@ function UpdateUser({ item }) {
           }))
         );
       });
-    } 
+    }
   };
 
   const getDataTM = async (clientID) => {
+    if (clientID !== "") {
+      const resManager = await getManager(clientID);
 
-if(clientID !== ""){
-    const resManager = await getManager(clientID);
-    
-    setManagerList(resManager?.data.map((item) => ({
-      label:
-        item?.clientManagerName + " " + item?.clientManagerLastName ||
-        "N/A",
-      value: item?._id || "",
-    })));
- 
-    const resTechLead = await getTechLead(clientID);     setTeachLeadsList(resTechLead?.data.map((item) => ({
-      label: item?.projectTechLeadName || "N/A",
-      value: item?._id || "",
-    })));
- 
+      setManagerList(
+        resManager?.data.map((item) => ({
+          label:
+            item?.clientManagerName + " " + item?.clientManagerLastName ||
+            "N/A",
+          value: item?._id || "",
+        }))
+      );
 
-  }
+      const resTechLead = await getTechLead(clientID);
+      setTeachLeadsList(
+        resTechLead?.data.map((item) => ({
+          label: item?.projectTechLeadName || "N/A",
+          value: item?._id || "",
+        }))
+      );
+    }
   };
 
-/* const changeData = useCallback(()=>{
+  /* const changeData = useCallback(()=>{
   setClientStatusUpdate({value:item?.currentClient})
 },[])
  */
   useEffect(() => {
+    /*     if(item?.currentClient != null){ */
+    /*     setClientStatusUpdate({value:item?.currentClient}) */
+    if (item?.currentClient) {
+      handleList({ item });
+    }
 
-/*     if(item?.currentClient != null){ */
-  /*     setClientStatusUpdate({value:item?.currentClient}) */
-  if(item?.currentClient){
-    handleList({ item });
-  }
-      
-      setClientList(
-        itemsClients.map((item) => ({
-          label: item?.name,
-          value: item?._id,
-        }))
-      ); 
+    setClientList(
+      itemsClients.map((item) => ({
+        label: item?.name,
+        value: item?._id,
+      }))
+    );
 
-
-  /*   } else{
+    /*   } else{
       getDataTM(clientStatusUpdate.value);
     } */
-    
-    
-    
- 
   }, []);
 
   return (
@@ -515,58 +503,71 @@ if(clientID !== ""){
                         onChange={(date) => setHired(date)}
                       />
                     </Col>
-
-                    <Col xs={12} lg={12} className="mb-4">
-                      <label htmlFor="client" className="form-label">
-                        Current Client
-                      </label>
-                      <Select
-                        id="client"
-                        name="client"
-                        options={clientList}
-                        isSearchable={true}
-                        getOptionLabel={(option) => option.label || "N/A"}
-                        getOptionValue={(option) => option.value || ""}
-                        value={clientStatusUpdate}
-                        onChange={(selected) => setClientStatusUpdate(selected)}
-                      />
-                    </Col>
-
-                    {clientStatusUpdate.label != "N/A" ? (
+                    {isManager && (
                       <>
                         <Col xs={12} lg={12} className="mb-4">
-                          <label htmlFor="manager" className="form-label">
-                            Current Manager
+                          <label htmlFor="client" className="form-label">
+                            Current Client
                           </label>
                           <Select
-                            id="manager"
-                            name="manager"
-                            options={managerList}
+                            id="client"
+                            name="client"
+                            options={clientList}
                             isSearchable={true}
                             getOptionLabel={(option) => option.label || "N/A"}
                             getOptionValue={(option) => option.value || ""}
-                            value={managerStatus}
-                            onChange={(selected) => setManagerStatus(selected)}
+                            value={clientStatusUpdate}
+                            onChange={(selected) =>
+                              setClientStatusUpdate(selected)
+                            }
                           />
                         </Col>
 
-                        <Col xs={12} lg={12} className="mb-4">
-                          <label htmlFor="techLead" className="form-label">
-                            Current Tech Lead
-                          </label>
-                          <Select
-                            id="techLead"
-                            name="techLead"
-                            options={techLeadList}
-                            isSearchable={true}
-                            getOptionLabel={(option) => option.label || "N/A"}
-                            getOptionValue={(option) => option.value || ""}
-                            value={techLeadStatus}
-                            onChange={(selected) => setTechLeadStatus(selected)}
-                          />
-                        </Col>
+                        {clientStatusUpdate.label != "N/A" ? (
+                          <>
+                            <Col xs={12} lg={12} className="mb-4">
+                              <label htmlFor="manager" className="form-label">
+                                Current Manager
+                              </label>
+                              <Select
+                                id="manager"
+                                name="manager"
+                                options={managerList}
+                                isSearchable={true}
+                                getOptionLabel={(option) =>
+                                  option.label || "N/A"
+                                }
+                                getOptionValue={(option) => option.value || ""}
+                                value={managerStatus}
+                                onChange={(selected) =>
+                                  setManagerStatus(selected)
+                                }
+                              />
+                            </Col>
+
+                            <Col xs={12} lg={12} className="mb-4">
+                              <label htmlFor="techLead" className="form-label">
+                                Current Tech Lead
+                              </label>
+                              <Select
+                                id="techLead"
+                                name="techLead"
+                                options={techLeadList}
+                                isSearchable={true}
+                                getOptionLabel={(option) =>
+                                  option.label || "N/A"
+                                }
+                                getOptionValue={(option) => option.value || ""}
+                                value={techLeadStatus}
+                                onChange={(selected) =>
+                                  setTechLeadStatus(selected)
+                                }
+                              />
+                            </Col>
+                          </>
+                        ) : null}
                       </>
-                    ) : null}
+                    )}
                   </Row>
                 </Modal.Body>
               </Form>

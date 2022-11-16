@@ -60,7 +60,7 @@ const routes = {
 
     manager:express.Router()
     .get('/getAllUserNotAdded',auth,managerPage.getAllUserNotAdded)
-    .delete('/addNewUserToMyList/:id',auth,managerPage.updateUserAccount)
+    .put('/addNewUserToMyList/:id',auth,managerPage.updateUserAccount)
 }
 
 module.exports = routes

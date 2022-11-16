@@ -11,7 +11,7 @@ const controller = {
       .populate([
         {
           path: "chatRoom",
-          model: "chats",
+          model: "chatRooms",
           populate: [
             { path: "guestUserB", model: "user", select: "-password" },
             { path: "guestUserA", model: "user", select: "-password" },

@@ -81,26 +81,36 @@ const controller = {
     let user = await User.findById(req.params.id);
     user.owner = req.user.id;
 
+
     const passwordChatRoom = mongoose.Types.ObjectId();
 
     /*Create ChatRoom */
-    const checkIfChatAlreadyExist = ChatRoom.findOne({
+    const checkIfChatAlreadyExist = await ChatRoom.findOne({
       guestUserA: req.user.id,
-      guestUserB: req.params._id,
+      guestUserB: req.params.id,
     });
-    const findUser = ChatRoom.findById({ _id: req.params._id });
-   
-    if (!checkIfChatAlreadyExist) {
+  
+console.log(checkIfChatAlreadyExist)
+    if (checkIfChatAlreadyExist === null) {
       const newChatRoom = new ChatRoom({
         chatRoomSharedId: passwordChatRoom,
         guestUserA: req.user.id,
-        guestUserB: req.params._id,
+        guestUserB: req.params.id,
       });
 
-      findUser.chatRoom.push(newChatRoom);
-      
+      user.chatRoom.push(newChatRoom);
+      await user
+      .save()
+      /* updateCurrentUserLogged({ newChatRoom, res, req }); */
 
-      updateCurrentUserLogged({ newChatRoom, res, req });
+      await User.findById(req.user.id).then((saveChat) => {
+        saveChat.chatRoom.push(newChatRoom);
+        saveChat.save();
+      });
+    
+      newChatRoom.save();
+
+      
     }
 
     // Save changes

@@ -66,7 +66,7 @@ export const adminService = () => {
   };
   const addNewUserToMyList = (id) => {
     const url = `/api/addNewUserToMyList/${id}`;
-    return deleteFn(url, "addToMyList", {});
+    return put(url, "addToMyList", {});
   };
 
   return {
