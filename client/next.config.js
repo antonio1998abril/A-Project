@@ -1,4 +1,4 @@
-const onLine = 'http://localhost:5000/api' /*'https://a-project-production.up.railway.app/api'*/
+const onLine = /*'http://localhost:5000/api'*/ 'https://a-project-production.up.railway.app/api'
 
 module.exports = {
   reactStrictMode: false,
