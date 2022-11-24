@@ -62,6 +62,7 @@ const [itemsClients,setItemsClients] = useState([]);
               headers: { Authorization: token },
             }
           );
+          console.log(res)
           setItemsDashBoard(res.data.users);
           setResult(res.data.result)
         } catch (err) {

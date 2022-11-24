@@ -43,7 +43,7 @@ function Index() {
   return (
     <>
       <div className="content-wrap">
-        {itemsDashBoard.length >= 1 && (
+       
           <>
             <div className="cardSearch container">
               <div className="card-body">
@@ -70,7 +70,7 @@ function Index() {
               </div>
             </div>
           </>
-        )}
+      
         <br />
         <br />
         <br />

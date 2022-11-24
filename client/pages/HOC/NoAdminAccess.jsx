@@ -1,3 +1,4 @@
+/* eslint-disable */
 import axios from "axios";
 import { useRouter } from "next/router";
 import { useContext, useEffect, useState } from "react";
@@ -22,6 +23,7 @@ const NoAdminAccess=(WrappedComponent) =>{
           localStorage.removeItem("firstLogin");
         }
         useEffect(() => {
+          try{
           const firstLogin = localStorage.getItem("firstLogin");
     /*       if (firstLogin) { */
             const refreshToken = async () => {
@@ -51,9 +53,11 @@ const NoAdminAccess=(WrappedComponent) =>{
          /*  } else {
             setReturnPage(true);
           } */
-    
+        }catch(err){
+          console.log(err)
+        }
           if (returnPage || isAdmin) {
-            Router.push("/");
+            Router.replace("/");
           }
         }, [returnPage,isAdmin]);
     

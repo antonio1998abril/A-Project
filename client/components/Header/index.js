@@ -74,7 +74,6 @@ function Index() {
 
     const receiveNotification = (message) => {
       if (message) {
-        audioPlayer.current.play();
         setShowAlert({
           status: true,
           message: "You have a new notification",
@@ -84,6 +83,7 @@ function Index() {
         });
       }
       setNotifications([message, ...notifications]);
+      audioPlayer.current.play();
     };
 
     socket.on("connect", () => {});
@@ -104,6 +104,7 @@ function Index() {
       socket.off("newNotification", socketInitializerNotification);
     };
   }, [notifications, userId]);
+  console.log(notifications)
   return (
     <>
       <Navbar className="borderHeader" expand="lg" variant="light" sticky="top">
